@@ -29,7 +29,7 @@ class WebConfiguration : WebFluxConfigurer {
                     // 检查是否已经分配过客服
                     // 如果是就重新分配到该客服，如果客服不在线就重新分配客服
                     // 如果没有就返回空
-                    PUT("/is-staff-service", assignmentHandler::checkIsStaffService)
+                    PUT("/auto", assignmentHandler::assignmentAuto)
                 }
             }
         }

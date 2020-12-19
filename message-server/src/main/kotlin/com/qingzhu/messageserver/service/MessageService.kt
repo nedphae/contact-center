@@ -48,7 +48,7 @@ class MessageService(
                 .publishOn(Schedulers.parallel())
                 .flatMap {
                     when (it.type) {
-                        CreatorType.CUSTOMER -> customerStatusService.findCustomer(it.organizationId, it.to)
+                        CreatorType.CUSTOMER -> customerStatusService.findByUserId(it.organizationId, it.to)
                                 .map { cs -> cs.redisHashKey }
                                 .syncMessage(it)
                         CreatorType.STAFF -> staffStatusService.findStaff(it.organizationId, it.to)

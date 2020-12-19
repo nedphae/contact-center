@@ -3,7 +3,7 @@ package com.qingzhu.imaccess.domain.dto
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.imaccess.domain.query.CustomerConfig
 
-data class CustomerChangeStatusDto(
+data class CustomerBaseStatusDto(
         // 公司id
         val organizationId: Int,
         val userId: Long

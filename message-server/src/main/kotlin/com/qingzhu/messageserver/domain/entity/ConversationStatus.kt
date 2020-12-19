@@ -8,11 +8,11 @@ import java.time.LocalDateTime
  */
 @NoArg
 data class ConversationStatus(
-        // 公司id
-        val organizationId: Int,
         // 会话id 唯一 雪花
         val id: Long,
-        // 会话分类信息
+        // 公司id
+        val organizationId: Int,
+        // 会话分类信息 "xx/xx"
         var category: String,
         // 会话关闭原因
         /**

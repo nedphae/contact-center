@@ -1,6 +1,9 @@
 package com.qingzhu.messageserver.controller
 
+import com.qingzhu.messageserver.domain.dto.ConversationBaseStatusDto
+import com.qingzhu.messageserver.domain.dto.CustomerBaseStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
+import com.qingzhu.messageserver.service.ConversationStatusService
 import com.qingzhu.messageserver.service.CustomerStatusService
 import com.qingzhu.messageserver.service.StaffStatusService
 import kotlinx.coroutines.flow.asFlow
@@ -11,9 +14,8 @@ import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.*
 
 @RestController
-class StatusHandler(
-        private val staffStatusService: StaffStatusService,
-        private val customerStatusService: CustomerStatusService
+class StaffStatusHandler(
+        private val staffStatusService: StaffStatusService
 ) {
     suspend fun findIdleStaffWithStaffDispatcherDto(sr: ServerRequest): ServerResponse {
         val result = sr.queryParam("organizationId").map(String::toInt).map { oi ->
@@ -24,16 +26,28 @@ class StatusHandler(
         return ok().bodyAndAwait(result)
     }
 
-    suspend fun assignmentStaff(sr: ServerRequest): ServerResponse {
+    suspend fun findBotStaffWithStaffDispatcherDto(sr: ServerRequest): ServerResponse {
+        val result = sr.queryParam("organizationId").map(String::toInt).map { oi ->
+            sr.queryParam("shuntId").map(String::toLong).map { rg ->
+                staffStatusService.findBotStaffWithStaffDispatcherDto(oi, rg)
+            }.orElse(listOf())
+        }.orElse(listOf()).asFlow()
+        return ok().bodyAndAwait(result)
+    }
+
+    suspend fun staffAssignment(sr: ServerRequest): ServerResponse {
         val param = sr.bodyToMono<StaffChangeStatusDto>()
-        return param.flatMap { staffStatusService.assignmentCustomer(it) }
-                .flatMap { param.flatMap { customerStatusService.assignmentStaff(it) } }
+        return param.flatMap { staffStatusService.assignment(it) }
                 .flatMap {
                     accepted().build()
                 }
                 .switchIfEmpty(status(HttpStatus.FORBIDDEN).build())
                 .awaitSingle()
     }
+}
+
+@RestController
+class CustomerStatusHandler(private val customerStatusService: CustomerStatusService) {
 
     suspend fun findStaffIdOrShuntId(sr: ServerRequest): ServerResponse {
         val response = ok().build()
@@ -44,11 +58,35 @@ class StatusHandler(
         }.orElse(response).awaitSingle()
     }
 
-    suspend fun checkIsStaffService(sr: ServerRequest): ServerResponse {
-        val response = ok().bodyValue(false)
+    suspend fun findByUid(sr: ServerRequest): ServerResponse {
+        val response = ok().build()
         return sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("uid").map { uid ->
-                ok().body(customerStatusService.checkIsStaffService(oi, uid))
+                customerStatusService.findByUid(oi, uid)
+                        .map { CustomerBaseStatusDto(it.organizationId, it.userId) }
+                        .transform { ok().body(it) }
+            }.orElse(response)
+        }.orElse(response).awaitSingle()
+    }
+
+}
+
+@RestController
+class ConversationStatusHandler(private val conversationStatusService: ConversationStatusService) {
+    suspend fun conversationAssignment(sr: ServerRequest): ServerResponse {
+        val param = sr.bodyToMono<ConversationBaseStatusDto>()
+        return param.flatMap { conversationStatusService.assignment(it) }
+                .flatMap { accepted().build() }
+                .awaitSingle()
+    }
+
+    suspend fun findByUserId(sr: ServerRequest): ServerResponse {
+        val response = ok().build()
+        return sr.queryParam("organizationId").map(String::toInt).map { oi ->
+            sr.queryParam("userId").map(String::toLong).map { uid ->
+                conversationStatusService.findByUserId(oi, uid)
+                        .map { ConversationBaseStatusDto.fromConversationStatus(it) }
+                        .transform { ok().body(it) }
             }.orElse(response)
         }.orElse(response).awaitSingle()
     }

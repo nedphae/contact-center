@@ -4,9 +4,8 @@ import com.hazelcast.config.IndexType
 import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
 import com.hazelcast.query.impl.predicates.EqualPredicate
-import com.qingzhu.messageserver.domain.dto.CustomerChangeStatusDto
+import com.qingzhu.messageserver.domain.dto.CustomerBaseStatusDto
 import com.qingzhu.messageserver.domain.dto.CustomerDispatcherDto
-import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.entity.CustomerStatus
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -35,18 +34,19 @@ class CustomerStatusService(
             it.redisHashKey = customerStatus.redisHashKey
             statusMap[it.userId] = it
         }
-        statusMap.setTtl(customerStatus.userId, 2, TimeUnit.HOURS)
+        // TODO 特定时间没有说话就踢出咨询
+        statusMap.setTtl(customerStatus.userId, 1, TimeUnit.HOURS)
     }
 
     /**
      * TODO 添加 EntryListener 到 IMap， 删除 entry 同时会删除该 userId 关联的会话和 redis zSet 消息
      */
-    fun setStatusOffline(customerChangeStatusDto: CustomerChangeStatusDto) {
-        val statusMap = getStatusMap(customerChangeStatusDto.organizationId)
-        val customerStatus = statusMap[customerChangeStatusDto.userId]
+    fun setStatusOffline(customerBaseStatusDto: CustomerBaseStatusDto) {
+        val statusMap = getStatusMap(customerBaseStatusDto.organizationId)
+        val customerStatus = statusMap[customerBaseStatusDto.userId]
         if (customerStatus != null) {
             customerStatus.setOffline()
-            statusMap.put(customerChangeStatusDto.userId, customerStatus, 1, TimeUnit.HOURS)
+            statusMap.put(customerBaseStatusDto.userId, customerStatus, 15, TimeUnit.MINUTES)
         }
     }
 
@@ -56,19 +56,9 @@ class CustomerStatusService(
                 .map { CustomerDispatcherDto.fromCustomerStatus(it!!) }
     }
 
-    fun findCustomer(organizationId: Int, userId: Long): Mono<CustomerStatus> {
+    fun findByUserId(organizationId: Int, userId: Long): Mono<CustomerStatus> {
         val statusMap = getStatusMap(organizationId)
         return Mono.justOrEmpty(statusMap[userId])
-    }
-
-    fun assignmentStaff(staffChangeStatusDto: StaffChangeStatusDto): Mono<CustomerStatus> {
-        return findCustomer(staffChangeStatusDto.organizationId, staffChangeStatusDto.userId!!)
-                .doOnSuccess {
-                    it.staffId = staffChangeStatusDto.staffId
-                    it.isStaffService = true
-                    // 重新保存状态
-                    saveStatus(it)
-                }
     }
 
     fun findByUid(organizationId: Int, uid: String): Mono<CustomerStatus> {

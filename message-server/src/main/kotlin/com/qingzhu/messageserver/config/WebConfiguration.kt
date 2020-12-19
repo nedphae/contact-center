@@ -1,8 +1,6 @@
 package com.qingzhu.messageserver.config
 
-import com.qingzhu.messageserver.controller.MessageHandler
-import com.qingzhu.messageserver.controller.RegisterHandler
-import com.qingzhu.messageserver.controller.StatusHandler
+import com.qingzhu.messageserver.controller.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -31,7 +29,9 @@ class WebConfiguration : WebFluxConfigurer {
 
     @Bean
     fun routerFunction(messageHandler: MessageHandler,
-                       statusHandler: StatusHandler,
+                       staffStatusHandler: StaffStatusHandler,
+                       customerStatusHandler: CustomerStatusHandler,
+                       conversationStatusHandler: ConversationStatusHandler,
                        registerHandler: RegisterHandler): RouterFunction<ServerResponse> {
         return coRouter {
             accept(MediaType.APPLICATION_JSON).nest {
@@ -53,22 +53,26 @@ class WebConfiguration : WebFluxConfigurer {
                 }
                 "/status".nest {
                     "/staff".nest {
-                        // 获取空闲客服
-                        GET("/idle", statusHandler::findIdleStaffWithStaffDispatcherDto)
+                        // 获取空闲人工客服
+                        GET("/idle", staffStatusHandler::findIdleStaffWithStaffDispatcherDto)
+                        // 获取机器人客服
+                        GET("/bot", staffStatusHandler::findBotStaffWithStaffDispatcherDto)
                         // 分配客服
-                        PUT("/assignment", statusHandler::assignmentStaff)
+                        PUT("/assignment", staffStatusHandler::staffAssignment)
                     }
                     "/customer".nest {
                         // 查询客户指定的接待组id或者客服id
-                        GET("/shunt-id", statusHandler::findStaffIdOrShuntId)
+                        GET("/shunt-id", customerStatusHandler::findStaffIdOrShuntId)
                         // 根据 uid 查找客户
-                        GET("/by-uid", statusHandler::checkIsStaffService)
+                        GET("/find-by-uid", customerStatusHandler::findByUid)
                     }
                     "/conversation".nest {
-                        // 创建新会话
+                        // 创建新会话 分配机器人客服
                         POST("/new")
                         // 根据客户 userId 查找会话
-                        GET("/by-user-id", statusHandler::checkIsStaffService)
+                        GET("/find-by-user-id", conversationStatusHandler::findByUserId)
+                        // 为会话分配人工客服
+                        PUT("/assignment", conversationStatusHandler::conversationAssignment)
                     }
                 }
             }

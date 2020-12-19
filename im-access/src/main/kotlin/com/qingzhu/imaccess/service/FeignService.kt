@@ -19,12 +19,11 @@ interface DispatchingCenter {
     @PostMapping(value = ["/customer"])
     fun updateCustomer(customerDto: CustomerDto): CustomerDto?
 
+    @PutMapping(value = ["/assignment/auto"])
+    fun assignmentAuto(@RequestParam("organizationId") organizationId: Int, @RequestParam("userId") userId: Long): ConversationView?
+
     @PutMapping(value = ["/assignment/staff"])
     fun assignmentStaff(@RequestParam("organizationId") organizationId: Int, @RequestParam("userId") userId: Long): ConversationView?
-
-    @GetMapping(value = ["/customer/is-staff-service"])
-    fun checkIsStaffService(@RequestParam("organizationId") organizationId: Int,
-                            @RequestParam("uid") uid: String): ConversationView?
 }
 
 @Service
@@ -37,13 +36,16 @@ interface MessageService {
     fun registerCustomer(customerDto: CustomerStatusDto)
 
     @PutMapping(value = ["/unregister/customer"])
-    fun unregisterCustomer(customerDto: CustomerChangeStatusDto)
+    fun unregisterCustomer(customerDto: CustomerBaseStatusDto)
 
     @PostMapping(value = ["/register/staff"])
     fun registerStaff(staffStatusDto: StaffStatusDto)
 
     @PutMapping(value = ["/unregister/staff"])
     fun unregisterStaff(staffChangeStatusDto: StaffChangeStatusDto)
+
+    @GetMapping(value = ["/status/customer/find-by-uid"])
+    fun findCustomerByUid(@RequestParam("organizationId") organizationId: Int, @RequestParam("uid") uid: String): CustomerBaseStatusDto?
 }
 
 @Service

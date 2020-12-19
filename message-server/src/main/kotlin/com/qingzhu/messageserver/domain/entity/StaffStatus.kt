@@ -6,7 +6,6 @@ import com.qingzhu.messageserver.domain.constant.ReadyStatus
 import com.qingzhu.messageserver.domain.constant.StaffRole
 import java.util.*
 
-
 data class StaffStatus(
         // 公司id
         val organizationId: Int,
@@ -22,7 +21,9 @@ data class StaffStatus(
         // 客服所处服务器 hash 值
         var redisHashKey: Int = -1,
         // 最大接待数量
-        var maxServiceCount: Int
+        var maxServiceCount: Int,
+        // 客服类型，0 表示机器人，1 表示人工会话。
+        val staffType: Int = 1
 ) : java.io.Serializable {
     // 登录时间
     val loginTime: Date = Date()

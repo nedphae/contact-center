@@ -4,6 +4,7 @@ import com.hazelcast.config.IndexType
 import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
 import com.hazelcast.query.impl.predicates.EqualPredicate
+import com.qingzhu.messageserver.domain.dto.ConversationBaseStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import org.springframework.beans.factory.annotation.Qualifier
@@ -16,8 +17,7 @@ class ConversationStatusService(
         @Qualifier("hazelcastInstance")
         private val hazelcastInstance: HazelcastInstance,
         private val clearStatusService: ClearStatusService,
-        private val staffStatusService: StaffStatusService,
-        private val customerStatusService: CustomerStatusService
+        private val staffStatusService: StaffStatusService
 ) {
     private fun getStatusMap(organizationId: Int) =
             hazelcastInstance.getMap<Long, ConversationStatus>("$organizationId:conversation")
@@ -45,19 +45,27 @@ class ConversationStatusService(
         }
     }
 
+    fun generate(): Mono<ConversationStatus> {
+
+    }
+
     fun findByUserId(organizationId: Int, userId: Long): Mono<ConversationStatus> {
         val statusMap = getStatusMap(organizationId)
         val equalPredicate = EqualPredicate("userId", userId)
         @Suppress("UNCHECKED_CAST")
-        return Mono
-                .justOrEmpty(statusMap.values(equalPredicate as Predicate<Long, ConversationStatus>)
-                        .stream().findFirst())
+        return Mono.justOrEmpty(statusMap
+                .values(equalPredicate as Predicate<Long, ConversationStatus>)
+                .stream().findFirst())
     }
 
-    // TODO 迁移到状态服务器
-    fun checkIsStaffService(organizationId: Int, uid: String): Mono<ConversationStatus> {
-        return customerStatusService.findByUid(organizationId, uid)
-                .flatMap { findByUserId(organizationId, it.userId) }
+    fun assignment(conversationBaseStatusDto: ConversationBaseStatusDto): Mono<ConversationStatus> {
+        return findByUserId(conversationBaseStatusDto.organizationId, conversationBaseStatusDto.userId)
+                .map { }
+    }
+
+
+    fun checkIsStaffService(organizationId: Int, userId: Long): Mono<ConversationStatus> {
+        return findByUserId(organizationId, userId)
                 .filter { it.interaction == 0 }
                 .flatMap { cs ->
                     staffStatusService.assignmentCustomer(StaffChangeStatusDto(

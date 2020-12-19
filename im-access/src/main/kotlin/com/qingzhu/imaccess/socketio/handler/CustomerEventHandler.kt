@@ -6,9 +6,10 @@ import com.corundumstudio.socketio.annotation.OnConnect
 import com.corundumstudio.socketio.annotation.OnDisconnect
 import com.corundumstudio.socketio.annotation.OnEvent
 import com.qingzhu.imaccess.domain.constant.SocketIONamespace
+import com.qingzhu.imaccess.domain.dto.CustomerBaseStatusDto
 import com.qingzhu.imaccess.domain.query.*
-import com.qingzhu.imaccess.domain.view.ConversationView
 import com.qingzhu.imaccess.service.DispatchingCenter
+import com.qingzhu.imaccess.service.MessageService
 import com.qingzhu.imaccess.service.RegisterService
 import com.qingzhu.imaccess.socketio.AbstractHandler
 import com.qingzhu.imaccess.socketio.constant.SocketEvent
@@ -22,7 +23,8 @@ import reactor.core.publisher.Mono
 @Service
 class CustomerEventHandler(
         private val registerService: RegisterService,
-        private val dispatchingCenter: DispatchingCenter
+        private val dispatchingCenter: DispatchingCenter,
+        private val messageService: MessageService
 ) : AbstractHandler(SocketIONamespace.CUSTOMER) {
 
     @OnConnect
@@ -36,29 +38,29 @@ class CustomerEventHandler(
     fun onRegister(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<CustomerConfig>) {
         val customerConfig = request.toMonoMonad(socketIOClient)
         customerConfig
+                //添加 10 分钟内自动转接人工
                 .flatMap {
-                    //添加 10 分钟内自动转接人工
-                    Mono.justOrEmpty(dispatchingCenter.checkIsStaffService(it.organizationId, it.uid))
-                }
-                .doOnSuccess {
-                    socketIOClient[registerName] = it!!.userId
-                    socketIOClient["organizationId"] = it.organizationId
+                    // 检查 是否在缓存中 缓存10分钟
+                    Mono.justOrEmpty(messageService.findCustomerByUid(it.organizationId, it.uid))
                 }
                 // 如果缓存中还有状态，就不用再次注册了
                 .switchIfEmpty(
+                        // 缓存中不存在客户信息就重新注册
                         customerConfig
                                 .flatMap {
                                     // 向消息服务存储用户消息
                                     registerService.registerCustomer(it)
                                 }
-                                .doOnSuccess {
-                                    socketIOClient[registerName] = it!!.userId
-                                    socketIOClient["organizationId"] = it.organizationId
-                                }
-                                .flatMap {
-                                    Mono.empty<ConversationView>()
-                                }
+                                .map { CustomerBaseStatusDto(it.organizationId, it.userId) }
                 )
+                .flatMap {
+                    // 存在就直接调用调度系统分配客服
+                    Mono.justOrEmpty(dispatchingCenter.assignmentAuto(it!!.organizationId, it.userId))
+                }
+                .doOnSuccess {
+                    socketIOClient[registerName] = it!!.userId
+                    socketIOClient["organizationId"] = it.organizationId
+                }
                 .subscribeWithData(ackRequest, request)
     }
 

@@ -20,9 +20,9 @@ interface MessageService {
     @GetMapping(value = ["/status/customer/shunt-id"])
     fun findStaffIdOrShuntIdOfCustomer(@RequestParam("organizationId") organizationId: Int, @RequestParam("userId") userId: Long): CustomerDispatcherDto?
 
-    @GetMapping(value = ["/customer/is-staff-service"])
-    fun checkIsStaffService(@RequestParam("organizationId") organizationId: Int,
-                            @RequestParam("uid") uid: String): CustomerInStaffServiceStatusDto?
+    @GetMapping(value = ["/status/conversation/find-by-user-id"])
+    fun findConversationByUserId(@RequestParam("organizationId") organizationId: Int,
+                                 @RequestParam("userId") userId: Long): ConversationView?
 }
 
 @Service

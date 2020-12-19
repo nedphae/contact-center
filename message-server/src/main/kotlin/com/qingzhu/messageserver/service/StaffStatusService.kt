@@ -39,9 +39,9 @@ class StaffStatusService(
     /**
      * 获取 在线 ，状态就绪，空闲的客服
      */
-    fun findIdleStaff(organizationId: Int, shuntId: Long): Collection<StaffStatus> {
+    fun findIdleStaff(organizationId: Int, shuntId: Long, bot: Boolean = false): Collection<StaffStatus> {
         val statusMap = getStatusMap(organizationId)
-        val andPredicate = AndPredicate(
+        val predicateList = mutableListOf(
                 // 在当前接待组
                 EqualPredicate("receptionistGroup[any]", shuntId),
                 // 在线
@@ -53,20 +53,22 @@ class StaffStatusService(
                 // 接待未满
                 EqualPredicate("autoBusy", false)
         )
+        if (bot) {
+            predicateList.add(EqualPredicate("staffType", 0))
+        } else {
+            predicateList.add(EqualPredicate("staffType", 1))
+        }
+        val andPredicate = AndPredicate(*predicateList.toTypedArray())
         @Suppress("UNCHECKED_CAST")
         return statusMap.values(andPredicate as Predicate<Long, StaffStatus>)
     }
 
     fun findIdleStaffWithStaffDispatcherDto(organizationId: Int, shuntId: Long): Collection<StaffDispatcherDto> {
-        return findIdleStaff(organizationId, shuntId).map {
-            StaffDispatcherDto(
-                    it.organizationId,
-                    it.staffId,
-                    it.priorityOfGroup,
-                    it.maxServiceCount,
-                    it.currentServiceCount
-            )
-        }
+        return findIdleStaff(organizationId, shuntId).map { StaffDispatcherDto.fromStaffStatus(it) }
+    }
+
+    fun findBotStaffWithStaffDispatcherDto(organizationId: Int, shuntId: Long): Collection<StaffDispatcherDto> {
+        return findIdleStaff(organizationId, shuntId, true).map { StaffDispatcherDto.fromStaffStatus(it) }
     }
 
     fun setStatusOffline(staffChangeStatusDto: StaffChangeStatusDto) {
@@ -86,7 +88,7 @@ class StaffStatusService(
     /**
      * 分配客服，有一定的不一致
      */
-    fun assignmentCustomer(staffChangeStatusDto: StaffChangeStatusDto): Mono<StaffStatus> {
+    fun assignment(staffChangeStatusDto: StaffChangeStatusDto): Mono<StaffStatus> {
         return findStaff(staffChangeStatusDto.organizationId, staffChangeStatusDto.staffId)
                 .filter {
                     !it.autoBusy

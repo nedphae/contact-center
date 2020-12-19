@@ -3,26 +3,26 @@ package com.qingzhu.messageserver.domain.dto
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.messageserver.domain.entity.CustomerStatus
 
-data class CustomerChangeStatusDto(
+data class CustomerBaseStatusDto(
         // 公司id
         val organizationId: Int,
         val userId: Long
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class CustomerInStaffServiceStatusDto(
+data class CustomerDispatcherDto(
         val organizationId: Int,
         val userId: Long,
+        // 指定客服id
         val staffId: Long?,
-        val isStaffService: Boolean
+        val shuntId: Long
 ) {
     companion object {
-        fun fromCustomerStatus(customerStatus: CustomerStatus): CustomerInStaffServiceStatusDto {
-            return CustomerInStaffServiceStatusDto(
+        fun fromCustomerStatus(customerStatus: CustomerStatus): CustomerDispatcherDto {
+            return CustomerDispatcherDto(
                     organizationId = customerStatus.organizationId,
                     userId = customerStatus.userId,
                     staffId = customerStatus.staffId,
-                    isStaffService = customerStatus.isStaffService
+                    shuntId = customerStatus.shuntId
             )
         }
     }

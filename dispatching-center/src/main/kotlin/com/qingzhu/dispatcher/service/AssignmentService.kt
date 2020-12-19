@@ -14,13 +14,13 @@ class AssignmentService(
         private val staffAdminService: StaffAdminService,
         private val weightedAssignmentService: WeightedAssignmentService
 ) {
-    fun checkIsStaffService(organizationId: Int, uid: String): Mono<ConversationView> {
+    fun assignmentAuto(organizationId: Int, userId: Long): Mono<ConversationView> {
         return Mono
-                .create<CustomerInStaffServiceStatusDto> {
+                .create<ConversationView> {
                     // 添加 10 分钟内自动转接人工
-                    it.success(messageService.checkIsStaffService(organizationId, uid))
+                    it.success(messageService.findConversationByUserId(organizationId, userId))
                 }
-                .flatMap {
+                .doOnSuccess {
                     if (it.isStaffService) {
                         if (it.staffId != null) {
                             val staffDto = staffAdminService.getStaffInfo(organizationId, it.staffId)

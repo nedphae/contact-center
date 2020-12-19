@@ -48,7 +48,7 @@ class RegisterService(
      * 注册客户在线信息
      */
     fun unRegisterCustomer(organizationId: Int, userId: Long) {
-        messageService.unregisterCustomer(CustomerChangeStatusDto(organizationId, userId))
+        messageService.unregisterCustomer(CustomerBaseStatusDto(organizationId, userId))
     }
 
 }

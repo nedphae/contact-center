@@ -1,6 +1,6 @@
 package com.qingzhu.messageserver.controller
 
-import com.qingzhu.messageserver.domain.dto.CustomerChangeStatusDto
+import com.qingzhu.messageserver.domain.dto.CustomerBaseStatusDto
 import com.qingzhu.messageserver.domain.dto.CustomerStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffStatusDto
@@ -30,7 +30,7 @@ class RegisterHandler(
     }
 
     suspend fun unregisterCustomer(sr: ServerRequest): ServerResponse {
-        return sr.bodyToMono<CustomerChangeStatusDto>()
+        return sr.bodyToMono<CustomerBaseStatusDto>()
                 .map { customerStatusService.setStatusOffline(it) }.flatMap { accepted().build() }.awaitSingle()
     }
 
