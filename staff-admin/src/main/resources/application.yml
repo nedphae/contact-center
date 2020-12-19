@@ -1,0 +1,60 @@
+logging:
+  level:
+    root: info
+
+server:
+  port: 8112
+
+management:
+  health:
+    elasticsearch:
+      enabled: false
+
+spring:
+  application:
+    name: staff-admin
+
+  redis:
+    database: 0
+    host: 10.0.0.100
+    port: 6379
+    password: test123
+    timeout: 5000
+
+  cloud:
+    inetutils:
+      ignored-interfaces:
+        - eth*
+      preferred-networks:
+        - 10.0.*
+    consul:
+      host: 10.0.0.105
+      port: 8500
+      discovery:
+        prefer-ip-address: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
+        # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+  elasticsearch:
+    rest:
+      uris: ["http://10.0.0.107:9200"]
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://10.0.0.101:5432/postgres?currentSchema=staffadmin
+    username: postgres
+    password: 5CPKuFFTyZ
+
+
+  # security:
+  #   oauth2:
+  #     client:
+  #       registration:

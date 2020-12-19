@@ -1,0 +1,77 @@
+package com.qingzhu.messageserver.config
+
+import com.qingzhu.messageserver.controller.MessageHandler
+import com.qingzhu.messageserver.controller.RegisterHandler
+import com.qingzhu.messageserver.controller.StatusHandler
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.http.MediaType
+import org.springframework.web.reactive.config.EnableWebFlux
+import org.springframework.web.reactive.config.WebFluxConfigurer
+import org.springframework.web.reactive.function.server.RouterFunction
+import org.springframework.web.reactive.function.server.ServerResponse
+import org.springframework.web.reactive.socket.server.WebSocketService
+import org.springframework.web.reactive.socket.server.support.HandshakeWebSocketService
+import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter
+import org.springframework.web.reactive.socket.server.upgrade.ReactorNettyRequestUpgradeStrategy
+import org.springframework.web.reactive.function.server.coRouter
+
+@Configuration
+@EnableWebFlux
+class WebConfiguration : WebFluxConfigurer {
+
+    @Bean
+    fun handlerAdapter() =
+            WebSocketHandlerAdapter(webSocketService())
+
+    @Bean
+    fun webSocketService(): WebSocketService {
+        return HandshakeWebSocketService(ReactorNettyRequestUpgradeStrategy())
+    }
+
+    @Bean
+    fun routerFunction(messageHandler: MessageHandler,
+                       statusHandler: StatusHandler,
+                       registerHandler: RegisterHandler): RouterFunction<ServerResponse> {
+        return coRouter {
+            accept(MediaType.APPLICATION_JSON).nest {
+                "/message".nest {
+                    // 发送消息
+                    POST("/send", messageHandler::send)
+                }
+                "/register".nest {
+                    // 注册客户在线信息
+                    POST("/customer", registerHandler::registerCustomer)
+                    // 注册客服在线信息
+                    POST("/staff", registerHandler::registerStaff)
+                }
+                "/unregister".nest {
+                    // 注销客户在线信息
+                    PUT("/customer", registerHandler::unregisterCustomer)
+                    // 注销客服在线信息
+                    PUT("/staff", registerHandler::unregisterStaff)
+                }
+                "/status".nest {
+                    "/staff".nest {
+                        // 获取空闲客服
+                        GET("/idle", statusHandler::findIdleStaffWithStaffDispatcherDto)
+                        // 分配客服
+                        PUT("/assignment", statusHandler::assignmentStaff)
+                    }
+                    "/customer".nest {
+                        // 查询客户指定的接待组id或者客服id
+                        GET("/shunt-id", statusHandler::findStaffIdOrShuntId)
+                        // 根据 uid 查找客户
+                        GET("/by-uid", statusHandler::checkIsStaffService)
+                    }
+                    "/conversation".nest {
+                        // 创建新会话
+                        POST("/new")
+                        // 根据客户 userId 查找会话
+                        GET("/by-user-id", statusHandler::checkIsStaffService)
+                    }
+                }
+            }
+        }
+    }
+}

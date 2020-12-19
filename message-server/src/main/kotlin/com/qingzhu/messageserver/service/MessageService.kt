@@ -1,0 +1,65 @@
+package com.qingzhu.messageserver.service
+
+import com.qingzhu.common.util.toJson
+import com.qingzhu.messageserver.domain.constant.CreatorType
+import com.qingzhu.messageserver.domain.dto.Message
+import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.ZSetOperations
+import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
+
+@Service
+class MessageService(
+        private val customerStatusService: CustomerStatusService,
+        private val staffStatusService: StaffStatusService,
+        private val redisTemplate: RedisTemplate<String, String>
+) {
+    val zSet: ZSetOperations<String, String> = redisTemplate.opsForZSet()
+
+    private fun Mono<Int>.syncMessage(message: Message): Mono<Message> {
+        val data = message.toJson()
+        val from = Mono.just("${message.organizationId}:${message.creatorType.name.toLowerCase()}:${message.from}")
+        return this
+                .doOnSuccess {
+                    if (it != -1) {
+                        redisTemplate.convertAndSend("im:message:${it}", data)
+                    }
+                }
+                .map {
+                    "${message.organizationId}:${message.type.name.toLowerCase()}:${message.to}"
+                }
+                .concatWith(from)
+                .map {
+                    // 写扩散
+                    zSet.add(it, data, message.seqId.toDouble())
+                }
+                .collectList()
+                .map { message }
+    }
+
+    /**
+     * 消息发送步骤：
+     * 1、保存到 redis zSet (写扩散/发送方，接受方都会写入)
+     * 2、查找消息接受方 redis 订阅地址，向 redis 列队写入消息 (推送模式)
+     */
+    fun send(message: Mono<Message>): Mono<Message> {
+        return message
+                .publishOn(Schedulers.parallel())
+                .flatMap {
+                    when (it.type) {
+                        CreatorType.CUSTOMER -> customerStatusService.findCustomer(it.organizationId, it.to)
+                                .map { cs -> cs.redisHashKey }
+                                .syncMessage(it)
+                        CreatorType.STAFF -> staffStatusService.findStaff(it.organizationId, it.to)
+                                .map { cs -> cs.redisHashKey }
+                                .syncMessage(it)
+                        else -> message
+                    }
+                }
+    }
+
+    fun sendAssignmentEvent() {
+
+    }
+}

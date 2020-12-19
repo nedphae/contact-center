@@ -1,0 +1,66 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: im-server
+  netty-websocket:
+    name: websocket-server
+    port: 8090
+    service-id: ${spring.netty-websocket.name}:${vcap.application.instance_id:${spring.application.instance_id:${spring.netty-websocket.port}}}
+
+  redis:
+    database: 0
+    host: 10.0.0.100
+    port: 6379
+    password: test123
+    timeout: 5000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+  # 接入服务器不需要数据库
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://10.0.0.101:5432/postgres?currentSchema=im
+    username: postgres
+    password: 5CPKuFFTyZ
+
+  # security:
+  #   oauth2:
+  #     resourceserver:
+  #       jwt:
+  #         jwk-set-uri: http://localhost:8000/.well-known/jwks.json
+
+  cloud:
+    inetutils:
+      ignored-interfaces:
+        - eth*
+      preferred-networks:
+        - 10.0.*
+    consul:
+      host: 10.0.0.105
+      port: 8500
+      discovery:
+        prefer-ip-address: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
+        # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+
+    stream:
+      function:
+        definition: message;kStreamProcess
+      poller:
+        fixed-delay: 500
+        max-messages-per-poll: 1
+      kafka:
+        binder:
+          brokers: 10.0.0.10:32060
+      bindings:
+        message-out-0:
+          destination: chatMessage
+        kStreamProcess-in-0:
+          destination: chatMessage
+
+logging:
+  level:
+    root: info

@@ -1,0 +1,35 @@
+package com.qingzhu.common.util
+
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
+import java.math.BigDecimal
+
+object JsonUtils {
+    val objectMapper: ObjectMapper = ObjectMapper()
+
+    init {
+        objectMapper.registerModule(KotlinModule())
+    }
+
+    fun <T> toJson(data: T): String {
+        return objectMapper.writeValueAsString(data)
+    }
+
+    inline fun <reified T> fromJson(content: String): T {
+        return objectMapper.readValue(content)
+    }
+}
+
+class BigDecimalSerializer : JsonSerializer<BigDecimal>() {
+    override fun serialize(value: BigDecimal?, gen: JsonGenerator?, serializers: SerializerProvider?) {
+        gen?.writeString(value?.times(100.toBigDecimal()).toString())
+    }
+}
+
+fun <T> T.toJson(): String {
+    return JsonUtils.toJson(this)
+}

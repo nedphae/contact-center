@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration = \
+  com.qingzhu.common.security.InnerLoadBalanceProperties,\
+  com.qingzhu.common.security.InnerLoadBalanceAutoConfiguration

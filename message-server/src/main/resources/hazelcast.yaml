@@ -1,0 +1,14 @@
+# hazelcast 配置
+#  禁用 multicast， 使用 k8s 进行服务集群连接
+hazelcast:
+  cluster-name: im
+  network:
+    join:
+      multicast:
+        enabled: false
+      kubernetes:
+        # 测试时设置为 false
+        enabled: false
+        # user k8s headless service
+        service-dns: message-server.devops.svc.cluster.local
+        service-dns-timeout: 50000

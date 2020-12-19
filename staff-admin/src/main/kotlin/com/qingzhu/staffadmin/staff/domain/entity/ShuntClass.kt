@@ -1,0 +1,22 @@
+package com.qingzhu.staffadmin.staff.domain.entity
+
+import javax.persistence.*
+
+/**
+ * 技能组分类
+ */
+@Entity
+@Table(indexes = [Index(columnList = "organizationId"),
+    Index(columnList = "catalogue")])
+data class ShuntClass(
+        // 公司id
+        val organizationId: Int,
+        // 分类名称
+        val className: String,
+        // 上级分类
+        val catalogue: Long
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
+}

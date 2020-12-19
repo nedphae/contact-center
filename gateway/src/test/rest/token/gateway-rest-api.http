@@ -1,0 +1,20 @@
+###
+# 测试 通过网关获取 token
+POST http://localhost:8080/oauth/token?username=admin&password=123456&grant_type=password&scope=test
+Accept: */*
+Cache-Control: no-cache
+# base64 of user_client:test_secret
+Authorization: Basic dXNlcl9jbGllbnQ6dGVzdF9zZWNyZXQ=
+
+###
+
+# 测试 根据 token 获取用户信息
+GET http://localhost:8080/im
+Accept: */*
+Cache-Control: no-cache
+# base64 of user_client:test_secret
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6YXRpb25JZCI6OTQ5MSwiYXVkIjpbImNzLWFkbWluIiwiYm90Iiwib2F1dGgyIl0sInVzZXJfbmFtZSI6ImFkbWluIiwic2NvcGUiOlsidGVzdCJdLCJleHAiOjE1ODQ5NTg2OTgsImF1dGhvcml0aWVzIjpbIlJPTEVfQURNSU4iXSwianRpIjoiMDU1NmUzNTQtNmNlMy00NTA0LThjYzMtMTcwN2E3Yzg1YTM4IiwiY2xpZW50X2lkIjoidXNlcl9jbGllbnQifQ.CHNDkwwyoR6UwrBWwCL8sgBM3nfVj4fL5lldVpHZvGptgkRLnapeYpjAINP0Lq45GIUJs89n3qb4IT_4Tei_qe2oCNQCiLjF3E-znBofwe79dfdfnf8vwy_3oS4bodfswY-9-iwlM5RY1UT2w9Coxy2GIUuaTHiyDRe98vE9BHPXix1DsAv5FDgzN0Pa8Vob6sH60A-vp9JWbqKuddsJCwAzcxp5pDC_rhxaYXIyBipaIrTDOknpLgmRrxIq7qhfGYou2K8bciRot66_1JMGMFakSRxEwLcuI2iKUejBi3-M6zhKrz1CMovMgQR4-90auy1IIGWhv-ArJdh8MaAkcQ
+
+###
+
+

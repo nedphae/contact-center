@@ -1,0 +1,70 @@
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-server
+  # 配置 oauth2 client，现在使用的是动态配置 client，因此无法使用 oauth2
+  # security:
+  #   oauth2:
+  #     client:
+  #       registration:
+  #         gateway:
+  #           provider: uaa
+  #           client-id: test_client
+  #           client-secret: test_secret
+  #           authorization-grant-type: password
+  #           redirect-uri: '{baseUrl}/'
+  #           scope: read
+  #       provider:
+  #         uaa:
+  #           authorization-uri: http://localhost:8000/oauth/authorize
+  #           token-uri: http://localhost:8000/oauth/token
+  #           user-info-uri: http://localhost:8000/userinfo
+  #           user-name-attribute: sub
+  #           jwk-set-uri: http://localhost:8000/token_keys
+  cloud:
+    inetutils:
+      ignored-interfaces:
+      - eth*
+      preferred-networks:
+      - 10.0.*
+    loadbalancer:
+      ribbon:
+        enabled: false
+    consul:
+      host: 10.0.0.105
+      port: 8500
+      discovery:
+        prefer-ip-address: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
+        # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+
+    gateway:
+      routes:
+        - id: auth_weight_high
+          uri: lb://oauth2-auth-server
+          predicates:
+            # - Path=/{companyId}/**
+            - Path=/oauth/**
+
+        - id: websocket_http_route
+          # hlb for hash load balance
+          uri: hlb://websocket-server
+          predicates:
+            - Path=/socket.io/**
+
+        - id: websocket_route
+          uri: hlb:ws://websocket-server
+          predicates:
+              - Path=/socket.io/**
+
+        - id: im_weight_high
+          uri: lb://im-server
+          predicates:
+            # - Path=/{companyId}/**
+            - Path=/im/**
+logging:
+  level:
+    root: info

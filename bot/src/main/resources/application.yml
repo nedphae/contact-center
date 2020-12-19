@@ -1,0 +1,33 @@
+logging:
+  level:
+    root: info
+
+server:
+  port: 8111
+
+spring:
+  application:
+    name: bot
+  data:
+    jpa:
+      repositories:
+        enabled: true
+    elasticsearch:
+      repositories:
+        enabled: true
+  elasticsearch:
+    rest:
+      uris: ["http://10.0.0.107:9200"]
+  cloud:
+    inetutils:
+      ignored-interfaces:
+        - eth*
+      preferred-networks:
+        - 10.0.*
+    consul:
+      host: 10.0.0.105
+      port: 8500
+      discovery:
+        prefer-ip-address: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
+        # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health

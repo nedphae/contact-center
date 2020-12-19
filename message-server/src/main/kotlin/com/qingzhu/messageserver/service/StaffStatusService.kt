@@ -1,0 +1,116 @@
+package com.qingzhu.messageserver.service
+
+import com.hazelcast.config.IndexType
+import com.hazelcast.core.HazelcastInstance
+import com.hazelcast.query.Predicate
+import com.hazelcast.query.impl.predicates.AndPredicate
+import com.hazelcast.query.impl.predicates.EqualPredicate
+import com.qingzhu.messageserver.domain.constant.BusyStatus
+import com.qingzhu.messageserver.domain.constant.OnlineStatus
+import com.qingzhu.messageserver.domain.constant.ReadyStatus
+import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
+import com.qingzhu.messageserver.domain.dto.StaffDispatcherDto
+import com.qingzhu.messageserver.domain.entity.StaffStatus
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
+import java.util.concurrent.TimeUnit
+
+@Service
+class StaffStatusService(
+        @Qualifier("hazelcastInstance")
+        private val hazelcastInstance: HazelcastInstance
+) {
+    private fun getStatusMap(organizationId: Int) =
+            hazelcastInstance.getMap<Long, StaffStatus>("$organizationId:staff")
+
+    /**
+     * 设置客服状态
+     */
+    fun saveStatus(staffStatus: StaffStatus) {
+        val statusMap = getStatusMap(staffStatus.organizationId)
+        if (statusMap.isEmpty) {
+            statusMap.addIndex(IndexType.HASH, "receptionistGroup[any]")
+            // TODO 添加其他查询条件的索引
+        }
+        statusMap.put(staffStatus.staffId, staffStatus, 2, TimeUnit.HOURS)
+    }
+
+    /**
+     * 获取 在线 ，状态就绪，空闲的客服
+     */
+    fun findIdleStaff(organizationId: Int, shuntId: Long): Collection<StaffStatus> {
+        val statusMap = getStatusMap(organizationId)
+        val andPredicate = AndPredicate(
+                // 在当前接待组
+                EqualPredicate("receptionistGroup[any]", shuntId),
+                // 在线
+                EqualPredicate("onlineStatus", OnlineStatus.ONLINE),
+                // 就绪
+                EqualPredicate("readyStatus", ReadyStatus.READY),
+                // 空闲
+                EqualPredicate("busyStatus", BusyStatus.IDLE),
+                // 接待未满
+                EqualPredicate("autoBusy", false)
+        )
+        @Suppress("UNCHECKED_CAST")
+        return statusMap.values(andPredicate as Predicate<Long, StaffStatus>)
+    }
+
+    fun findIdleStaffWithStaffDispatcherDto(organizationId: Int, shuntId: Long): Collection<StaffDispatcherDto> {
+        return findIdleStaff(organizationId, shuntId).map {
+            StaffDispatcherDto(
+                    it.organizationId,
+                    it.staffId,
+                    it.priorityOfGroup,
+                    it.maxServiceCount,
+                    it.currentServiceCount
+            )
+        }
+    }
+
+    fun setStatusOffline(staffChangeStatusDto: StaffChangeStatusDto) {
+        val statusMap = getStatusMap(staffChangeStatusDto.organizationId)
+        val staffStatus = statusMap[staffChangeStatusDto.staffId]
+        if (staffStatus != null) {
+            staffStatus.setOffline()
+            statusMap.put(staffChangeStatusDto.staffId, staffStatus, 1, TimeUnit.HOURS)
+        }
+    }
+
+    fun findStaff(organizationId: Int, staffId: Long): Mono<StaffStatus> {
+        val statusMap = getStatusMap(organizationId)
+        return Mono.justOrEmpty(statusMap[staffId])
+    }
+
+    /**
+     * 分配客服，有一定的不一致
+     */
+    fun assignmentCustomer(staffChangeStatusDto: StaffChangeStatusDto): Mono<StaffStatus> {
+        return findStaff(staffChangeStatusDto.organizationId, staffChangeStatusDto.staffId)
+                .filter {
+                    !it.autoBusy
+                            && it.onlineStatus == OnlineStatus.ONLINE
+                            && it.readyStatus == ReadyStatus.READY
+                            && it.busyStatus == BusyStatus.IDLE
+                }
+                .doOnSuccess {
+                    it.currentServiceCount++
+                    it.userIdList.add(staffChangeStatusDto.userId!!)
+                    // 重新保存状态
+                    saveStatus(it)
+                }
+    }
+
+    fun removeCustomer(organizationId: Int, staffId: Long, userId: Long) {
+        findStaff(organizationId, staffId)
+                .doOnSuccess {
+                    it.currentServiceCount--
+                    it.userIdList.remove(userId)
+                }
+                .subscribe {
+                    // 重新保存状态
+                    saveStatus(it)
+                }
+    }
+}
