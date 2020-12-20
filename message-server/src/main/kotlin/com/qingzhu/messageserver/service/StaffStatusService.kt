@@ -11,6 +11,10 @@ import com.qingzhu.messageserver.domain.constant.ReadyStatus
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffDispatcherDto
 import com.qingzhu.messageserver.domain.entity.StaffStatus
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -63,12 +67,16 @@ class StaffStatusService(
         return statusMap.values(andPredicate as Predicate<Long, StaffStatus>)
     }
 
-    fun findIdleStaffWithStaffDispatcherDto(organizationId: Int, shuntId: Long): Collection<StaffDispatcherDto> {
-        return findIdleStaff(organizationId, shuntId).map { StaffDispatcherDto.fromStaffStatus(it) }
+    fun findIdleStaffWithStaffDispatcherDto(organizationId: Int, shuntId: Long): Flow<StaffDispatcherDto> {
+        return findIdleStaff(organizationId, shuntId)
+                .asFlow()
+                .map { StaffDispatcherDto.fromStaffStatusAndShuntId(shuntId, it) }
     }
 
-    fun findBotStaffWithStaffDispatcherDto(organizationId: Int, shuntId: Long): Collection<StaffDispatcherDto> {
-        return findIdleStaff(organizationId, shuntId, true).map { StaffDispatcherDto.fromStaffStatus(it) }
+    fun findBotStaffWithStaffDispatcherDto(organizationId: Int, shuntId: Long): Flow<StaffDispatcherDto> {
+        return findIdleStaff(organizationId, shuntId, true)
+                .asFlow()
+                .map { StaffDispatcherDto.fromStaffStatusAndShuntId(shuntId, it) }
     }
 
     fun setStatusOffline(staffChangeStatusDto: StaffChangeStatusDto) {

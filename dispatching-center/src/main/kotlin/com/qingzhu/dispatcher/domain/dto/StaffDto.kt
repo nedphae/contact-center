@@ -9,11 +9,6 @@ data class StaffDto(
         val realName: String,
         val nickName: String,
         val gender: Int,
-        val personalizedSignature: String
-) {
-    fun toStaffViewWithUserId(userId: Long): ConversationView {
-        return ConversationView(
-                organizationId, staffId, userId, nickName
-        )
-    }
-}
+        val personalizedSignature: String,
+        val staffType: Int
+)

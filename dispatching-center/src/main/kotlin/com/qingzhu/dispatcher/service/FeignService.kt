@@ -23,6 +23,10 @@ interface MessageService {
     @GetMapping(value = ["/status/conversation/find-by-user-id"])
     fun findConversationByUserId(@RequestParam("organizationId") organizationId: Int,
                                  @RequestParam("userId") userId: Long): ConversationView?
+
+    @GetMapping(value = ["/status/staff/bot/idle"])
+    fun findIdleBotStaff(@RequestParam("organizationId") organizationId: Int,
+                         @RequestParam("shuntId") shuntId: Long): List<StaffDispatcherDto>
 }
 
 @Service

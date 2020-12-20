@@ -56,7 +56,7 @@ class WebConfiguration : WebFluxConfigurer {
                         // 获取空闲人工客服
                         GET("/idle", staffStatusHandler::findIdleStaffWithStaffDispatcherDto)
                         // 获取机器人客服
-                        GET("/bot", staffStatusHandler::findBotStaffWithStaffDispatcherDto)
+                        GET("/bot/idle", staffStatusHandler::findBotStaffWithStaffDispatcherDto)
                         // 分配客服
                         PUT("/assignment", staffStatusHandler::staffAssignment)
                     }

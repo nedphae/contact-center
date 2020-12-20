@@ -50,7 +50,7 @@ data class Staff(
     var maxTicketAllTime: Int = 999
 
     // 是否是机器人
-    val android: Boolean = false
+    val staffType: Int = 1
 
     // 性别
     var gender: Int = 0

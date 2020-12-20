@@ -3,6 +3,7 @@ package com.qingzhu.messageserver.controller
 import com.qingzhu.messageserver.domain.dto.ConversationBaseStatusDto
 import com.qingzhu.messageserver.domain.dto.CustomerBaseStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
+import com.qingzhu.messageserver.domain.dto.StaffDispatcherDto
 import com.qingzhu.messageserver.service.ConversationStatusService
 import com.qingzhu.messageserver.service.CustomerStatusService
 import com.qingzhu.messageserver.service.StaffStatusService
@@ -21,8 +22,8 @@ class StaffStatusHandler(
         val result = sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("shuntId").map(String::toLong).map { rg ->
                 staffStatusService.findIdleStaffWithStaffDispatcherDto(oi, rg)
-            }.orElse(listOf())
-        }.orElse(listOf()).asFlow()
+            }.orElse(listOf<StaffDispatcherDto>().asFlow())
+        }.orElse(listOf<StaffDispatcherDto>().asFlow())
         return ok().bodyAndAwait(result)
     }
 

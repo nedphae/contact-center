@@ -18,11 +18,11 @@ import java.util.concurrent.ConcurrentHashMap
 class NginxWeightedAssignmentService(
         private val redisTemplate: RedisTemplate<String, String>,
         private val messageService: MessageService
-) : AssignmentInterface {
+) {
     /**
      * 获取 客服权重分配
      */
-    override fun assignmentStaff(organizationId: Int, shuntId: Long): Mono<Long> {
+    fun assignmentStaff(organizationId: Int, shuntId: Long): Mono<Long> {
         val opsForHash = redisTemplate.opsForHash<Long, String>()
         val key = "weight_info:${organizationId}:${shuntId}"
         val redisMap = opsForHash.entries(key)
@@ -65,11 +65,11 @@ class NginxWeightedAssignmentService(
                     (weightInfoMap[it.staffId]?.apply {
                         this.max = it.maxServiceCount
                         this.current = it.currentServiceCount
-                        this.weight = it.priorityOfGroup[shuntId] ?: 0
+                        this.weight = it.priorityOfGroup.second ?: 0
                     } ?: WeightInfo(
                             it.organizationId,
                             it.staffId,
-                            it.priorityOfGroup[shuntId] ?: 0,
+                            it.priorityOfGroup.second ?: 0,
                             it.maxServiceCount,
                             it.currentServiceCount
                     )).apply {

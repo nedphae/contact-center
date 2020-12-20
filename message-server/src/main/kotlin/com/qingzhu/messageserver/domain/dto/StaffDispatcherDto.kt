@@ -8,7 +8,7 @@ data class StaffDispatcherDto(
         // 客服id
         val staffId: Long,
         // 不同接待组的优先级
-        var priorityOfGroup: Map<Long, Int>,
+        var priorityOfGroup: Pair<Long, Int?>,
         // 最大接待数量
         var maxServiceCount: Int,
         // 当前接待量
@@ -17,11 +17,11 @@ data class StaffDispatcherDto(
         val staffType: Int
 ) {
     companion object {
-        fun fromStaffStatus(staffStatus: StaffStatus): StaffDispatcherDto {
+        fun fromStaffStatusAndShuntId(shuntId: Long, staffStatus: StaffStatus): StaffDispatcherDto {
             return StaffDispatcherDto(
                     organizationId = staffStatus.organizationId,
                     staffId = staffStatus.staffId,
-                    priorityOfGroup = staffStatus.priorityOfGroup,
+                    priorityOfGroup = shuntId to staffStatus.priorityOfGroup[shuntId],
                     maxServiceCount = staffStatus.maxServiceCount,
                     currentServiceCount = staffStatus.currentServiceCount,
                     staffType = staffStatus.staffType
