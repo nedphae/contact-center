@@ -15,7 +15,8 @@ import java.util.concurrent.TimeUnit
 @Service
 class CustomerStatusService(
         @Qualifier("hazelcastInstance")
-        private val hazelcastInstance: HazelcastInstance
+        private val hazelcastInstance: HazelcastInstance,
+        private val clearStatusService: ClearStatusService
 ) {
     private fun getStatusMap(organizationId: Int) =
             hazelcastInstance.getMap<Long, CustomerStatus>("$organizationId:customer")
@@ -27,6 +28,7 @@ class CustomerStatusService(
         val statusMap = getStatusMap(customerStatus.organizationId)
         if (statusMap.isEmpty) {
             statusMap.addIndex(IndexType.HASH, "uid")
+            statusMap.addEntryListener(clearStatusService, true)
         }
         // 这样写为了后面一些临时状态保存到 HazelcastInstance 不会丢失
         val oldCustomerStatus = statusMap.putIfAbsent(customerStatus.userId, customerStatus)
@@ -34,13 +36,9 @@ class CustomerStatusService(
             it.redisHashKey = customerStatus.redisHashKey
             statusMap[it.userId] = it
         }
-        // TODO 特定时间没有说话就踢出咨询
         statusMap.setTtl(customerStatus.userId, 1, TimeUnit.HOURS)
     }
 
-    /**
-     * TODO 添加 EntryListener 到 IMap， 删除 entry 同时会删除该 userId 关联的会话和 redis zSet 消息
-     */
     fun setStatusOffline(customerBaseStatusDto: CustomerBaseStatusDto) {
         val statusMap = getStatusMap(customerBaseStatusDto.organizationId)
         val customerStatus = statusMap[customerBaseStatusDto.userId]

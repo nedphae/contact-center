@@ -16,11 +16,13 @@ import java.util.concurrent.TimeUnit
 class ConversationStatusService(
         @Qualifier("hazelcastInstance")
         private val hazelcastInstance: HazelcastInstance,
-        private val clearStatusService: ClearStatusService,
         private val staffStatusService: StaffStatusService
 ) {
     private fun getStatusMap(organizationId: Int) =
             hazelcastInstance.getMap<Long, ConversationStatus>("$organizationId:conversation")
+
+    private fun getNoSpeakQueue(organizationId: Int) =
+            hazelcastInstance.getQueue<Long>("$organizationId:no-speak")
 
     /**
      * 设置客服状态
@@ -30,11 +32,16 @@ class ConversationStatusService(
         if (statusMap.isEmpty) {
             statusMap.addIndex(IndexType.HASH, "staffId")
             statusMap.addIndex(IndexType.HASH, "userId")
-            statusMap.addEntryListener(clearStatusService, true)
         }
         statusMap.put(conversationStatus.id, conversationStatus, 2, TimeUnit.HOURS)
+        // TODO 特定时间没有说话就踢出咨询 修改放到接入服务器进行
+        val noSpeakQueue = getNoSpeakQueue(conversationStatus.organizationId)
+        noSpeakQueue.offer(conversationStatus.userId, )
     }
 
+    /**
+     * TODO 添加 EntryListener 到 IMap， 删除 entry 同时会删除该 userId 关联的会话和 redis zSet 消息
+     */
     fun setRemove(organizationId: Int, id: Long) {
         val statusMap = getStatusMap(organizationId)
         val conversationStatus = statusMap[id]
