@@ -16,7 +16,8 @@ import java.util.concurrent.TimeUnit
 class ConversationStatusService(
         @Qualifier("hazelcastInstance")
         private val hazelcastInstance: HazelcastInstance,
-        private val staffStatusService: StaffStatusService
+        private val staffStatusService: StaffStatusService,
+        private val clearStatusService: ClearStatusService
 ) {
     private fun getStatusMap(organizationId: Int) =
             hazelcastInstance.getMap<Long, ConversationStatus>("$organizationId:conversation")
@@ -29,9 +30,9 @@ class ConversationStatusService(
         if (statusMap.isEmpty) {
             statusMap.addIndex(IndexType.HASH, "staffId")
             statusMap.addIndex(IndexType.HASH, "userId")
+            statusMap.addEntryListener(clearStatusService, true)
         }
-        statusMap.put(conversationStatus.id, conversationStatus, 2, TimeUnit.HOURS)
-        // TODO 特定时间没有说话就踢出咨询 修改放到接入服务器进行
+        statusMap.put(conversationStatus.id, conversationStatus, 1, TimeUnit.HOURS)
     }
 
     /**
@@ -41,7 +42,7 @@ class ConversationStatusService(
         val statusMap = getStatusMap(organizationId)
         val conversationStatus = statusMap[id]
         if (conversationStatus != null) {
-            statusMap.put(conversationStatus.id, conversationStatus, 1, TimeUnit.HOURS)
+            statusMap.put(conversationStatus.id, conversationStatus, 20, TimeUnit.MINUTES)
             staffStatusService.removeCustomer(conversationStatus.organizationId,
                     conversationStatus.staffId, conversationStatus.userId)
         }

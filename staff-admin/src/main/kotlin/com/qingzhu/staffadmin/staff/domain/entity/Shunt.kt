@@ -16,7 +16,7 @@ data class Shunt(
         val name: String,
         // 接待组所属分类
         // @ManyToOne
-        val receptionistGroupClassId: Long,
+        val shuntClassId: Long,
         // 接待组范围代码
         val code: String
 ) {

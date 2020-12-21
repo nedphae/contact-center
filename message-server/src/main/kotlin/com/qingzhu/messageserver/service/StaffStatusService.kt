@@ -34,7 +34,10 @@ class StaffStatusService(
         val statusMap = getStatusMap(staffStatus.organizationId)
         if (statusMap.isEmpty) {
             statusMap.addIndex(IndexType.HASH, "receptionistGroup[any]")
-            // TODO 添加其他查询条件的索引
+            statusMap.addIndex(IndexType.SORTED, "onlineStatus")
+            statusMap.addIndex(IndexType.SORTED, "readyStatus")
+            statusMap.addIndex(IndexType.SORTED, "busyStatus")
+            statusMap.addIndex(IndexType.BITMAP, "autoBusy")
         }
         statusMap.put(staffStatus.staffId, staffStatus, 2, TimeUnit.HOURS)
     }

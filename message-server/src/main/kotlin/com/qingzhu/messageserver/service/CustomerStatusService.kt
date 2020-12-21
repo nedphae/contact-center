@@ -15,8 +15,7 @@ import java.util.concurrent.TimeUnit
 @Service
 class CustomerStatusService(
         @Qualifier("hazelcastInstance")
-        private val hazelcastInstance: HazelcastInstance,
-        private val clearStatusService: ClearStatusService
+        private val hazelcastInstance: HazelcastInstance
 ) {
     private fun getStatusMap(organizationId: Int) =
             hazelcastInstance.getMap<Long, CustomerStatus>("$organizationId:customer")
@@ -28,7 +27,6 @@ class CustomerStatusService(
         val statusMap = getStatusMap(customerStatus.organizationId)
         if (statusMap.isEmpty) {
             statusMap.addIndex(IndexType.HASH, "uid")
-            statusMap.addEntryListener(clearStatusService, true)
         }
         // 这样写为了后面一些临时状态保存到 HazelcastInstance 不会丢失
         val oldCustomerStatus = statusMap.putIfAbsent(customerStatus.userId, customerStatus)

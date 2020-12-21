@@ -15,7 +15,7 @@ data class ConversationStatus(
         val organizationId: Int,
         // 冗余部分数据
         // 会话来自分流组ID
-        val fromGroupId: Long,
+        val fromShuntId: Long,
         // 会话来自分流组名称
         // var fromGroup: String,
         // 访客来源ip
