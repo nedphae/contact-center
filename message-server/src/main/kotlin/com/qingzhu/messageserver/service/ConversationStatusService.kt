@@ -21,9 +21,6 @@ class ConversationStatusService(
     private fun getStatusMap(organizationId: Int) =
             hazelcastInstance.getMap<Long, ConversationStatus>("$organizationId:conversation")
 
-    private fun getNoSpeakQueue(organizationId: Int) =
-            hazelcastInstance.getQueue<Long>("$organizationId:no-speak")
-
     /**
      * 设置客服状态
      */
@@ -35,8 +32,6 @@ class ConversationStatusService(
         }
         statusMap.put(conversationStatus.id, conversationStatus, 2, TimeUnit.HOURS)
         // TODO 特定时间没有说话就踢出咨询 修改放到接入服务器进行
-        val noSpeakQueue = getNoSpeakQueue(conversationStatus.organizationId)
-        noSpeakQueue.offer(conversationStatus.userId, )
     }
 
     /**
