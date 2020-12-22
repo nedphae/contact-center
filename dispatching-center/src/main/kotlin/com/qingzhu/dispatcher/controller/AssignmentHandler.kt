@@ -1,5 +1,6 @@
 package com.qingzhu.dispatcher.controller
 
+import com.qingzhu.dispatcher.domain.dto.ConversationView
 import com.qingzhu.dispatcher.service.AssignmentService
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
@@ -14,7 +15,8 @@ class AssignmentHandler(
         val response = ok().build()
         return sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("userId").map(String::toLong).map { uid ->
-                ok().body(assignmentService.assignmentStaff(oi, uid))
+                assignmentService.assignmentStaff(oi, uid)
+                        .transform { ok().body(it) }
             }.orElse(response)
         }.orElse(response).awaitSingle()
     }

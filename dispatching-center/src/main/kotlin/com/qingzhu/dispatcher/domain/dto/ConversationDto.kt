@@ -1,26 +1,35 @@
 package com.qingzhu.dispatcher.domain.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.common.message.getConversationSnowFlake
 import com.qingzhu.dispatcher.domain.constant.*
 import java.time.LocalDateTime
 
 
 /**
- * 返回给用户的客服的公开信息
+ * 返回给用户的会话信息 / 排队信息
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ConversationView(
-        val id: Long,
+        val id: Long?,
         // 公司id
         val organizationId: Int,
         // 客服id
-        val staffId: Long,
+        val staffId: Long?,
         val userId: Long,
-        val nickName: String,
+        val nickName: String?,
         // 0=客服正常会话  1=机器人会话
-        val interaction: Int
+        val interaction: Int?,
+        // 会话结束时间
+        val endTime: LocalDateTime?,
+        // 当前排队信息
+        val queue: Int?
 ) {
+    constructor(organizationId: Int, userId: Long, queue: Int) : this(null, organizationId,
+            null, userId, null, null, null, queue)
 }
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ConversationStatusDto(
         // 公司id
         val organizationId: Int,
