@@ -5,7 +5,7 @@ import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
 import com.hazelcast.query.impl.predicates.EqualPredicate
 import com.qingzhu.messageserver.domain.dto.ConversationBaseStatusDto
-import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
+import com.qingzhu.messageserver.domain.dto.ConversationStatusDto
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -48,8 +48,10 @@ class ConversationStatusService(
         }
     }
 
-    fun generate(): Mono<ConversationStatus> {
-
+    fun generate(conversationStatusDto: ConversationStatusDto): Mono<ConversationStatus> {
+        return Mono.just(conversationStatusDto)
+                .map { it.toConversationStatus() }
+                .doOnSuccess { saveStatus(it) }
     }
 
     fun findByUserId(organizationId: Int, userId: Long): Mono<ConversationStatus> {
@@ -64,28 +66,5 @@ class ConversationStatusService(
     fun assignment(conversationBaseStatusDto: ConversationBaseStatusDto): Mono<ConversationStatus> {
         return findByUserId(conversationBaseStatusDto.organizationId, conversationBaseStatusDto.userId)
                 .map { }
-    }
-
-
-    fun checkIsStaffService(organizationId: Int, userId: Long): Mono<ConversationStatus> {
-        return findByUserId(organizationId, userId)
-                .filter { it.interaction == 0 }
-                .flatMap { cs ->
-                    staffStatusService.assignmentCustomer(StaffChangeStatusDto(
-                            cs.organizationId,
-                            cs.staffId,
-                            cs.userId
-                    ))
-                            .map { cs }
-                }
-                .switchIfEmpty(
-                        // 如果没有分配成功, 就新建一个会话
-                        statusMono.doOnSuccess {
-                            it.staffId = null
-                        }
-                )
-                .map {
-                    CustomerInStaffServiceStatusDto.fromCustomerStatus(it)
-                }
     }
 }

@@ -7,6 +7,7 @@ data class StaffDto(
         val organizationId: Int,
         // 客服id
         val staffId: Long,
+        val groupId: Long,
         val username: String,
         val realName: String,
         val nickName: String,
@@ -18,6 +19,7 @@ data class StaffDto(
             return StaffDto(
                     organizationId = staff.organizationId,
                     staffId = staff.id ?: -1,
+                    groupId = staff.staffGroupId,
                     username = staff.username,
                     realName = staff.realName,
                     nickName = staff.nickName,

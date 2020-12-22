@@ -52,9 +52,7 @@ data class StaffStatus(
     // 当前接待量 (不能大于最大接待量)
     var currentServiceCount: Int = 0
         set(value) {
-            if (value >= maxServiceCount) {
-                autoBusy = true
-            }
+            autoBusy = value >= maxServiceCount
             field = value
         }
 

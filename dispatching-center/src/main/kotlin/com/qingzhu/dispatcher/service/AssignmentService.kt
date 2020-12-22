@@ -1,9 +1,6 @@
 package com.qingzhu.dispatcher.service
 
-import com.qingzhu.dispatcher.domain.dto.CustomerDispatcherDto
-import com.qingzhu.dispatcher.domain.dto.StaffChangeStatusDto
-import com.qingzhu.dispatcher.domain.dto.ConversationView
-import com.qingzhu.dispatcher.domain.dto.StaffDispatcherDto
+import com.qingzhu.dispatcher.domain.dto.*
 import com.qingzhu.dispatcher.service.impl.WeightedAssignmentService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -29,10 +26,10 @@ class AssignmentService(
                 .flatMap {
                     if (it.interaction == 0) {
                         // 客服会话
-                        assignmentStaff(it.organizationId, it.userId)
+                        staff(it.organizationId, it.userId)
                     } else {
                         // 机器人会话
-                        assignmentBot(it.organizationId, it.userId)
+                        bot(it.organizationId, it.userId)
                     }
                 }
                 .doOnSuccess {
@@ -40,19 +37,22 @@ class AssignmentService(
 
                 }
                 // 不存在历史会话
-                .switchIfEmpty(assignmentBot(organizationId, userId))
-    }
-
-    private fun assignmentBot(organizationId: Int, userId: Long): Mono<ConversationView> {
-        return getCustomerDispatcher(organizationId, userId)
-                .map { messageService.findIdleBotStaff(organizationId, it) }
-                .transform {
-                    assignment(it, organizationId, userId)
+                .switchIfEmpty(bot(organizationId, userId))
+                .flatMap {
+                    Mono.justOrEmpty(messageService.createConversation(it))
                 }
     }
 
-    private fun assignment(staffList: Mono<List<StaffDispatcherDto>>, organizationId: Int, userId: Long): Mono<ConversationView> {
-        return staffList
+    private fun bot(organizationId: Int, userId: Long): Mono<ConversationStatusDto> {
+        return assignment(organizationId, userId) { messageService.findIdleBotStaff(organizationId, it) }
+    }
+
+    private fun assignment(organizationId: Int, userId: Long,
+                           getStaffList: (shuntId: Long) ->
+                           List<StaffDispatcherDto>): Mono<ConversationStatusDto> {
+        val customerDispatcherDto = getCustomerDispatcher(organizationId, userId)
+        return customerDispatcherDto
+                .map { getStaffList(it.shuntId) }
                 .cache()
                 .flatMap {
                     weightedAssignmentService.assignmentStaff(it)
@@ -63,29 +63,38 @@ class AssignmentService(
                     messageService.assignmentCustomer(dto)
                     dto
                 }.retry(3)
-                .map {
-                    val staffDto = staffAdminService.getStaffInfo(it.organizationId, it.staffId)
-                    // TODO 根据 user 和 staff 创建会话
-                    staffDto!!.toStaffViewWithUserId(it.userId)
+                .flatMap {
+                    Mono.justOrEmpty(staffAdminService.getStaffInfo(it.organizationId, it.staffId))
+                }
+                .flatMap {
+                    customerDispatcherDto
+                            .map { cd ->
+                                ConversationStatusDto.fromStaffAndCustomer(it!!,
+                                        cd!!, 0)
+                            }
+                }
+                .doOnSuccess {
+                    // 设置会话状态
+
                 }
     }
 
-    private fun getCustomerDispatcher(organizationId: Int, userId: Long): Mono<Long> {
+    private fun getCustomerDispatcher(organizationId: Int, userId: Long): Mono<CustomerDispatcherDto> {
         return Mono.create<CustomerDispatcherDto> {
             val customerDispatcherDto = messageService.findStaffIdOrShuntIdOfCustomer(organizationId, userId)
             it.success(customerDispatcherDto)
         }
                 .cache()
-                .map { it.shuntId }
-                .filter { it != -1L }
+                .filter { it.shuntId != -1L }
     }
+
+    private fun staff(organizationId: Int, userId: Long): Mono<ConversationStatusDto> {
+        return assignment(organizationId, userId) { messageService.findIdleStaff(organizationId, it) }
+    }
+
 
     fun assignmentStaff(organizationId: Int, userId: Long): Mono<ConversationView> {
-        return getCustomerDispatcher(organizationId, userId)
-                .map { messageService.findIdleStaff(organizationId, it) }
-                .transform {
-                    assignment(it, organizationId, userId)
-                }
+        return assignment(organizationId, userId) { messageService.findIdleStaff(organizationId, it) }
+                .
     }
-
 }

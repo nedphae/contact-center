@@ -5,6 +5,7 @@ data class StaffDto(
         val organizationId: Int,
         // 客服id
         val staffId: Long,
+        val groupId: Long,
         val username: String,
         val realName: String,
         val nickName: String,

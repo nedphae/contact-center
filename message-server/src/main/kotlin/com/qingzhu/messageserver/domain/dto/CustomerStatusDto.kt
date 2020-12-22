@@ -10,13 +10,20 @@ data class CustomerBaseStatusDto(
         val userId: Long
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CustomerDispatcherDto(
         val organizationId: Int,
         val userId: Long,
         // 指定客服id
         val staffId: Long?,
+        val groupId: Long?,
         val shuntId: Long,
-        val ip: String
+        val robotShuntSwitch: Int?,
+        val vipLevel: Int?,
+        val fromType: FromType,
+        val ip: String,
+        val title: String?,
+        val referrer: String?
 ) {
     companion object {
         fun fromCustomerStatus(customerStatus: CustomerStatus): CustomerDispatcherDto {
@@ -24,8 +31,14 @@ data class CustomerDispatcherDto(
                     organizationId = customerStatus.organizationId,
                     userId = customerStatus.userId,
                     staffId = customerStatus.staffId,
+                    groupId = customerStatus.groupId,
                     shuntId = customerStatus.shuntId,
-                    ip = customerStatus.ip
+                    robotShuntSwitch = customerStatus.robotShuntSwitch,
+                    vipLevel = customerStatus.vipLevel,
+                    fromType = customerStatus.fromType,
+                    ip = customerStatus.ip,
+                    title = customerStatus.title,
+                    referrer = customerStatus.referrer
             )
         }
     }

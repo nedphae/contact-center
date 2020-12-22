@@ -16,8 +16,8 @@ data class ConversationStatus(
         // 冗余部分数据
         // 会话来自分流组ID
         val fromShuntId: Long,
-        // 会话来自分流组名称
-        // var fromGroup: String,
+        // 会话来自客服组ID
+        var fromGroupId: Long,
         // 访客来源ip
         val fromIp: String,
         // 来源页
@@ -35,7 +35,7 @@ data class ConversationStatus(
         // 关联会话类型
         val relatedType: RelatedType = RelatedType.NO,
         // 0：正常会话.1(2)：离线留言，3：排队超时
-        val cType: Int,
+        val cType: ConversationType,
         // 客服id
         val staffId: Long,
         // 客服名字 或为 "机器人"
@@ -45,7 +45,7 @@ data class ConversationStatus(
         // 客户id
         val userId: Long,
         // vip 层级 0=非VIP用户
-        val vipLevel: Int,
+        val vipLevel: Int?,
         // 与上一次来访的时间差 <=0则忽略
         val visitRange: Long,
         // 转人工类型

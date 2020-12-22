@@ -4,6 +4,7 @@ import com.qingzhu.common.security.AuthorizedFeignClient
 import com.qingzhu.dispatcher.domain.dto.*
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestParam
 
@@ -27,6 +28,9 @@ interface MessageService {
     @GetMapping(value = ["/status/staff/bot/idle"])
     fun findIdleBotStaff(@RequestParam("organizationId") organizationId: Int,
                          @RequestParam("shuntId") shuntId: Long): List<StaffDispatcherDto>
+
+    @PostMapping(value = ["/status/conversation/new"])
+    fun createConversation(conversationStatusDto: ConversationStatusDto): ConversationView?
 }
 
 @Service

@@ -1,6 +1,7 @@
 package com.qingzhu.dispatcher.domain.dto
 
 import com.qingzhu.common.message.getConversationSnowFlake
+import com.qingzhu.dispatcher.domain.constant.*
 import java.time.LocalDateTime
 
 
@@ -20,7 +21,7 @@ data class ConversationView(
 ) {
 }
 
-data class ConversationDto(
+data class ConversationStatusDto(
         // 公司id
         val organizationId: Int,
         // 客服id
@@ -28,29 +29,51 @@ data class ConversationDto(
         val userId: Long,
         val nickName: String,
         var fromGroupId: Long,
-        var fromGroup: String,
+        val fromShuntId: Long,
         var fromIp: String,
         var fromPage: String?,
-        var fromStaff: String?,
-        var fromType: String,
-        var inQueueTime: Long,
+        val fromTitle: String?,
+        val fromType: FromType,
         // 0=客服正常会话  1=机器人会话
         val interaction: Int,
-        var relatedId: Long?,
-        var relatedType: Int?,
+        val vipLevel: Int?,
+        var isStaffInvited: Boolean = false,
+        val beginner: CreatorType = CreatorType.CUSTOMER
 ) {
+    var inQueueTime: Long = 0
+    var relatedId: Long? = null
+    var relatedType: RelatedType = RelatedType.NO
+    var cType: ConversationType = ConversationType.NORMAL
+    var visitRange: Long = 0
+    lateinit var transferType: TransferType
+    var humanTransferSessionId: Long = 0
+    var transferFromStaffName: String? = null
+    var transferFromGroup: String? = null
+    var transferRemarks: String? = null
+
     // 生成 会话id
     val id: Long = getConversationSnowFlake().getNextSequenceId()
+
     // 会话开始时间
     val startTime: LocalDateTime = LocalDateTime.now()
 
     companion object {
-        fun fromStaffAndCustomer(staffDto:StaffDto): ConversationDto {
-            return ConversationDto(
+        fun fromStaffAndCustomer(staffDto: StaffDto,
+                                 customerDispatcherDto: CustomerDispatcherDto,
+                                 interaction: Int): ConversationStatusDto {
+            return ConversationStatusDto(
                     organizationId = staffDto.organizationId,
                     staffId = staffDto.staffId,
-                    userId = ,
-                    nickName = staffDto.nickName
+                    userId = customerDispatcherDto.userId,
+                    nickName = staffDto.nickName,
+                    fromGroupId = staffDto.groupId,
+                    fromShuntId = customerDispatcherDto.shuntId,
+                    fromIp = customerDispatcherDto.ip,
+                    fromPage = customerDispatcherDto.referrer,
+                    fromTitle = customerDispatcherDto.title,
+                    fromType = customerDispatcherDto.fromType,
+                    interaction = interaction,
+                    vipLevel = customerDispatcherDto.vipLevel
             )
         }
     }

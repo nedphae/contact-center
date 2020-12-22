@@ -1,9 +1,7 @@
 package com.qingzhu.messageserver.domain.dto
 
-import com.qingzhu.messageserver.domain.constant.CreatorType
-import com.qingzhu.messageserver.domain.constant.FromType
-import com.qingzhu.messageserver.domain.constant.RelatedType
-import com.qingzhu.messageserver.domain.constant.TransferType
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.qingzhu.messageserver.domain.constant.*
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import java.time.LocalDateTime
 
@@ -29,23 +27,29 @@ data class ConversationBaseStatusDto(
     }
 }
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ConversationStatusDto(
         val id: Long,
-        val organizationId: Int,
-        val fromShuntId: Long,
-        val fromIp: String,
-        val fromPage: String?,
-        val fromTitle: String?,
-        val fromType: FromType,
-        val inQueueTime: Long,
-        val interaction: Int,
-        val relatedId: Long?,
-        val relatedType: RelatedType = RelatedType.NO,
-        val cType: Int,
-        val staffId: Long,
         val startTime: LocalDateTime,
+        // 公司id
+        val organizationId: Int,
+        // 客服id
+        val staffId: Long,
         val userId: Long,
-        val vipLevel: Int,
+        val nickName: String,
+        var fromGroupId: Long,
+        val fromShuntId: Long,
+        var fromIp: String,
+        var fromPage: String?,
+        val fromTitle: String?,
+        var fromType: FromType,
+        var inQueueTime: Long,
+        // 0=客服正常会话  1=机器人会话
+        val interaction: Int,
+        var relatedId: Long?,
+        val relatedType: RelatedType = RelatedType.NO,
+        val cType: ConversationType,
+        val vipLevel: Int?,
         val visitRange: Long,
         val transferType: TransferType,
         val humanTransferSessionId: Long = 0,
@@ -55,4 +59,33 @@ data class ConversationStatusDto(
         val isStaffInvited: Boolean = false,
         val beginner: CreatorType
 ) {
+    fun toConversationStatus(): ConversationStatus {
+        return ConversationStatus(
+                id = this.id,
+                organizationId = this.organizationId,
+                fromShuntId = this.fromShuntId,
+                fromGroupId = this.fromGroupId,
+                fromIp = this.fromIp,
+                fromPage = this.fromPage,
+                fromTitle = this.fromTitle,
+                fromType = this.fromType,
+                inQueueTime = this.inQueueTime,
+                interaction = this.interaction,
+                relatedId = this.relatedId,
+                relatedType = this.relatedType,
+                cType = this.cType,
+                staffId = this.staffId,
+                startTime = this.startTime,
+                userId = this.userId,
+                vipLevel = this.vipLevel,
+                visitRange = this.visitRange,
+                transferType = this.transferType,
+                humanTransferSessionId = this.humanTransferSessionId,
+                transferFromStaffName = this.transferFromStaffName,
+                transferFromGroup = this.transferFromGroup,
+                transferRemarks = this.transferRemarks,
+                isStaffInvited = this.isStaffInvited,
+                beginner = this.beginner
+        )
+    }
 }
