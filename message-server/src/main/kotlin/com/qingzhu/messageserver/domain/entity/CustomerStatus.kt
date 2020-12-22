@@ -1,5 +1,6 @@
 package com.qingzhu.messageserver.domain.entity
 
+import com.qingzhu.messageserver.domain.constant.FromType
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import java.util.*
 
@@ -23,7 +24,13 @@ data class CustomerStatus(
         // 机器人优先开关（访客分配）
         val robotShuntSwitch: Int?,
         // 客服所处服务器 hash 值
-        var redisHashKey: Int = -1
+        var redisHashKey: Int = -1,
+        // vip等级 1-10
+        val vipLevel: Int?,
+        // 客户来源类型
+        val fromType: FromType,
+        // 客户IP
+        val ip: String
 ) {
     // 登录时间
     val loginTime: Date = Date()

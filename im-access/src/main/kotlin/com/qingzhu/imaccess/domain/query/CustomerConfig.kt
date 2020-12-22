@@ -1,6 +1,7 @@
 package com.qingzhu.imaccess.domain.query
 
 import com.qingzhu.common.constant.NoArg
+import com.qingzhu.imaccess.domain.constant.FromType
 import com.qingzhu.imaccess.domain.value.DetailData
 import com.qingzhu.imaccess.util.getRandomInt
 
@@ -47,4 +48,8 @@ data class CustomerConfig(
 
     // vip等级 1-10
     val vipLevel: Int? = null
+
+    var fromType: FromType = FromType.WEB
+
+    lateinit var ip: String
 }

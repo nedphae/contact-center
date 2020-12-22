@@ -38,6 +38,10 @@ class CustomerEventHandler(
     fun onRegister(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<CustomerConfig>) {
         val customerConfig = request.toMonoMonad(socketIOClient)
         customerConfig
+                .doOnSuccess {
+                    // 设置 IP
+                    it.ip = socketIOClient.handshakeData.httpHeaders["X-Forwarded-For"]
+                }
                 //添加 10 分钟内自动转接人工
                 .flatMap {
                     // 检查 是否在缓存中 缓存10分钟
