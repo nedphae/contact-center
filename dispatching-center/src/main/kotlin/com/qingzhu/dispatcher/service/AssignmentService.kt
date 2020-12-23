@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Duration
 
+
 @Service
 class AssignmentService(
         private val messageService: MessageService,
@@ -20,11 +21,18 @@ class AssignmentService(
 ) {
     private val listOps: ReactiveListOperations<String, String> = redisTemplate.opsForList()
 
-    fun assignmentAuto(organizationId: Int, userId: Long): Mono<ConversationView> {
-        val mono = Mono
+    private fun getLastConversation(organizationId: Int, userId: Long): Mono<ConversationView> {
+        return Mono
                 .create<ConversationView> {
                     it.success(messageService.findConversationByUserId(organizationId, userId))
                 }.cache()
+    }
+
+    /**
+     * TODO: 获取设置的用户信息里的客服ID 和 分组 配置
+     */
+    fun assignmentAuto(organizationId: Int, userId: Long): Mono<ConversationView> {
+        val mono = getLastConversation(organizationId, userId)
         // 添加 10 分钟内自动转接人工
         return mono
                 .doOnSuccess {
@@ -49,12 +57,14 @@ class AssignmentService(
                 .switchIfEmpty(bot(organizationId, userId))
                 .flatMap {
                     // 进行会话关联
-                    mono.map { cv ->
-                        it.relatedId = cv.id
-                        it.relatedType = RelatedType.FROM_HISTORY
-                        it.visitRange = Duration.between(it.startTime, cv.endTime).toMillis()
-                        it
-                    }
+                    // 历史会话不进行双向关联
+                    mono
+                            .map { cv ->
+                                it.relatedId = cv.id
+                                it.relatedType = RelatedType.FROM_HISTORY
+                                it.visitRange = Duration.between(it.startTime, cv.endTime).toMillis()
+                                it
+                            }
                 }
                 .flatMap {
                     Mono.justOrEmpty(messageService.createConversation(it))
@@ -89,7 +99,9 @@ class AssignmentService(
                     customerDispatcherDto
                             .map { cd ->
                                 ConversationStatusDto.fromStaffAndCustomer(it!!,
-                                        cd!!, 0)
+                                        // it.staffType.inv()
+                                        // 会话类型 和 客服类型相同
+                                        cd!!, it.staffType)
                             }
                 }
     }
@@ -109,7 +121,7 @@ class AssignmentService(
 
 
     /**
-     * 手动转人工
+     * 手动从机器人转人工
      */
     fun assignmentStaff(organizationId: Int, userId: Long): Mono<ConversationView> {
         val mono = Mono
@@ -125,13 +137,28 @@ class AssignmentService(
                 .onErrorResume {
                     // 分配失败就重新分配到其他客服
                     staff(organizationId, userId)
-                }
-                .doOnSuccess {
-                    // TODO: 与机器人会话 进行关联
+                            .doOnSuccess { cs -> cs.transferType = TransferType.INITIATIVE }
                 }
                 .flatMap {
+                    // 与机器人会话 进行双向关联
+                    getLastConversation(organizationId, userId)
+                            .map { cv ->
+                                ConversationEndDto.createById(cv.id!!)
+                            }
+                            .map { ce ->
+                                it.relatedId = ce.id
+                                it.relatedType = RelatedType.FROM_BOT
+                                it.visitRange = Duration.between(it.startTime, ce.endTime).toMillis()
+                                it to ce
+                            }
+                }
+                .flatMap { pair ->
                     // null 的时候丢失了类型信息
-                    Mono.justOrEmpty<ConversationView>(messageService.createConversation(it))
+                    Mono.justOrEmpty<ConversationView>(messageService.createConversation(pair.first))
+                            .doOnSuccess {
+                                pair.second.relatedId = it.id
+                                // TODO 更新机器人会话
+                            }
                 }
                 .switchIfEmpty {
                     // staff 方法获取客服为空时 进行排队

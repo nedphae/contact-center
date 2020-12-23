@@ -4,7 +4,6 @@ import com.hazelcast.config.IndexType
 import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
 import com.hazelcast.query.impl.predicates.EqualPredicate
-import com.qingzhu.messageserver.domain.dto.ConversationBaseStatusDto
 import com.qingzhu.messageserver.domain.dto.ConversationStatusDto
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import org.springframework.beans.factory.annotation.Qualifier
@@ -42,7 +41,7 @@ class ConversationStatusService(
         val statusMap = getStatusMap(organizationId)
         val conversationStatus = statusMap[id]
         if (conversationStatus != null) {
-            statusMap.put(conversationStatus.id, conversationStatus, 20, TimeUnit.MINUTES)
+            statusMap.put(conversationStatus.id, conversationStatus, 15, TimeUnit.MINUTES)
             staffStatusService.removeCustomer(conversationStatus.organizationId,
                     conversationStatus.staffId, conversationStatus.userId)
         }

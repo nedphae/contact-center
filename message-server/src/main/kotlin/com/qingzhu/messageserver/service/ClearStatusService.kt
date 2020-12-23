@@ -5,6 +5,9 @@ import com.hazelcast.map.listener.EntryExpiredListener
 import com.qingzhu.messageserver.domain.entity.CustomerStatus
 import org.springframework.stereotype.Component
 
+/**
+ * 清理会话残留，redis 缓存记录，更新 持久化 会话信息
+ */
 @Component
 class ClearStatusService : EntryExpiredListener<String, CustomerStatus> {
     /**

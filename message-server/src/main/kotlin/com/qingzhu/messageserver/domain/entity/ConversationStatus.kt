@@ -28,7 +28,7 @@ data class ConversationStatus(
         val fromType: FromType,
         // 列队时间
         val inQueueTime: Long,
-        // 0=客服正常会话  1=机器人会话
+        // 0=机器人会话, 1=客服正常会话
         val interaction: Int,
         // 关联会话id
         val relatedId: Long?,

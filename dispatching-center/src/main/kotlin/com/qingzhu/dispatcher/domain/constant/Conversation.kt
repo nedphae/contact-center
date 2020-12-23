@@ -3,6 +3,31 @@ package com.qingzhu.dispatcher.domain.constant
 import com.fasterxml.jackson.annotation.JsonFormat
 
 /**
+ * 0-客服关闭；1-访客离开页面失效关闭；2-访客离开超时关闭；3-访客申请其他客服关闭；
+ * 4-网络差客服掉线关闭；5-客服转接关闭；6-管理员接管关闭；7-访客主动关闭；
+ * 8-系统关闭，静默超时关闭；9-系统关闭，静默转接关闭；10-访客未说话；
+ * 11-访客排队超时清队列；12-访客放弃排队；13-客服离线清队列；
+ * 16-系统关闭会话；其他-机器人转人工。
+ */
+enum class CloseReason(val reason: String) {
+    STAFF_CLOSE("客服关闭"),
+    USER_LEFT("访客离开页面失效关闭"),
+    USER_TIME_OUT("访客离开超时关闭"),
+    USER_OTHER_STAFF("访客申请其他客服关闭"),
+    USER_NET_ERROR("网络差客服掉线关闭"),
+    TRANSLATE("客服转接关闭"),
+    ADMIN_TAKE_OVER("管理员接管"),
+    USER_CLOSE("访客主动关闭"),
+    SYS_CLOSE("系统关闭，静默超时关闭"),
+    SYS_TRAN("系统关闭，静默转接关闭"),
+    USER_SILENT("访客未说话"),
+    USER_QUEUE_TIMEOUT("访客排队超时清队列"),
+    USER_QUEUE_LEFT("访客放弃排队"),
+    STAFF_OFFLINE("客服离线清队列"),
+    BOT_TO_STAFF("机器人转人工"),
+}
+
+/**
  * 来源类型
  * web/ios/android/wx(微信)/wx_ma(微信小程序)/wb(微博)/open(开放接口)
  */

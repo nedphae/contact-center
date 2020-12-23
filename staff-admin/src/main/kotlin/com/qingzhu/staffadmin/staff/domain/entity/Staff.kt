@@ -49,7 +49,7 @@ data class Staff(
     // 总上限
     var maxTicketAllTime: Int = 999
 
-    // 是否是机器人
+    // 是否是机器人 0 机器人， 1人工
     val staffType: Int = 1
 
     // 性别

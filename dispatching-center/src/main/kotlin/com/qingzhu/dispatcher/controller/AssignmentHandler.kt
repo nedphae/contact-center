@@ -1,6 +1,5 @@
 package com.qingzhu.dispatcher.controller
 
-import com.qingzhu.dispatcher.domain.dto.ConversationView
 import com.qingzhu.dispatcher.service.AssignmentService
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController

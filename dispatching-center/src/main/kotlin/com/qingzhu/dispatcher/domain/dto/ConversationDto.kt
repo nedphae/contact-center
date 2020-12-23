@@ -29,6 +29,32 @@ data class ConversationView(
             null, userId, null, null, null, queue)
 }
 
+/**
+ * 设置会话结束 DTO
+ */
+data class ConversationEndDto(
+        val id: Long,
+        // 默认用户是机器人转人工
+        val closeReason: CloseReason = CloseReason.BOT_TO_STAFF,
+        val endTime: LocalDateTime = LocalDateTime.now(),
+        // 机器人会话全部设置为有效
+        val isValid: Int = 1,
+        var relatedId: Long?,
+        // 关联类型 为转接到人工
+        val relatedType: RelatedType = RelatedType.FROM_BOT,
+        // 客户转接到客服，设置机器人会话为系统关闭
+        val terminator: CreatorType = CreatorType.SYS
+) {
+    companion object {
+        fun createById(id: Long): ConversationEndDto {
+            return ConversationEndDto(id = id, relatedId = null)
+        }
+    }
+}
+
+/**
+ * 设置会话开始 DTO
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ConversationStatusDto(
         // 公司id
