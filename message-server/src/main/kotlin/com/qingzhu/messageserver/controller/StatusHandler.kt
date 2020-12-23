@@ -71,12 +71,6 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
 
 @RestController
 class ConversationStatusHandler(private val conversationStatusService: ConversationStatusService) {
-    suspend fun conversationAssignment(sr: ServerRequest): ServerResponse {
-        val param = sr.bodyToMono<ConversationBaseStatusDto>()
-        return param.flatMap { conversationStatusService.assignment(it) }
-                .flatMap { accepted().build() }
-                .awaitSingle()
-    }
 
     suspend fun findByUserId(sr: ServerRequest): ServerResponse {
         val response = ok().build()

@@ -4,6 +4,8 @@ import com.qingzhu.dispatcher.domain.constant.RelatedType
 import com.qingzhu.dispatcher.domain.constant.TransferType
 import com.qingzhu.dispatcher.domain.dto.*
 import com.qingzhu.dispatcher.service.impl.WeightedAssignmentService
+import org.springframework.data.redis.core.ReactiveListOperations
+import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -13,8 +15,11 @@ import java.time.Duration
 class AssignmentService(
         private val messageService: MessageService,
         private val staffAdminService: StaffAdminService,
-        private val weightedAssignmentService: WeightedAssignmentService
+        private val weightedAssignmentService: WeightedAssignmentService,
+        redisTemplate: ReactiveRedisTemplate<String, String>
 ) {
+    private val listOps: ReactiveListOperations<String, String> = redisTemplate.opsForList()
+
     fun assignmentAuto(organizationId: Int, userId: Long): Mono<ConversationView> {
         val mono = Mono
                 .create<ConversationView> {
@@ -129,13 +134,14 @@ class AssignmentService(
                     Mono.justOrEmpty<ConversationView>(messageService.createConversation(it))
                 }
                 .switchIfEmpty {
-                    // TODO: staff 方法获取客服为空时 进行排队
-                    Mono.create<Int> {
-                        // TODO: 插入到 redis 列队
-                        it.success()
-                    }
+                    // staff 方法获取客服为空时 进行排队
+                    Mono
+                            .just(userId)
+                            .flatMap {
+                                // 客户 插入到 redis 列队
+                                listOps.leftPush("queue:$organizationId", it.toString())
+                            }
                             .map { ConversationView(organizationId, userId, it) }
-                            .doOnSuccess { }
                 }
     }
 }

@@ -63,8 +63,4 @@ class ConversationStatusService(
                 .stream().findFirst())
     }
 
-    fun assignment(conversationBaseStatusDto: ConversationBaseStatusDto): Mono<ConversationStatus> {
-        return findByUserId(conversationBaseStatusDto.organizationId, conversationBaseStatusDto.userId)
-                .map { }
-    }
 }

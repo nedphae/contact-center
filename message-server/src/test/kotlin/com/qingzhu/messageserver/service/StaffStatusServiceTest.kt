@@ -5,14 +5,39 @@ import com.qingzhu.messageserver.domain.constant.StaffRole
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.entity.StaffStatus
 import com.qingzhu.messageserver.domain.dto.StaffStatusDto
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.redis.core.ReactiveListOperations
+import org.springframework.data.redis.core.ReactiveRedisTemplate
+import reactor.core.publisher.Mono
 
 
 class StaffStatusServiceTest : MessageServerApplicationTests() {
     @Autowired
     private lateinit var staffStatusService: StaffStatusService
+    @Autowired
+    private lateinit var redisTemplate: ReactiveRedisTemplate<String, String>
+
+    @Test
+    fun testLPush(){
+        val listOps: ReactiveListOperations<String, String> = redisTemplate.opsForList()
+        Mono.just(9491)
+                .flatMap { listOps.delete("queue:9491") }
+                .flatMap { listOps.leftPush("queue:9491", it.toString()) }
+                .map { println(it) }
+                .flatMap { listOps.leftPush("queue:9491", it.toString()) }
+                .map { println(it) }
+                .flatMap { listOps.rightPop("queue:9491") }
+                .map { println(it) }
+                .flatMap { listOps.size("queue:9491") }
+                .subscribe { println(it) }
+        runBlocking {
+            delay(5000L)
+        }
+    }
 
     @Test
     fun testStaffStatus() {

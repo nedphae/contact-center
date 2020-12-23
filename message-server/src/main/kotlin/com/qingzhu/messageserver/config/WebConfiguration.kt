@@ -57,7 +57,7 @@ class WebConfiguration : WebFluxConfigurer {
                         GET("/idle", staffStatusHandler::findIdleStaffWithStaffDispatcherDto)
                         // 获取机器人客服
                         GET("/bot/idle", staffStatusHandler::findBotStaffWithStaffDispatcherDto)
-                        // 分配客服
+                        // 分配客户
                         PUT("/assignment", staffStatusHandler::staffAssignment)
                     }
                     "/customer".nest {
@@ -71,8 +71,6 @@ class WebConfiguration : WebFluxConfigurer {
                         POST("/new", conversationStatusHandler::new)
                         // 根据客户 userId 查找会话
                         GET("/find-by-user-id", conversationStatusHandler::findByUserId)
-                        // 为会话分配人工客服
-                        PUT("/assignment", conversationStatusHandler::conversationAssignment)
                     }
                 }
             }

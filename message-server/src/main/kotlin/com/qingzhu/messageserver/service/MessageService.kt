@@ -3,8 +3,8 @@ package com.qingzhu.messageserver.service
 import com.qingzhu.common.util.toJson
 import com.qingzhu.messageserver.domain.constant.CreatorType
 import com.qingzhu.messageserver.domain.dto.Message
-import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.ZSetOperations
+import org.springframework.data.redis.core.ReactiveRedisTemplate
+import org.springframework.data.redis.core.ReactiveZSetOperations
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
@@ -13,24 +13,24 @@ import reactor.core.scheduler.Schedulers
 class MessageService(
         private val customerStatusService: CustomerStatusService,
         private val staffStatusService: StaffStatusService,
-        private val redisTemplate: RedisTemplate<String, String>
+        private val redisTemplate: ReactiveRedisTemplate<String, String>
 ) {
-    val zSet: ZSetOperations<String, String> = redisTemplate.opsForZSet()
+    private val zSet: ReactiveZSetOperations<String, String> = redisTemplate.opsForZSet()
 
     private fun Mono<Int>.syncMessage(message: Message): Mono<Message> {
         val data = message.toJson()
         val from = Mono.just("${message.organizationId}:${message.creatorType.name.toLowerCase()}:${message.from}")
         return this
-                .doOnSuccess {
+                .flatMap {
                     if (it != -1) {
                         redisTemplate.convertAndSend("im:message:${it}", data)
-                    }
+                    } else this
                 }
                 .map {
                     "${message.organizationId}:${message.type.name.toLowerCase()}:${message.to}"
                 }
                 .concatWith(from)
-                .map {
+                .flatMap {
                     // 写扩散
                     zSet.add(it, data, message.seqId.toDouble())
                 }

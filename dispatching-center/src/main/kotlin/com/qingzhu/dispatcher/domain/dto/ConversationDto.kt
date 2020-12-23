@@ -23,9 +23,9 @@ data class ConversationView(
         // 会话结束时间
         val endTime: LocalDateTime?,
         // 当前排队信息
-        val queue: Int?
+        val queue: Long?
 ) {
-    constructor(organizationId: Int, userId: Long, queue: Int) : this(null, organizationId,
+    constructor(organizationId: Int, userId: Long, queue: Long?) : this(null, organizationId,
             null, userId, null, null, null, queue)
 }
 
