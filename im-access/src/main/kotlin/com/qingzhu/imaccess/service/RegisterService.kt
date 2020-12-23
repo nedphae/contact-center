@@ -31,6 +31,7 @@ class RegisterService(
      */
     fun registerCustomer(customerConfig: CustomerConfig): Mono<CustomerStatusDto> {
         val customerDto = CustomerDto.fromCustomerConfig(customerConfig)
+        // 客户信息现在保存到了 调度服务器 TODO: 后期再拆分到单独的服务器
         return Mono.justOrEmpty(dispatchingCenter.updateCustomer(customerDto))
                 .map { CustomerStatusDto.fromCustomerConfig(customerConfig, it!!) }
                 // 注册信息
