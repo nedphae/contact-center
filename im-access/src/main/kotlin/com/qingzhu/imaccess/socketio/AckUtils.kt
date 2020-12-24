@@ -4,7 +4,9 @@ import com.corundumstudio.socketio.AckCallback
 import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.qingzhu.common.message.Header
+import com.qingzhu.common.util.JsonUtils
 import com.qingzhu.imaccess.domain.view.WebSocketResponse
+import com.qingzhu.imaccess.domain.view.WebSocketResponseWithString
 import kotlinx.coroutines.*
 import org.springframework.http.HttpStatus
 import java.util.concurrent.TimeoutException
@@ -56,24 +58,24 @@ fun messageAck(request: AckRequest, header: Header) {
  *  this call will block your fun until it return
  *  so don't use in batch operation
  */
-fun SocketIOClient.sendAndAwait(event: String, data: Any): WebSocketResponse<*> {
+inline fun <reified T> SocketIOClient.sendAndAwait(event: String, data: Any): WebSocketResponse<T> {
     val client = this
     return runBlocking(Dispatchers.IO) {
-        client.syncSend(event, data)
+        client.syncSend<T>(event, data)
     }
 }
 
-private fun <T> CancellableContinuation<T>.resumeIfActive(value: T) {
+fun <T> CancellableContinuation<T>.resumeIfActive(value: T) {
     if (this.isActive) this.resume(value)
 }
 
-private fun <T> CancellableContinuation<T>.resumeWithExceptionIfActive(exception: Throwable) {
+fun <T> CancellableContinuation<T>.resumeWithExceptionIfActive(exception: Throwable) {
     if (this.isActive) this.resumeWithException(exception)
 }
 
-private suspend fun SocketIOClient.syncSend(event: String, data: Any) =
-        suspendCancellableCoroutine { cont: CancellableContinuation<WebSocketResponse<*>> ->
-            this.sendWithCallback(event, data, {
+suspend inline fun <reified T> SocketIOClient.syncSend(event: String, data: Any) =
+        suspendCancellableCoroutine { cont: CancellableContinuation<WebSocketResponse<T>> ->
+            this.sendWithCallback<T>(event, data, {
                 cont.resumeWithExceptionIfActive(TimeoutException("响应超时"))
             }) {
                 cont.resumeIfActive(it)
@@ -86,11 +88,17 @@ private suspend fun SocketIOClient.syncSend(event: String, data: Any) =
 
 // --------------- async ---------------
 
-fun SocketIOClient.sendWithCallback(event: String, data: Any, onTimeout: () -> Unit = {}, onSuccess: (data: WebSocketResponse<*>) -> Unit = {}) {
+inline fun <reified T> SocketIOClient.sendWithCallback(
+        event: String, data: Any, crossinline onTimeout: () -> Unit = {},
+        crossinline onSuccess: (data: WebSocketResponse<T>) -> Unit = {}) {
     this.sendEvent(event,
-            object : AckCallback<WebSocketResponse<*>>(WebSocketResponse::class.java, 15000) {
-                override fun onSuccess(result: WebSocketResponse<*>?) {
-                    result?.let { onSuccess(result) }
+            object : AckCallback<WebSocketResponseWithString>(WebSocketResponseWithString::class.java, 15000) {
+                override fun onSuccess(result: WebSocketResponseWithString?) {
+                    result?.let {
+                        // 先转换为 String， 然后再手动序列化
+                        val body = result.body?.let { it1 -> JsonUtils.fromJson<T>(it1) }
+                        onSuccess(WebSocketResponse(it.header, it.code, body))
+                    }
                 }
 
                 override fun onTimeout() {

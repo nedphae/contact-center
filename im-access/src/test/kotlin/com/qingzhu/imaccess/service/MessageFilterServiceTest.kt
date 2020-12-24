@@ -18,7 +18,7 @@ internal class MessageFilterServiceTest : ImApplicationTests() {
     fun testFilter() {
         Mono.just(Message(
                 "1",
-                "2",
+                2,
                 null,
                 1,
                 CreatorType.CUSTOMER,

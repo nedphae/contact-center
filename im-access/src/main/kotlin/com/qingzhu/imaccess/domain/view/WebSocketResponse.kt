@@ -23,3 +23,17 @@ data class WebSocketResponse<T>(
         private val serialVersionUID = 741L
     }
 }
+
+data class WebSocketResponseWithString(
+        // 消息头
+        val header: Header,
+        // 返回参数
+        val code: Int,
+        // 数据
+        val body: String? = null
+) : java.io.Serializable {
+    companion object {
+        @JvmStatic
+        private val serialVersionUID = 741L
+    }
+}

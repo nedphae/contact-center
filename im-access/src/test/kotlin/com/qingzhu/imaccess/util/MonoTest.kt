@@ -51,7 +51,7 @@ internal class MonoTest {
     fun testMono() {
         Mono.just(Message(
                 "1",
-                "2",
+                2,
                 null,
                 1,
                 CreatorType.CUSTOMER,

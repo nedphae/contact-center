@@ -4,16 +4,12 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import java.math.BigDecimal
 
 object JsonUtils {
-    val objectMapper: ObjectMapper = ObjectMapper()
-
-    init {
-        objectMapper.registerModule(KotlinModule())
-    }
+    val objectMapper: ObjectMapper = jacksonObjectMapper()
 
     fun <T> toJson(data: T): String {
         return objectMapper.writeValueAsString(data)
