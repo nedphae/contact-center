@@ -20,7 +20,8 @@ class MessageDisruptorHandler : WorkHandler<Message> {
                     it.organizationId = null
                     it.to = null
                     // 需要记录日志 或增加成功回调 可添加 callback 函数
-                    client?.sendWithCallback(SocketEvent.Message.sync,
+                    // TODO: 增加回调通知消息送达
+                    client?.sendWithCallback<Void>(SocketEvent.Message.sync,
                             WebSocketRequest.createRequest(client.sessionId.toString(), it))
                 }
     }

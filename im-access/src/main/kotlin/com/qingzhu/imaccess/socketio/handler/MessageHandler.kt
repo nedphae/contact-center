@@ -41,6 +41,7 @@ class MessageHandler(
                     MessageResponse.fromMessage(it)
                 }
         // TODO 客户特定时间没有说话就踢出咨询 修改放到接入服务器进行
+        // socketio 支持多次监听同一事件
     }
 
     /**
