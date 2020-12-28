@@ -33,6 +33,7 @@ data class ConversationView(
  * 设置会话结束 DTO
  */
 data class ConversationEndDto(
+        val organizationId: Int,
         val id: Long,
         // 默认用户是机器人转人工
         val closeReason: CloseReason = CloseReason.BOT_TO_STAFF,
@@ -46,8 +47,8 @@ data class ConversationEndDto(
         val terminator: CreatorType = CreatorType.SYS
 ) {
     companion object {
-        fun createById(id: Long): ConversationEndDto {
-            return ConversationEndDto(id = id, relatedId = null)
+        fun createById(organizationId: Int, id: Long): ConversationEndDto {
+            return ConversationEndDto(organizationId = organizationId, id = id, relatedId = null)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.qingzhu.messageserver.domain.entity
 
 import com.qingzhu.common.constant.NoArg
 import com.qingzhu.messageserver.domain.constant.*
+import com.qingzhu.messageserver.domain.dto.ConversationEndDto
 import java.time.LocalDateTime
 
 /**
@@ -30,10 +31,6 @@ data class ConversationStatus(
         val inQueueTime: Long,
         // 0=机器人会话, 1=客服正常会话
         val interaction: Int,
-        // 关联会话id
-        val relatedId: Long?,
-        // 关联会话类型
-        val relatedType: RelatedType = RelatedType.NO,
         // 0：正常会话.1(2)：离线留言，3：排队超时
         val cType: ConversationType,
         // 客服id
@@ -63,16 +60,26 @@ data class ConversationStatus(
         // 会话发起方  1：访客，2：客服
         val beginner: CreatorType
 ) {
+        // 关联会话id
+        var relatedId: Long? = null;
+
+        // 关联会话类型
+        var relatedType: RelatedType = RelatedType.NO
+
         // 会话分类信息 "xx"， 必须用字符串，关联查询被删除就失效了
         var category: String? = null
+
         // 会话咨询分类明细 "xx/xx"
         var categoryDetail: String? = null
+
         // 会话关闭原因
-        var closeReason: CloseReason?  = null
+        var closeReason: CloseReason? = null
+
         // 结束时间
-        var endTime: LocalDateTime?  = null
+        var endTime: LocalDateTime? = null
+
         // 用户评价内容
-        var evaluate: Evaluate?  = null
+        var evaluate: Evaluate? = null
         // 客服首次响应的时间戳
         var staffFirstReplyTime: LocalDateTime? = null
         // 客服首次响应时长(访客首条消息与客服首次回复消息的时间间隔)
@@ -91,14 +98,28 @@ data class ConversationStatus(
         var avgRespDuration: Long? = 0
         // 是否有效会话
         var isValid: Int? = 0
+
         // 客服消息数
         var staffMessageCount: Int = 0
+
         // 用户消息数
         var userMessageCount: Int = 0
+
         // 留言处理时间,若会话不是留言则返回0
         var treatedTime: Int = 0
+
         //客服是否邀评  0：邀评；1：主动评价
         var isEvaluationInvited: Boolean? = null
+
         // 会话中止方  1：访客，2：客服，3：系统
         var terminator: CreatorType? = null
+
+        fun updateByEnd(end: ConversationEndDto) = apply {
+                this.closeReason = end.closeReason
+                this.endTime = end.endTime
+                this.isValid = end.isValid
+                this.relatedId = end.relatedId
+                this.relatedType = end.relatedType
+                this.terminator = end.terminator
+        }
 }

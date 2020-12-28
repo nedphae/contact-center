@@ -71,6 +71,8 @@ class WebConfiguration : WebFluxConfigurer {
                         POST("/new", conversationStatusHandler::new)
                         // 根据客户 userId 查找会话
                         GET("/find-by-user-id", conversationStatusHandler::findByUserId)
+                        // 结束会话
+                        PUT("/end", conversationStatusHandler::end)
                     }
                 }
             }

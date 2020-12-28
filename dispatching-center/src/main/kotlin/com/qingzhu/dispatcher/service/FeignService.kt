@@ -31,6 +31,9 @@ interface MessageService {
 
     @PostMapping(value = ["/status/conversation/new"])
     fun createConversation(conversationStatusDto: ConversationStatusDto): ConversationView?
+
+    @PutMapping(value = ["/status/conversation/end"])
+    fun endConversation(conversationEndDto: ConversationEndDto)
 }
 
 @Service

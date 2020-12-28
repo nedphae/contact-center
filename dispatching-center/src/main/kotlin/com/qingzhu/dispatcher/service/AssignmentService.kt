@@ -143,7 +143,7 @@ class AssignmentService(
                     // 与机器人会话 进行双向关联
                     getLastConversation(organizationId, userId)
                             .map { cv ->
-                                ConversationEndDto.createById(cv.id!!)
+                                ConversationEndDto.createById(cv.organizationId, cv.id!!)
                             }
                             .map { ce ->
                                 it.relatedId = ce.id
@@ -157,7 +157,8 @@ class AssignmentService(
                     Mono.justOrEmpty<ConversationView>(messageService.createConversation(pair.first))
                             .doOnSuccess {
                                 pair.second.relatedId = it.id
-                                // TODO 更新机器人会话
+                                // 更新机器人会话
+                                messageService.endConversation(pair.second)
                             }
                 }
                 .switchIfEmpty {

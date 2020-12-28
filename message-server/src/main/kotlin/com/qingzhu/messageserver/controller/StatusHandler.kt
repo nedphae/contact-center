@@ -91,4 +91,10 @@ class ConversationStatusHandler(private val conversationStatusService: Conversat
                     ok().body(it)
                 }.awaitSingle()
     }
+
+    suspend fun end(sr: ServerRequest): ServerResponse {
+        return sr.bodyToMono<ConversationEndDto>()
+                .flatMap { conversationStatusService.endConversation(it) }
+                .transform { ok().build() }.awaitSingle()
+    }
 }
