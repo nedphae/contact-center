@@ -1,5 +1,6 @@
 package com.qingzhu.imaccess.domain.dto
 
+import com.qingzhu.imaccess.domain.constant.OnlineStatus
 import com.qingzhu.imaccess.domain.query.StaffConfig
 
 data class StaffChangeStatusDto(
@@ -26,11 +27,7 @@ data class StaffStatusDto(
         // 不同接待组的优先级
         var priorityOfGroup: Map<Long, Int>,
         // 在线状态
-        var onlineStatus: Int = 1,
-        // 就绪状态
-        var readyStatus: Int = 1,
-        // 繁忙状态
-        var busyStatus: Int = 1,
+        var onlineStatus: OnlineStatus = OnlineStatus.ONLINE,
         // 最大接待数量
         var maxServiceCount: Int = 8
 ) : BaseDto() {
@@ -43,8 +40,6 @@ data class StaffStatusDto(
                     receptionistGroup = receptionistGroupDto.receptionistGroup,
                     priorityOfGroup = receptionistGroupDto.priorityOfGroup,
                     onlineStatus = staffConfig.onlineStatus,
-                    readyStatus = staffConfig.readyStatus,
-                    busyStatus = staffConfig.busyStatus,
                     maxServiceCount = receptionistGroupDto.maxServiceCount
             )
         }

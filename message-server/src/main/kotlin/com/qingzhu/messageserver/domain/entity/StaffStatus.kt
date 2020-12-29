@@ -1,8 +1,6 @@
 package com.qingzhu.messageserver.domain.entity
 
-import com.qingzhu.messageserver.domain.constant.BusyStatus
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
-import com.qingzhu.messageserver.domain.constant.ReadyStatus
 import com.qingzhu.messageserver.domain.constant.StaffRole
 import java.util.*
 
@@ -30,24 +28,6 @@ data class StaffStatus(
 
     // 在线状态
     var onlineStatus: OnlineStatus = OnlineStatus.ONLINE
-
-    // 就绪状态
-    var readyStatus: ReadyStatus = ReadyStatus.READY
-        set(value) {
-            // 必须 在线状态才能设置就绪
-            if (field == ReadyStatus.UNREADY && onlineStatus == OnlineStatus.OFFLINE)
-                throw UnsupportedOperationException("客服未在线，无法设置就绪")
-            field = value
-        }
-
-    // 繁忙状态
-    var busyStatus: BusyStatus = BusyStatus.IDLE
-        set(value) {
-            // 必须 就绪状态才能设置空闲
-            if (readyStatus == ReadyStatus.UNREADY)
-                throw UnsupportedOperationException("客服未就绪，无法设置示忙")
-            field = value
-        }
 
     // 当前接待量 (不能大于最大接待量)
     var currentServiceCount: Int = 0

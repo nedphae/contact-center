@@ -1,9 +1,7 @@
 package com.qingzhu.messageserver.domain.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.qingzhu.messageserver.domain.constant.BusyStatus
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
-import com.qingzhu.messageserver.domain.constant.ReadyStatus
 import com.qingzhu.messageserver.domain.constant.StaffRole
 import com.qingzhu.messageserver.domain.entity.StaffStatus
 
@@ -37,10 +35,6 @@ data class StaffStatusDto(
         var redisHashKey: Int = -1,
         // 在线状态
         var onlineStatus: OnlineStatus = OnlineStatus.ONLINE,
-        // 就绪状态
-        var readyStatus: ReadyStatus = ReadyStatus.READY,
-        // 繁忙状态
-        var busyStatus: BusyStatus = BusyStatus.IDLE,
         // 最大接待数量
         var maxServiceCount: Int = 8
 ) {
@@ -54,7 +48,5 @@ data class StaffStatusDto(
             maxServiceCount = maxServiceCount
     ).also {
         it.onlineStatus = onlineStatus
-        it.readyStatus = readyStatus
-        it.busyStatus = busyStatus
     }
 }

@@ -5,9 +5,7 @@ import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
 import com.hazelcast.query.impl.predicates.AndPredicate
 import com.hazelcast.query.impl.predicates.EqualPredicate
-import com.qingzhu.messageserver.domain.constant.BusyStatus
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
-import com.qingzhu.messageserver.domain.constant.ReadyStatus
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffDispatcherDto
 import com.qingzhu.messageserver.domain.entity.StaffStatus
@@ -35,8 +33,6 @@ class StaffStatusService(
         if (statusMap.isEmpty) {
             statusMap.addIndex(IndexType.HASH, "receptionistGroup[any]")
             statusMap.addIndex(IndexType.SORTED, "onlineStatus")
-            statusMap.addIndex(IndexType.SORTED, "readyStatus")
-            statusMap.addIndex(IndexType.SORTED, "busyStatus")
             statusMap.addIndex(IndexType.BITMAP, "autoBusy")
         }
         statusMap.put(staffStatus.staffId, staffStatus, 2, TimeUnit.HOURS)
@@ -52,10 +48,6 @@ class StaffStatusService(
                 EqualPredicate("receptionistGroup[any]", shuntId),
                 // 在线
                 EqualPredicate("onlineStatus", OnlineStatus.ONLINE),
-                // 就绪
-                EqualPredicate("readyStatus", ReadyStatus.READY),
-                // 空闲
-                EqualPredicate("busyStatus", BusyStatus.IDLE),
                 // 接待未满
                 EqualPredicate("autoBusy", false)
         )
@@ -101,10 +93,7 @@ class StaffStatusService(
     fun assignment(staffChangeStatusDto: StaffChangeStatusDto): Mono<StaffStatus> {
         return findStaff(staffChangeStatusDto.organizationId, staffChangeStatusDto.staffId)
                 .filter {
-                    !it.autoBusy
-                            && it.onlineStatus == OnlineStatus.ONLINE
-                            && it.readyStatus == ReadyStatus.READY
-                            && it.busyStatus == BusyStatus.IDLE
+                    !it.autoBusy && it.onlineStatus == OnlineStatus.ONLINE
                 }
                 .doOnSuccess {
                     it.currentServiceCount++
