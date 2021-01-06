@@ -26,18 +26,8 @@ class SecurityConfiguration {
                 .anyExchange().authenticated()
                 .and()
                 .oauth2ResourceServer()
-                .jwt { jwt ->
-                    jwt.jwtDecoder(NimbusReactiveJwtDecoder(getPublicKey() as RSAPublicKey).also { decoder ->
-                        decoder.setJwtValidator {
-                            // 设置资源 id
-                            if (it.audience.contains("im")) {
-                                OAuth2TokenValidatorResult.success()
-                            } else {
-                                OAuth2TokenValidatorResult.failure()
-                            }
-                        }
-                    })
-                }
+                .jwt()
+                .publicKey(getPublicKey() as RSAPublicKey)
         return http.build()
     }
 

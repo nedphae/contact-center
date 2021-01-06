@@ -8,7 +8,7 @@ import javax.persistence.*
  */
 @Entity
 @Table(indexes = [Index(columnList = "organizationId"),
-    Index(columnList = "receptionistGroupClassId")])
+    Index(columnList = "shuntClassId")])
 data class Shunt(
         // 公司id
         val organizationId: Int,

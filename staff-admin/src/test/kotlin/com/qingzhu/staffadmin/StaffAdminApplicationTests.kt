@@ -1,5 +1,6 @@
 package com.qingzhu.staffadmin
 
+import com.qingzhu.common.security.password.getBCryptPasswordEncoder
 import com.qingzhu.staffadmin.staff.authority.StaffAuthority
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
@@ -50,7 +51,7 @@ class StaffAdminApplicationTests {
                 organizationId = 9491,
                 username = "admin",
                 // 123456
-                password = "$2a$10\$PziqdyLYIKnxXd7192XBh.Kl9HpHcm4CEERw8M1xeyRunl3yZbY0m",
+                password = getBCryptPasswordEncoder().encode("123456"),
                 role = StaffAuthority.ROLE_ADMIN,
                 staffGroupId = staffGroup.id ?: 0
         )
