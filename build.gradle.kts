@@ -74,7 +74,6 @@ subprojects {
         // spring 依赖
         implementation("org.springframework.boot:spring-boot-starter")
         implementation("org.springframework.boot:spring-boot-starter-webflux")
-        implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
         implementation("org.springframework.boot:spring-boot-devtools")
 
         // 安全配置

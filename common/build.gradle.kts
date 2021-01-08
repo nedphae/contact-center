@@ -14,7 +14,6 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.9")
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

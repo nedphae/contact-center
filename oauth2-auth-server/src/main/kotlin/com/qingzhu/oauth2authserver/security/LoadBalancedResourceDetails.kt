@@ -1,4 +1,4 @@
-package com.qingzhu.common.security
+package com.qingzhu.oauth2authserver.security
 
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean

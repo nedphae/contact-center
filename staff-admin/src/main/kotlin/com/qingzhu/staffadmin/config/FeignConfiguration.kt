@@ -1,6 +1,5 @@
 package com.qingzhu.staffadmin.config
 
-import com.qingzhu.common.security.FeignOauth2RequestInterceptor
 import feign.RequestInterceptor
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.beans.factory.annotation.Qualifier

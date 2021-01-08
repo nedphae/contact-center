@@ -1,6 +1,5 @@
 package com.qingzhu.dispatcher.config
 
-import com.qingzhu.common.security.FeignOauth2RequestInterceptor
 import feign.RequestInterceptor
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

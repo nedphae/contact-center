@@ -1,6 +1,5 @@
 package com.qingzhu.imaccess.service
 
-import com.qingzhu.common.security.AuthorizedFeignClient
 import com.qingzhu.imaccess.domain.dto.*
 import com.qingzhu.imaccess.domain.value.Message
 import com.qingzhu.imaccess.domain.view.ConversationView

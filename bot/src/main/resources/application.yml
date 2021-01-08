@@ -5,6 +5,11 @@ logging:
 server:
   port: 8111
 
+management:
+  health:
+    elasticsearch:
+      enabled: false
+
 spring:
   application:
     name: bot
@@ -15,9 +20,21 @@ spring:
     elasticsearch:
       repositories:
         enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://10.0.0.101:5432/postgres?currentSchema=bot
+    username: postgres
+    password: 5CPKuFFTyZ
+
   elasticsearch:
     rest:
       uris: ["http://10.0.0.107:9200"]
+
   cloud:
     inetutils:
       ignored-interfaces:
@@ -31,3 +48,8 @@ spring:
         prefer-ip-address: true
         instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
         # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+
+im:
+  security:
+    inner-oauth:
+      enable: true

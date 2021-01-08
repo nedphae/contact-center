@@ -21,8 +21,6 @@ dependencies {
     // implementation("org.springframework.cloud:spring-cloud-starter-security")
 
     implementation("org.springframework.cloud:spring-cloud-starter-gateway")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
-    implementation("org.springframework.cloud:spring-cloud-starter-netflix-hystrix")
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

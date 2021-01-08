@@ -1,6 +1,5 @@
 package com.qingzhu.dispatcher.service
 
-import com.qingzhu.common.security.AuthorizedFeignClient
 import com.qingzhu.dispatcher.domain.dto.*
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.GetMapping

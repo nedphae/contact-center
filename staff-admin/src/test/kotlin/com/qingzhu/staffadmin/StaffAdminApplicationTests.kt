@@ -55,6 +55,8 @@ class StaffAdminApplicationTests {
                 role = StaffAuthority.ROLE_ADMIN,
                 staffGroupId = staffGroup.id ?: 0
         )
+        staff.realName = "新之助"
+        staff.nickName = "蜡笔小新"
         if (staffRepository.findFirstByOrganizationIdAndUsername(staff.organizationId, staff.username).isPresent.not()) {
             staffRepository.save(staff)
         }

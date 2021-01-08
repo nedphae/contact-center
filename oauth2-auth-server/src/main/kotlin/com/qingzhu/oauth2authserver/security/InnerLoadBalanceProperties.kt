@@ -1,4 +1,4 @@
-package com.qingzhu.common.security
+package com.qingzhu.oauth2authserver.security
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

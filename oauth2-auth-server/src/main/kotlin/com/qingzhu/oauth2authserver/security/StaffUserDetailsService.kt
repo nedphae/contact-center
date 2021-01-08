@@ -23,7 +23,7 @@ class StaffUserDetailsService : UserDetailsService {
     override fun loadUserByUsername(username: String?): User {
         val request = (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes).request
         val org_id = request.getParameter("org_id")
-        val innerUser = staffService.findFirstByUsername(org_id.toLong(), username)
+        val innerUser = staffService.findFirstByUsername(org_id.toInt(), username)
         return innerUser?.toMyUser() ?: throw UsernameNotFoundException("$username not found")
     }
 

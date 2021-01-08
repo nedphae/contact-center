@@ -2,7 +2,7 @@ package com.qingzhu.bot.knowledgebase.controller
 
 import com.qingzhu.bot.knowledgebase.service.AuthProvider
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -14,8 +14,8 @@ class TestUserController {
     @Autowired
     private lateinit var authProvider: AuthProvider
 
-    @PostMapping
-    fun registerCustomerService(username: String, password: String, role: String) {
-        authProvider.registerCustomerService(username, password, role)
+    @GetMapping
+    fun getStaff(): String? {
+        return authProvider.getStaffInfo(9491, 1)
     }
 }

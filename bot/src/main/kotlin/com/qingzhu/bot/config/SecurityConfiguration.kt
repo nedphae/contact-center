@@ -1,4 +1,4 @@
-package com.qingzhu.staffadmin.config
+package com.qingzhu.bot.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -20,7 +20,7 @@ class SecurityConfiguration {
                 .authorizeExchange()
                 .pathMatchers("/actuator/**").permitAll()
                 // .pathMatchers("/staff/*").permitAll()
-                .pathMatchers("/*").hasAuthority("SCOPE_staff")
+                .pathMatchers("/*").hasAuthority("SCOPE_bot")
                 .anyExchange().authenticated()
                 .and()
                 // .oauth2Client()

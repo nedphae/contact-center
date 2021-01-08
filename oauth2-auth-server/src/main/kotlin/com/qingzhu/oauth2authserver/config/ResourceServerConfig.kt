@@ -29,7 +29,7 @@ class ResourceServerConfig : ResourceServerConfigurerAdapter() {
                 .authorizeRequests()
                 .antMatchers("/actuator/**").permitAll()
                 .antMatchers("/users/*")
-                .access("#oauth2.hasScope('test')")
+                .access("#oauth2.hasScope('oauth2')")
 
     }
 }

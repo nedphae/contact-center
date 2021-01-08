@@ -27,7 +27,7 @@ class OldResourceServerConfig : ResourceServerConfigurerAdapter() {
                 .antMatchers("/actuator/**").permitAll()
                 .antMatchers("/staff/*").permitAll()
                 .antMatchers("/*")
-                .access("#oauth2.hasScope('test')")
+                .access("#oauth2.hasScope('staff')")
     }
 
     //
