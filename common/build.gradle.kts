@@ -13,8 +13,6 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation("org.apache.commons:commons-lang3:3.9")
 
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

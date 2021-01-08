@@ -1,6 +1,6 @@
 package com.qingzhu.oauth2authserver.config
 
-import com.qingzhu.common.security.password.getBCryptPasswordEncoder
+import com.qingzhu.oauth2authserver.security.password.getBCryptPasswordEncoder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

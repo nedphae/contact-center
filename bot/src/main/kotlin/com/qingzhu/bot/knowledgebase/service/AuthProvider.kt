@@ -1,16 +1,20 @@
 package com.qingzhu.bot.knowledgebase.service
 
-import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
 
 
-@Deprecated("api 改动，后期需要删除")
+@Deprecated("仅测试使用，后期需要删除")
 @Service
-@AuthorizedFeignClient(name = "staff-admin")
-interface AuthProvider {
-    @GetMapping(value = ["/staff/info"])
-    fun getStaffInfo(@RequestParam("organizationId") organizationId: Int,
-                                @RequestParam("staffId") staffId: Int): String?
+class AuthProvider(private val webClient: WebClient) {
+
+    fun getStaffInfo(organizationId: Int, staffId: Int): String {
+        return webClient.get()
+                .uri("http://staff-admin/staff/info")
+                .attribute("organizationId", organizationId)
+                .attribute("staffId", staffId)
+                .retrieve()
+                .bodyToMono<String>().blockOptional().get()
+    }
 }

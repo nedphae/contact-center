@@ -12,5 +12,5 @@ pluginManagement {
 
 rootProject.name = "contact-center-all"
 
-include("bot", "gateway", "oauth2-auth-server", "common", "im-access",
+include("bot", "gateway", "common", "im-access",
         "dispatching-center", "staff-admin", "message-server")
