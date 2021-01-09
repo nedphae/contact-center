@@ -8,6 +8,9 @@ server:
 spring:
   application:
     name: oauth2-auth-server
+  devtools:
+    livereload:
+      port: 35730
   cloud:
     inetutils:
       ignored-interfaces:

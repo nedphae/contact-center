@@ -20,6 +20,9 @@ class WebConfiguration : WebFluxConfigurer {
                 "/users".nest {
                     GET("/test", authProvider::getStaff)
                 }
+                "/users".nest {
+                    GET("/test/test", authProvider::getStaffTest)
+                }
             }
         }
     }

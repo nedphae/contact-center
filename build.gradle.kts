@@ -11,6 +11,7 @@ plugins {
     kotlin("plugin.spring") version "1.3.72" apply false
     kotlin("plugin.jpa") version "1.3.72" apply false
     kotlin("kapt") version "1.3.72"
+    id("org.jetbrains.dokka") version "1.4.20"
 }
 
 subprojects {
@@ -20,6 +21,7 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.plugin.noarg")
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-kapt")
+    apply(plugin = "org.jetbrains.dokka")
 
     java.sourceCompatibility = JavaVersion.VERSION_11
 

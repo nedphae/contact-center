@@ -12,7 +12,7 @@ Authorization: Basic dXNlcl9jbGllbnQ6dGVzdF9zZWNyZXQ=
 
 ###
 # 测试 根据 token 获取用户信息
-GET http://localhost:8111/users/test
+GET http://localhost:8111/users/test/test
 Accept: */*
 Cache-Control: no-cache
 # base64 of user_client:test_secret

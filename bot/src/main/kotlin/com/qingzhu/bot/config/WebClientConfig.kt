@@ -1,7 +1,6 @@
 package com.qingzhu.bot.config
 
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.cloud.client.loadbalancer.LoadBalanced
+import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.oauth2.client.AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager
@@ -17,21 +16,12 @@ import org.springframework.web.reactive.function.client.WebClient
 @Configuration
 class WebClientConfig {
 
-    /**
-     * 无授权的调用，仅添加负载功能
-     */
-    @Bean("loadBalancerWebClient")
-    @LoadBalanced
-    fun webClient(): WebClient.Builder {
-        return WebClient.builder()
-    }
-
     @Bean
-    fun authorizedClientManager(@Qualifier("loadBalancerWebClient") webClientBuilder: WebClient.Builder,
+    fun authorizedClientManager(lbFunction: ReactorLoadBalancerExchangeFilterFunction,
                                 clientRegistrationRepository: ReactiveClientRegistrationRepository,
                                 authorizedClientService: ReactiveOAuth2AuthorizedClientService): ReactiveOAuth2AuthorizedClientManager {
         val loadBalancerClient = WebClientReactiveClientCredentialsTokenResponseClient()
-        loadBalancerClient.setWebClient(webClientBuilder.build())
+        loadBalancerClient.setWebClient(WebClient.builder().filter(lbFunction).build())
         val authorizedClientProvider = ReactiveOAuth2AuthorizedClientProviderBuilder.builder()
                 .clientCredentials { it.accessTokenResponseClient(loadBalancerClient) }
                 .build()
@@ -45,18 +35,22 @@ class WebClientConfig {
      * 内部客户端模式授权的服务间调用 client
      */
     @Bean("innerWebClient")
-    fun innerWebClient(@Qualifier("loadBalancerWebClient") webClientBuilder: WebClient.Builder,
+    fun innerWebClient(lbFunction: ReactorLoadBalancerExchangeFilterFunction,
                        authorizedClientManager: ReactiveOAuth2AuthorizedClientManager): WebClient.Builder {
         val oauth = ServerOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
-        return webClientBuilder.filter(oauth)
+        oauth.setDefaultClientRegistrationId("authProvider")
+        return WebClient.builder()
+                .filter(lbFunction)
+                .filter(oauth)
     }
 
     /**
      * 使用来自外部用户的权限
      */
     @Bean("bearerWebClient")
-    fun bearerWebClient(@Qualifier("loadBalancerWebClient") webClientBuilder: WebClient.Builder): WebClient.Builder {
+    fun bearerWebClient(lbFunction: ReactorLoadBalancerExchangeFilterFunction): WebClient.Builder {
         val oauth = ServerBearerExchangeFilterFunction()
-        return webClientBuilder.filter(oauth)
+        return WebClient.builder().filter(lbFunction).filter(oauth)
     }
+
 }

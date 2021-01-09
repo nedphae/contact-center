@@ -5,7 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     kotlin("jvm") version "1.3.72"
     kotlin("plugin.spring") version "1.3.72"
-    kotlin("plugin.jpa") version "1.3.72"
+    // kotlin("plugin.jpa") version "1.3.72"
     kotlin("kapt") version "1.3.72"
 }
 
@@ -49,7 +49,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-devtools")
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    // implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     // implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-hystrix")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
@@ -65,7 +65,7 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt:8.4")
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
 
-    runtimeOnly("org.postgresql:postgresql")
+    // runtimeOnly("org.postgresql:postgresql")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
