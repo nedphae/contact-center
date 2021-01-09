@@ -5,8 +5,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
-import org.springframework.security.oauth2.core.OAuth2TokenValidator
-import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
@@ -27,8 +25,10 @@ class SecurityConfiguration {
         http
                 .authorizeExchange()
                 .pathMatchers("/actuator/**").permitAll()
-                .pathMatchers("/websocket-address").hasAuthority("SCOPE_im")
-                // .anyExchange().authenticated()
+                .pathMatchers("/websocket-address/**").hasAuthority("SCOPE_im")
+                .anyExchange().authenticated()
+                .and()
+                .oauth2Client()
                 .and()
                 .oauth2ResourceServer()
                 .jwt().publicKey(getPublicKey() as RSAPublicKey)

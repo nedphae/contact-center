@@ -1,4 +1,4 @@
-package com.qingzhu.bot.config
+package com.qingzhu.imaccess.config
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.cloud.client.loadbalancer.LoadBalanced
@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.client.registration.ReactiveClientReg
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction
 import org.springframework.security.oauth2.server.resource.web.reactive.function.client.ServerBearerExchangeFilterFunction
 import org.springframework.web.reactive.function.client.WebClient
+
 
 @Configuration
 class WebClientConfig {

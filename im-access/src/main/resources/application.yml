@@ -61,6 +61,18 @@ spring:
         kStreamProcess-in-0:
           destination: chatMessage
 
+  security:
+    oauth2:
+      client:
+        provider:
+          authProvider:
+            token-uri: http://oauth2-auth-server/oauth/token
+        registration:
+          authProvider:
+            client-id: inner_client
+            client-secret: test_secret
+            authorization-grant-type: client_credentials
+
 logging:
   level:
     root: info

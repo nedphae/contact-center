@@ -19,8 +19,8 @@ class SecurityConfiguration {
         http.csrf().disable()
                 .authorizeExchange()
                 .pathMatchers("/actuator/**").permitAll()
-                // .pathMatchers("/staff/*").permitAll()
-                .pathMatchers("/*").hasAuthority("SCOPE_bot")
+                // /* 无效 必须 /**
+                .pathMatchers("/**").hasAuthority("SCOPE_bot")
                 .anyExchange().authenticated()
                 .and()
                 .oauth2Client()
