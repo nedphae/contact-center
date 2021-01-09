@@ -48,6 +48,9 @@ spring:
         prefer-ip-address: true
         instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
         # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+    loadbalancer:
+      ribbon:
+        enabled: false
 
   security:
     oauth2:
@@ -58,6 +61,5 @@ spring:
         registration:
           authProvider:
             client-id: inner_client
-            client-secret: $2a$10$lPaP9cSdF6QugTCJV4ntAuY1IML7V228WoPxdfDn.BHJqzbvLXoqu
+            client-secret: test_secret
             authorization-grant-type: client_credentials
-

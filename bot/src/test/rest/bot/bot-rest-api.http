@@ -1,6 +1,6 @@
 ###
 # 测试 获取 token
-POST http://localhost:8000/oauth/token?username=admin&password=123456&grant_type=password&scope=staff&org_id=9491
+POST http://localhost:8000/oauth/token?username=admin&password=123456&grant_type=password&org_id=9491
 Accept: */*
 Cache-Control: max-age=60
 # base64 of user_client:test_secret
@@ -20,3 +20,12 @@ Authorization: Bearer {{auth_token}}
 
 ###
 
+###
+# 测试 根据 token 获取用户信息
+GET http://localhost:8112/staff/info?organizationId=9491&staffId=1
+Accept: */*
+Cache-Control: no-cache
+# base64 of user_client:test_secret
+Authorization: Bearer {{auth_token}}
+
+###
