@@ -45,7 +45,7 @@ class CustomerEventHandler(
                 //添加 10 分钟内自动转接人工
                 .flatMap {
                     // 检查 是否在缓存中 缓存10分钟
-                    Mono.justOrEmpty(messageService.findCustomerByUid(it.organizationId, it.uid))
+                    messageService.findCustomerByUid(it.organizationId, it.uid)
                 }
                 // 如果缓存中还有状态，就不用再次注册了
                 .switchIfEmpty(
@@ -59,10 +59,10 @@ class CustomerEventHandler(
                 )
                 .flatMap {
                     // 存在就直接调用调度系统分配客服
-                    Mono.justOrEmpty(dispatchingCenter.assignmentAuto(it!!.organizationId, it.userId))
+                    dispatchingCenter.assignmentAuto(it!!.organizationId, it.userId)
                 }
                 .doOnSuccess {
-                    socketIOClient[registerName] = it!!.userId
+                    socketIOClient[registerName] = it.userId
                     socketIOClient["organizationId"] = it.organizationId
                 }
                 .subscribeWithData(ackRequest, request)

@@ -7,10 +7,11 @@ import com.qingzhu.dispatcher.service.impl.WeightedAssignmentService
 import org.springframework.data.redis.core.ReactiveListOperations
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
+import reactor.kotlin.core.publisher.toMono
 import java.time.Duration
-
 
 @Service
 class AssignmentService(
@@ -22,10 +23,8 @@ class AssignmentService(
     private val listOps: ReactiveListOperations<String, String> = redisTemplate.opsForList()
 
     private fun getLastConversation(organizationId: Int, userId: Long): Mono<ConversationView> {
-        return Mono
-                .create<ConversationView> {
-                    it.success(messageService.findConversationByUserId(organizationId, userId))
-                }.cache()
+        return messageService.findConversationByUserId(organizationId, userId)
+                .cache()
     }
 
     /**
@@ -37,7 +36,8 @@ class AssignmentService(
         return mono
                 .doOnSuccess {
                     // 尝试分配到历史客服
-                    messageService.assignmentCustomer(StaffChangeStatusDto(it.organizationId, it.staffId!!, it.userId))
+                    messageService.assignmentCustomer(StaffChangeStatusDto(it.organizationId,
+                            it.staffId!!, it.userId).toMono())
                 }
                 .onErrorResume { mono }
                 .flatMap {
@@ -66,8 +66,8 @@ class AssignmentService(
                                 it
                             }
                 }
-                .flatMap {
-                    Mono.justOrEmpty(messageService.createConversation(it))
+                .transform {
+                    messageService.createConversation(it)
                 }
     }
 
@@ -77,7 +77,7 @@ class AssignmentService(
 
     private fun assignment(organizationId: Int, userId: Long,
                            getStaffList: (shuntId: Long) ->
-                           List<StaffDispatcherDto>): Mono<ConversationStatusDto> {
+                           Flux<StaffDispatcherDto>): Mono<ConversationStatusDto> {
         val customerDispatcherDto = getCustomerDispatcher(organizationId, userId)
         return customerDispatcherDto
                 .map { getStaffList(it.shuntId) }
@@ -86,14 +86,15 @@ class AssignmentService(
                     // 根据权重分配客服
                     weightedAssignmentService.assignmentStaff(it)
                 }
-                .map {
-                    val dto = StaffChangeStatusDto(organizationId, it!!, userId)
+                .flatMap {
+                    val dto = StaffChangeStatusDto(organizationId, it!!, userId).toMono()
                     // 发送分配请求给客服 如果失败就重新分配
                     messageService.assignmentCustomer(dto)
                     dto
-                }.retry(3)
+                }
+                .retry(3)
                 .flatMap {
-                    Mono.justOrEmpty(staffAdminService.getStaffInfo(it.organizationId, it.staffId))
+                    staffAdminService.getStaffInfo(it.organizationId, it.staffId)
                 }
                 .flatMap {
                     customerDispatcherDto
@@ -107,10 +108,7 @@ class AssignmentService(
     }
 
     private fun getCustomerDispatcher(organizationId: Int, userId: Long): Mono<CustomerDispatcherDto> {
-        return Mono.create<CustomerDispatcherDto> {
-            val customerDispatcherDto = messageService.findStaffIdOrShuntIdOfCustomer(organizationId, userId)
-            it.success(customerDispatcherDto)
-        }
+        return messageService.findStaffIdOrShuntIdOfCustomer(organizationId, userId)
                 .cache()
                 .filter { it.shuntId != -1L }
     }
@@ -132,7 +130,8 @@ class AssignmentService(
         return mono
                 .doOnSuccess {
                     // 尝试分配到历史客服
-                    messageService.assignmentCustomer(StaffChangeStatusDto(it.organizationId, it.staffId, it.userId))
+                    messageService.assignmentCustomer(StaffChangeStatusDto(it.organizationId,
+                            it.staffId, it.userId).toMono())
                 }
                 .onErrorResume {
                     // 分配失败就重新分配到其他客服
@@ -141,7 +140,7 @@ class AssignmentService(
                 }
                 .flatMap {
                     // 与机器人会话 进行双向关联
-                    getLastConversation(organizationId, userId)
+                    val endDto = getLastConversation(organizationId, userId)
                             .map { cv ->
                                 ConversationEndDto.createById(cv.organizationId, cv.id!!)
                             }
@@ -149,16 +148,23 @@ class AssignmentService(
                                 it.relatedId = ce.id
                                 it.relatedType = RelatedType.FROM_BOT
                                 it.visitRange = Duration.between(it.startTime, ce.endTime).toMillis()
-                                it to ce
+                                ce
                             }
+                    Mono.zip(it.toMono(), endDto)
                 }
-                .flatMap { pair ->
+                .flatMap { zip ->
                     // null 的时候丢失了类型信息
-                    Mono.justOrEmpty<ConversationView>(messageService.createConversation(pair.first))
-                            .doOnSuccess {
-                                pair.second.relatedId = it.id
-                                // 更新机器人会话
-                                messageService.endConversation(pair.second)
+                    messageService.createConversation(zip.t1.toMono())
+                            .transform { cv ->
+                                cv
+                                        .map {
+                                            zip.t2.relatedId = it.id
+                                            zip.t2
+                                        }
+                                        .transform {
+                                            // 更新机器人会话
+                                            messageService.endConversation(it).transform { cv }
+                                        }
                             }
                 }
                 .switchIfEmpty {

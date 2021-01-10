@@ -5,13 +5,7 @@ import com.qingzhu.imaccess.domain.value.Message
 import com.qingzhu.imaccess.domain.view.ConversationView
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.body
-import org.springframework.web.reactive.function.client.bodyToMono
+import org.springframework.web.reactive.function.client.*
 import reactor.core.publisher.Mono
 
 /**
@@ -43,7 +37,7 @@ class DispatchingCenter(@Qualifier("innerWebClient") webClientBuilder: WebClient
                 .bodyToMono()
     }
 
-    fun assignmentStaff(@RequestParam("organizationId") organizationId: Int, @RequestParam("userId") userId: Long): Mono<ConversationView>{
+    fun assignmentStaff(organizationId: Int, userId: Long): Mono<ConversationView>{
         return webClient
                 .put()
                 .uri {
@@ -58,30 +52,82 @@ class DispatchingCenter(@Qualifier("innerWebClient") webClientBuilder: WebClient
 }
 
 @Service
-@AuthorizedFeignClient(name = "message-server")
-interface MessageService {
-    @PostMapping(value = ["/message/send"])
-    fun send(message: Message)
+class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) {
+    private val webClient = webClientBuilder.baseUrl("http://message-server").build()
 
-    @PostMapping(value = ["/register/customer"])
-    fun registerCustomer(customerDto: CustomerStatusDto)
+    fun send(message: Mono<Message>): Mono<Unit> {
+        return webClient
+                .post()
+                .uri("/message/send")
+                .body(message)
+                .retrieve()
+                .bodyToMono()
+    }
 
-    @PutMapping(value = ["/unregister/customer"])
-    fun unregisterCustomer(customerDto: CustomerBaseStatusDto)
+    fun registerCustomer(customerDto: Mono<CustomerStatusDto>): Mono<Unit> {
+        return webClient
+                .post()
+                .uri("/register/customer")
+                .body(customerDto)
+                .retrieve()
+                .bodyToMono()
+    }
 
-    @PostMapping(value = ["/register/staff"])
-    fun registerStaff(staffStatusDto: StaffStatusDto)
+    fun unregisterCustomer(customerDto: Mono<CustomerBaseStatusDto>): Mono<Unit> {
+        return webClient
+                .put()
+                .uri("/unregister/customer")
+                .body(customerDto)
+                .retrieve()
+                .bodyToMono()
+    }
 
-    @PutMapping(value = ["/unregister/staff"])
-    fun unregisterStaff(staffChangeStatusDto: StaffChangeStatusDto)
+    fun registerStaff(staffStatusDto: Mono<StaffStatusDto>): Mono<Unit> {
+        return webClient
+                .post()
+                .uri("/register/staff")
+                .body(staffStatusDto)
+                .retrieve()
+                .bodyToMono()
+    }
 
-    @GetMapping(value = ["/status/customer/find-by-uid"])
-    fun findCustomerByUid(@RequestParam("organizationId") organizationId: Int, @RequestParam("uid") uid: String): CustomerBaseStatusDto?
+    fun unregisterStaff(staffChangeStatusDto: Mono<StaffChangeStatusDto>): Mono<Unit> {
+        return webClient
+                .put()
+                .uri("/unregister/staff")
+                .body(staffChangeStatusDto)
+                .retrieve()
+                .bodyToMono()
+    }
+
+    fun findCustomerByUid(organizationId: Int, uid: String): Mono<CustomerBaseStatusDto>{
+        return webClient
+                .get()
+                .uri {
+                    it.path("/status/customer/find-by-uid")
+                            .queryParam("organizationId", organizationId)
+                            .queryParam("uid", uid)
+                            .build()
+                }
+                .retrieve()
+                .bodyToMono()
+    }
 }
 
 @Service
-@AuthorizedFeignClient(name = "staff-admin")
-interface StaffAdminService {
-    @GetMapping(value = ["/staff/receptionist"])
-    fun getReceptionistGroup(@RequestParam("organizationId") organizationId: Int, @RequestParam("staffId") staffId: Long): ReceptionistGroupDto?
+class StaffAdminService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) {
+    private val webClient = webClientBuilder.baseUrl("http://staff-admin").build()
+
+    fun getReceptionistGroup(organizationId: Int, staffId: Long): Mono<ReceptionistGroupDto> {
+        return webClient
+                .get()
+                .uri {
+                    it.path("/staff/receptionist")
+                            .queryParam("organizationId", organizationId)
+                            .queryParam("staffId", staffId)
+                            .build()
+                }
+                .retrieve()
+                .bodyToMono()
+    }
 }

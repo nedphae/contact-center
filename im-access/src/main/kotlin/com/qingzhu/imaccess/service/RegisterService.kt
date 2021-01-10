@@ -5,6 +5,7 @@ import com.qingzhu.imaccess.domain.query.CustomerConfig
 import com.qingzhu.imaccess.domain.query.StaffConfig
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 /**
  * 注册服务
@@ -20,10 +21,10 @@ class RegisterService(
      * 注册客服在线信息
      */
     fun registerStaff(staffConfig: StaffConfig): Mono<StaffStatusDto> {
-        val receptionistGroupDto = staffAdminService.getReceptionistGroup(staffConfig.organizationId!!, staffConfig.staffId!!)
-        return Mono.justOrEmpty(receptionistGroupDto)
-                .map { StaffStatusDto.fromStaffConfigAndStaff(staffConfig, it!!) }
-                .doOnSuccess { messageService.registerStaff(it) }
+        return staffAdminService
+                .getReceptionistGroup(staffConfig.organizationId!!, staffConfig.staffId!!)
+                .map { StaffStatusDto.fromStaffConfigAndStaff(staffConfig, it) }
+                .transform { dto -> messageService.registerStaff(dto).transform { dto } }
     }
 
     /**
@@ -32,24 +33,30 @@ class RegisterService(
     fun registerCustomer(customerConfig: CustomerConfig): Mono<CustomerStatusDto> {
         val customerDto = CustomerDto.fromCustomerConfig(customerConfig)
         // 客户信息现在保存到了 调度服务器 TODO: 后期再拆分到单独的服务器
-        return Mono.justOrEmpty(dispatchingCenter.updateCustomer(customerDto))
-                .map { CustomerStatusDto.fromCustomerConfig(customerConfig, it!!) }
+        return dispatchingCenter.updateCustomer(customerDto.toMono())
+                .map { CustomerStatusDto.fromCustomerConfig(customerConfig, it) }
                 // 注册信息
-                .doOnSuccess { messageService.registerCustomer(it) }
+                .transform { dto -> messageService.registerCustomer(dto).transform { dto } }
     }
 
     /**
      * 注册客服在线信息
      */
     fun unRegisterStaff(organizationId: Int, staffId: Long) {
-        messageService.unregisterStaff(StaffChangeStatusDto(organizationId, staffId))
+        messageService
+                .unregisterStaff(StaffChangeStatusDto(organizationId, staffId).toMono())
+                .retry(3)
+                .subscribe()
     }
 
     /**
      * 注册客户在线信息
      */
     fun unRegisterCustomer(organizationId: Int, userId: Long) {
-        messageService.unregisterCustomer(CustomerBaseStatusDto(organizationId, userId))
+        messageService
+                .unregisterCustomer(CustomerBaseStatusDto(organizationId, userId).toMono())
+                .retry(3)
+                .subscribe()
     }
 
 }

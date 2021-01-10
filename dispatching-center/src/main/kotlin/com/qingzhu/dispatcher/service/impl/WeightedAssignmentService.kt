@@ -1,8 +1,10 @@
 package com.qingzhu.dispatcher.service.impl
 
+import arrow.core.extensions.list.foldable.isNotEmpty
 import com.qingzhu.dispatcher.domain.dto.StaffDispatcherDto
 import com.qingzhu.dispatcher.service.AssignmentInterface
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.security.SecureRandom
 import kotlin.collections.ArrayList
@@ -13,13 +15,14 @@ import kotlin.collections.ArrayList
  */
 @Service
 class WeightedAssignmentService : AssignmentInterface {
-    override fun assignmentStaff(list: List<StaffDispatcherDto>): Mono<Long> {
-        return if (list.isNullOrEmpty()) {
-            Mono.empty()
-        } else {
-            val solution = Solution(list)
-            Mono.justOrEmpty(list[solution.pickIndex()].staffId)
-        }
+    override fun assignmentStaff(flux: Flux<StaffDispatcherDto>): Mono<Long> {
+        return flux
+                .collectList()
+                .filter { it.isNotEmpty() }
+                .flatMap {
+                    val solution = Solution(it)
+                    Mono.justOrEmpty(it[solution.pickIndex()].staffId)
+                }
     }
 
     private class Solution(staffDispatcherDtoList: List<StaffDispatcherDto>) {

@@ -13,6 +13,7 @@ import com.qingzhu.imaccess.service.MessageService
 import com.qingzhu.imaccess.socketio.AbstractHandler
 import com.qingzhu.imaccess.socketio.constant.SocketEvent
 import org.springframework.stereotype.Service
+import reactor.kotlin.core.publisher.toMono
 
 /**
  * 客服和客户共用的消息 handler
@@ -37,7 +38,7 @@ class MessageHandler(
                 // 过滤消息
                 .transform(messageFilterService::filter)
                 .messageSubscribe(ackRequest, request) {
-                    messageService.send(it)
+                    messageService.send(it.toMono())
                     MessageResponse.fromMessage(it)
                 }
         // TODO 客户特定时间没有说话就踢出咨询 修改放到接入服务器进行
