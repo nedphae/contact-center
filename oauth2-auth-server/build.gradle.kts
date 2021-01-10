@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.spring") version "1.3.72"
     // kotlin("plugin.jpa") version "1.3.72"
     kotlin("kapt") version "1.3.72"
+    id("org.jetbrains.dokka") version "1.4.20"
 }
 
 group = "com.qingzhu"

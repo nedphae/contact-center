@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
     kotlin("kapt")
+    id("org.jetbrains.dokka")
 }
 
 group = "com.qingzhu"

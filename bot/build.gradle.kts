@@ -3,6 +3,7 @@ plugins {
     id("io.spring.dependency-management")
     kotlin("jvm")
     kotlin("plugin.spring")
+    id("org.jetbrains.dokka")
 }
 
 group = "com.qingzhu"
