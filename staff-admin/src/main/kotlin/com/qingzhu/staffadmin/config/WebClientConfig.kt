@@ -1,4 +1,4 @@
-package com.qingzhu.imaccess.config
+package com.qingzhu.staffadmin.config
 
 import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction
 import org.springframework.context.annotation.Bean

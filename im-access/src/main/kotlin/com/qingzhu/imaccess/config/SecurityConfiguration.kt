@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator
+import org.springframework.security.oauth2.jwt.MappedJwtClaimSetConverter
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 import org.springframework.security.web.server.SecurityWebFilterChain
@@ -14,6 +15,7 @@ import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.RSAPublicKeySpec
+import java.util.*
 
 
 @EnableWebFluxSecurity
@@ -31,16 +33,30 @@ class SecurityConfiguration {
                 .oauth2Client()
                 .and()
                 .oauth2ResourceServer()
-                .jwt().publicKey(getPublicKey() as RSAPublicKey)
+                .jwt {
+                    it.jwtDecoder(reactiveJwtDecoder())
+                }
         return http.build()
     }
 
+    /**
+     * 使用 oauth2Client 获取 jwt 时没有 principalName， 所以这里要手动设置
+     *
+     * @see <https://stackoverflow.com/questions/63352692/spring-security-5-with-oauth2-causing-principalname-cannot-be-empty-error>
+     */
     @Bean
     fun reactiveJwtDecoder(): ReactiveJwtDecoder {
         val delegatingOAuth2TokenValidator = DelegatingOAuth2TokenValidator(JwtTimestampValidator())
+        val delegate = MappedJwtClaimSetConverter.withDefaults(Collections.emptyMap())
         return NimbusReactiveJwtDecoder(getPublicKey() as RSAPublicKey)
                 .also { decoder ->
                     decoder.setJwtValidator(delegatingOAuth2TokenValidator)
+                    decoder.setClaimSetConverter {
+                        val convertedClaims = delegate.convert(it)
+                        val username = "anonymous_user"
+                        convertedClaims!!["sub"] = username
+                        convertedClaims
+                    }
                 }
     }
 
@@ -51,4 +67,5 @@ class SecurityConfiguration {
         val factory: KeyFactory = KeyFactory.getInstance("RSA")
         return factory.generatePublic(publicSpec)
     }
+
 }
