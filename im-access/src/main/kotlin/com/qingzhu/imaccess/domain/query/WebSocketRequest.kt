@@ -39,7 +39,7 @@ data class WebSocketRequest<T>(
 
     fun toMonoMonad(socketIOClient: SocketIOClient): Mono<T> {
         return Mono.just(this)
-                .doOnSuccess {
+                .doOnNext {
                     it.header.sid = socketIOClient.sessionId.toString()
                 }.map { it.body }
     }

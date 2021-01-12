@@ -31,7 +31,7 @@ class RegisterHandler(
 
     suspend fun unregisterCustomer(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<CustomerBaseStatusDto>()
-                .doOnSuccess {
+                .doOnNext {
                     customerStatusService.setStatusOffline(it)
                     // TODO: 通知调度中心 关闭会话 重新调度
                 }

@@ -38,7 +38,7 @@ class CustomerEventHandler(
     fun onRegister(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<CustomerConfig>) {
         val customerConfig = request.toMonoMonad(socketIOClient)
         customerConfig
-                .doOnSuccess {
+                .doOnNext {
                     // 设置 IP
                     it.ip = socketIOClient.handshakeData.httpHeaders["X-Forwarded-For"]
                 }
@@ -61,7 +61,7 @@ class CustomerEventHandler(
                     // 存在就直接调用调度系统分配客服
                     dispatchingCenter.assignmentAuto(it!!.organizationId, it.userId)
                 }
-                .doOnSuccess {
+                .doOnNext {
                     socketIOClient[registerName] = it.userId
                     socketIOClient["organizationId"] = it.organizationId
                 }

@@ -34,7 +34,7 @@ class AssignmentService(
         val mono = getLastConversation(organizationId, userId)
         // 添加 10 分钟内自动转接人工
         return mono
-                .doOnSuccess {
+                .doOnNext {
                     // 尝试分配到历史客服
                     messageService.assignmentCustomer(StaffChangeStatusDto(it.organizationId,
                             it.staffId!!, it.userId).toMono())
@@ -44,7 +44,7 @@ class AssignmentService(
                     if (it.interaction == 0) {
                         // 客服会话
                         staff(it.organizationId, it.userId)
-                                .doOnSuccess { cs ->
+                                .doOnNext { cs ->
                                     // 设置为主动转人工
                                     cs.transferType = TransferType.INITIATIVE
                                 }
@@ -128,7 +128,7 @@ class AssignmentService(
                     it.success()
                 }.cache()
         return mono
-                .doOnSuccess {
+                .doOnNext {
                     // 尝试分配到历史客服
                     messageService.assignmentCustomer(StaffChangeStatusDto(it.organizationId,
                             it.staffId, it.userId).toMono())
@@ -136,7 +136,7 @@ class AssignmentService(
                 .onErrorResume {
                     // 分配失败就重新分配到其他客服
                     staff(organizationId, userId)
-                            .doOnSuccess { cs -> cs.transferType = TransferType.INITIATIVE }
+                            .doOnNext { cs -> cs.transferType = TransferType.INITIATIVE }
                 }
                 .flatMap {
                     // 与机器人会话 进行双向关联

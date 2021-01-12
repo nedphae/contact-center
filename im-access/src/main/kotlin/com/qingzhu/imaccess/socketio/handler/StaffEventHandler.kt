@@ -34,13 +34,13 @@ class StaffEventHandler(private val registerService: RegisterService) : Abstract
     @OnEvent("register")
     fun onRegister(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<StaffConfig>) {
         request.toMonoMonad(socketIOClient)
-                .doOnSuccess {
+                .doOnNext {
                     it.staffId = socketIOClient.handshakeData.getSingleUrlParam("sid").toLong()
                     it.organizationId = socketIOClient.handshakeData.getSingleUrlParam("oid").toInt()
                     socketIOClient[registerName] = it.staffId
                     socketIOClient["organizationId"] = it.organizationId
                 }
-                .doOnSuccess {
+                .doOnNext {
                     // 向消息服务存储客服消息
                     registerService.registerStaff(it)
                 }

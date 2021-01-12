@@ -58,7 +58,7 @@ class KafkaBroker(
             input
                     .mapValues { value ->
                         Mono.just(EventType.Msg(value))
-                                .doOnSuccess {
+                                .doOnNext {
                                     val next = disruptorForContext.ringBuffer.next()
                                     val nextEvent = disruptorForContext.ringBuffer.get(next)
 

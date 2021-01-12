@@ -29,7 +29,7 @@ class MessageHandler(
     @OnEvent(SocketEvent.Message.send)
     fun onSend(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<Message>) {
         request.toMonoMonad(socketIOClient)
-                .doOnSuccess {
+                .doOnNext {
                     val (organizationId, from) = getOrganizationIdAndRegisterName(socketIOClient)
                     it.organizationId = organizationId
                     // 重写 发送方

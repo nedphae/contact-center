@@ -45,7 +45,7 @@ class ConversationStatusService(
                     // 设置会话结束
                     it!!.updateByEnd(conversationEndDto)
                 }
-                .doOnSuccess {
+                .doOnNext {
                     statusMap.put(it.id, it, 15, TimeUnit.MINUTES)
                     staffStatusService.removeCustomer(it.organizationId,
                             it.staffId, it.userId)
@@ -55,7 +55,7 @@ class ConversationStatusService(
     fun generate(conversationStatusDto: ConversationStatusDto): Mono<ConversationStatus> {
         return Mono.just(conversationStatusDto)
                 .map { it.toConversationStatus() }
-                .doOnSuccess { saveStatus(it) }
+                .doOnNext { saveStatus(it) }
     }
 
     fun findByUserId(organizationId: Int, userId: Long): Mono<ConversationStatus> {

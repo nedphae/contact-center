@@ -95,7 +95,7 @@ class StaffStatusService(
                 .filter {
                     !it.autoBusy && it.onlineStatus == OnlineStatus.ONLINE
                 }
-                .doOnSuccess {
+                .doOnNext {
                     it.currentServiceCount++
                     it.userIdList.add(staffChangeStatusDto.userId!!)
                     // 重新保存状态
@@ -105,7 +105,7 @@ class StaffStatusService(
 
     fun removeCustomer(organizationId: Int, staffId: Long, userId: Long) {
         findStaff(organizationId, staffId)
-                .doOnSuccess {
+                .doOnNext {
                     it.currentServiceCount--
                     it.userIdList.remove(userId)
                 }
