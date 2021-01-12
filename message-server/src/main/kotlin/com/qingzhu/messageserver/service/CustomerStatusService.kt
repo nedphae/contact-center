@@ -31,7 +31,7 @@ class CustomerStatusService(
         // 这样写为了后面一些临时状态保存到 HazelcastInstance 不会丢失
         val oldCustomerStatus = statusMap.putIfAbsent(customerStatus.userId, customerStatus)
         oldCustomerStatus?.setOnline()?.also {
-            it.redisHashKey = customerStatus.redisHashKey
+            it.hashKey = customerStatus.hashKey
             statusMap[it.userId] = it
         }
         statusMap.setTtl(customerStatus.userId, 1, TimeUnit.HOURS)

@@ -32,6 +32,8 @@ spring:
   #       jwt:
   #         jwk-set-uri: http://localhost:8000/.well-known/jwks.json
 
+  kafka:
+    client-id: im.01
   cloud:
     inetutils:
       ignored-interfaces:
@@ -45,21 +47,31 @@ spring:
         prefer-ip-address: true
         instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
         # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+    loadbalancer:
+      ribbon:
+        enabled: false
 
     stream:
       function:
-        definition: message;kStreamProcess
+        definition: message;messageStreamProcess
       poller:
         fixed-delay: 500
         max-messages-per-poll: 1
       kafka:
         binder:
-          brokers: 10.0.0.10:32060
+          brokers: 10.0.0.109:9092
+        streams:
+          binder:
+            functions:
+              message:
+                applicationId: message
+              messageStreamProcess:
+                applicationId: messageStreamProcess
       bindings:
         message-out-0:
-          destination: chatMessage
-        kStreamProcess-in-0:
-          destination: chatMessage
+          destination: ${spring.kafka.client-id:im}.message
+        messageStreamProcess-in-0:
+          destination: ${spring.kafka.client-id:im}.message
 
   security:
     oauth2:

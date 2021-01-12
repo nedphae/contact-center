@@ -24,7 +24,7 @@ data class CustomerStatus(
         // 机器人优先开关（访客分配）
         val robotShuntSwitch: Int?,
         // 客服所处服务器 hash 值
-        var redisHashKey: Int = -1,
+        var hashKey: String? = null,
         // vip等级 1-10
         val vipLevel: Int?,
         // 客户来源类型
@@ -38,7 +38,7 @@ data class CustomerStatus(
     //是否在线
     var onlineStatus: OnlineStatus = OnlineStatus.ONLINE
 
-    fun setOffline() = apply { this.onlineStatus = OnlineStatus.OFFLINE; this.redisHashKey = -1 }
+    fun setOffline() = apply { this.onlineStatus = OnlineStatus.OFFLINE; this.hashKey = null }
 
     fun setOnline() = apply { this.onlineStatus = OnlineStatus.ONLINE }
 

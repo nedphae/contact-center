@@ -40,23 +40,49 @@ spring:
         prefer-ip-address: true
         instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
         # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+    loadbalancer:
+      ribbon:
+        enabled: false
 
     stream:
       function:
-        definition: message;kStreamProcess
+        definition: message;inKStreamProcess;outKStreamProcess
       poller:
         fixed-delay: 500
         max-messages-per-poll: 1
       kafka:
         binder:
-          brokers: 10.0.0.108:9092
-          # replication-factor: 1
+          brokers: 10.0.0.109:9092
+        streams:
+          binder:
+            functions:
+              message:
+                applicationId: message
+              inKStreamProcess:
+                applicationId: inKStreamProcess
+              outKStreamProcess:
+                applicationId: outKStreamProcess
       bindings:
         message-out-0:
-          destination: chatMessage
-        kStreamProcess-in-0:
-          destination: chatMessage
+          destination: im.test
+        outKStreamProcess-in-0:
+          destination: im.test
+        outKStreamProcess-out-0:
+          destination: im.message
+        inKStreamProcess-in-0:
+          destination: im.message
 
+  security:
+    oauth2:
+      client:
+        provider:
+          authProvider:
+            token-uri: http://oauth2-auth-server/oauth/token
+        registration:
+          authProvider:
+            client-id: inner_client
+            client-secret: test_secret
+            authorization-grant-type: client_credentials
 logging:
   level:
     root: info

@@ -34,6 +34,9 @@ spring:
         prefer-ip-address: true
         instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
         # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+    loadbalancer:
+      ribbon:
+        enabled: false
 
   data:
     elasticsearch:

@@ -4,13 +4,14 @@ import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.map.listener.EntryExpiredListener
 import com.hazelcast.map.listener.EntryRemovedListener
 import com.qingzhu.messageserver.config.CacheManager
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.cloud.stream.function.StreamBridge
+import org.springframework.messaging.support.MessageBuilder
 import reactor.core.publisher.EmitterProcessor
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 
@@ -89,25 +90,36 @@ class MessageServerApplicationTests {
             lock.unlock()
         }
         assertEquals(cacheHazelcastInstance, hazelcastInstance)
-        Thread.sleep(1000 * 10)
+        Thread.sleep(1000 * 100)
     }
+
+    @Autowired
+    private lateinit var streamBridge: StreamBridge
+    @Autowired
+    private lateinit var processor: EmitterProcessor<String>
 
     /**
      * 测试 processor 生产消息
      */
     // @Autowired
-    fun message(processor: EmitterProcessor<String>) {
-        Executors.newSingleThreadExecutor().submit {
+    @Test
+    fun message() {
+        // Executors.newSingleThreadExecutor().submit {
             var i = 0
-            while (i < 1000) {
-                processor.onNext("send some message: $i")
+            while (i < 100) {
+                val str = "streamBridge send some message: $i"
+                val message = MessageBuilder.withPayload(str)
+                        .setHeader("hashKey", "1")
+                        .build()
+                // processor.onNext(str)
+                streamBridge.send("im.test", message)
                 i++
-                if (i % 100 == 0) {
+                if (i % 10 == 0) {
                     Thread.sleep(1000)
                     println("next 100")
                 }
             }
-        }
+        // }
     }
 
     @Test

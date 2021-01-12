@@ -1,6 +1,7 @@
 package com.qingzhu.messageserver.config
 
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
@@ -18,6 +19,7 @@ import java.security.spec.RSAPublicKeySpec
 import java.util.*
 
 
+@Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 class SecurityConfiguration {

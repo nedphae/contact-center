@@ -32,7 +32,7 @@ data class StaffStatusDto(
         // 不同接待组的优先级
         var priorityOfGroup: Map<Long, Int>,
         // 客服所处服务器 hash 值
-        var redisHashKey: Int = -1,
+        var hashKey: String? = null,
         // 在线状态
         var onlineStatus: OnlineStatus = OnlineStatus.ONLINE,
         // 最大接待数量
@@ -44,7 +44,7 @@ data class StaffStatusDto(
             role = role,
             receptionistGroup = receptionistGroup,
             priorityOfGroup = priorityOfGroup,
-            redisHashKey = redisHashKey,
+            hashKey = hashKey,
             maxServiceCount = maxServiceCount
     ).also {
         it.onlineStatus = onlineStatus

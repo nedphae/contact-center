@@ -1,5 +1,6 @@
 package com.qingzhu.messageserver.broker
 
+import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.kstream.KStream
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -12,6 +13,8 @@ import java.util.function.Supplier
 /**
  * kafka Broker
  * 测试 kafka 消息生产和流式消费
+ * StreamBridge 动态绑定
+ * 不能使用 @EnableBinding
  */
 @Configuration
 class KafkaBroker {
@@ -35,7 +38,27 @@ class KafkaBroker {
      * 批量高并发处理，函数式
      */
     @Bean
-    fun kStreamProcess(): Consumer<KStream<Any?, String>> {
-        return Consumer { input: KStream<Any?, String> -> input.foreach { key: Any?, value: String -> println("Key: $key Value: $value") } }
+    fun outKStreamProcess(): java.util.function.Function<KStream<Any?, String>, KStream<String?, String>> {
+        return java.util.function.Function { input ->
+            input
+                    // .filter { _, value -> value.headers["hashKey"] == "1" }
+                    .map { key, value ->
+                        println("outKStreamProcess: Key: $key Value: $value")
+                        KeyValue("im", "outKStreamProcess Forward with :\t $value")
+                    }
+        }
+    }
+
+    /**
+     * kafka KStream 流式处理
+     * 批量高并发处理，函数式
+     */
+    @Bean
+    fun inKStreamProcess(): Consumer<KStream<String?, String>> {
+        return Consumer { input ->
+            input.foreach { key, value ->
+                println("inKStreamProcess: Key: $key Value: $value")
+            }
+        }
     }
 }

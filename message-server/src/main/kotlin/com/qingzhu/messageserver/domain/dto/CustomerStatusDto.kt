@@ -67,7 +67,7 @@ data class CustomerStatusDto(
         // vip等级 1-10
         val vipLevel: Int?,
         // 客服所处服务器 hash 值
-        val redisHashKey: Int,
+        val hashKey: String,
         // 客户来源类型
         val fromType: FromType,
         val ip: String
@@ -83,7 +83,7 @@ data class CustomerStatusDto(
                 groupId = this.groupId,
                 shuntId = this.shuntId,
                 robotShuntSwitch = this.robotShuntSwitch,
-                redisHashKey = this.redisHashKey,
+                hashKey = this.hashKey,
                 vipLevel = this.vipLevel,
                 fromType = this.fromType,
                 ip = this.ip

@@ -1,14 +1,9 @@
 package com.qingzhu.imaccess
 
-import com.qingzhu.common.util.ApplicationContextManager
-import com.qingzhu.imaccess.broker.RedisBroker
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
-import reactor.core.publisher.EmitterProcessor
-import java.util.concurrent.Executors
-
 
 /**
  * Kotlin Y 组合实现
@@ -48,33 +43,8 @@ val fib: (Int) -> Int = Y { f ->
 @SpringBootTest(classes = [ImAccessApplication::class])
 class ImApplicationTests {
 
-    /**
-     * 测试 processor 生产消息
-     */
-    // @Autowired
-    fun testMessage(processor: EmitterProcessor<String>) {
-        Executors.newSingleThreadExecutor().submit {
-            var i = 0
-            while (i < 1000) {
-                processor.onNext("send some message")
-                i++
-                if (i % 100 == 0) {
-                    Thread.sleep(10000)
-                    println("next 100")
-                }
-            }
-        }
-    }
-
     @Autowired
     private lateinit var appContext: ApplicationContext
-
-    @Test
-    fun testIP() {
-        ApplicationContextManager.applicationContext = appContext
-        val redisHashKey: Long = RedisBroker.hashKey
-        println(redisHashKey)
-    }
 
     @Test
     fun contextLoads() {

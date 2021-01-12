@@ -22,7 +22,7 @@ class DisruptorConfig {
     fun initChatMessageDisruptor(messageHandler: WorkHandler<DisruptorEvent>): Disruptor<DisruptorEvent> {
         /** 指定RingBuffer的大小 **/
         // TODO 后期使用配置
-        val bufferSize = 100
+        val bufferSize = 1024
         val threads = 20
         // 生产者的线程工厂
         val threadFactory = ThreadFactory { r -> Thread(r, "DefaultDisruptorThreads" + atomicInt.getAndIncrement()) }

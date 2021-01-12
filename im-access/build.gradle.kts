@@ -25,11 +25,6 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.security:spring-security-oauth2-jose")
-    implementation("org.springframework.security:spring-security-oauth2-client")
-    implementation("org.springframework.security:spring-security-oauth2-resource-server")
-
     runtimeOnly("org.postgresql:postgresql")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
@@ -37,5 +32,5 @@ dependencies {
     }
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.springframework.cloud:spring-cloud-starter-contract-verifier")
-    testImplementation("org.springframework.cloud:spring-cloud-stream-test-support")
+    // testImplementation("org.springframework.cloud:spring-cloud-stream-test-support")
 }

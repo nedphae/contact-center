@@ -8,6 +8,19 @@ import reactor.core.publisher.Mono
 internal class FluxTest {
 
     @Test
+    fun testThen() {
+        val start: Int? = null
+        Mono.justOrEmpty(start)
+                .doOnNext {
+                    println(it)
+                }
+                .then(Mono.just(2))
+                .subscribe {
+                    println(it)
+                }
+    }
+
+    @Test
     fun testFlux() {
         Flux
                 .empty<Int>()

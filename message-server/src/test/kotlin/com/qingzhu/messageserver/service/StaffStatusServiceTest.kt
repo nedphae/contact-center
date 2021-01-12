@@ -42,7 +42,7 @@ class StaffStatusServiceTest : MessageServerApplicationTests() {
     @Test
     fun testStaffStatus() {
         staffStatusService.saveStatus(StaffStatus(1, 2L, StaffRole.STAFF, listOf(3L, 4L),
-                mapOf(3L to 15), 1234, 10))
+                mapOf(3L to 15), "1234", 10))
         staffStatusService.saveStatus(StaffStatusDto(1, 12L, StaffRole.STAFF, listOf(13L, 4L),
                 mapOf(4L to 15)).toStaffStatus())
 

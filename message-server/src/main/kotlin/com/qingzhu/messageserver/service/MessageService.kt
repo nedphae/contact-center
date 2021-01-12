@@ -3,6 +3,7 @@ package com.qingzhu.messageserver.service
 import com.qingzhu.common.util.toJson
 import com.qingzhu.messageserver.domain.constant.CreatorType
 import com.qingzhu.messageserver.domain.dto.Message
+import org.springframework.cloud.stream.function.StreamBridge
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.ReactiveZSetOperations
 import org.springframework.stereotype.Service
@@ -13,23 +14,22 @@ import reactor.core.scheduler.Schedulers
 class MessageService(
         private val customerStatusService: CustomerStatusService,
         private val staffStatusService: StaffStatusService,
-        private val redisTemplate: ReactiveRedisTemplate<String, String>
+        redisTemplate: ReactiveRedisTemplate<String, String>,
+        private val streamBridge: StreamBridge
 ) {
     private val zSet: ReactiveZSetOperations<String, String> = redisTemplate.opsForZSet()
 
-    private fun Mono<Int>.syncMessage(message: Message): Mono<Message> {
+    private fun Mono<String>.syncMessage(message: Message): Mono<Message> {
         val data = message.toJson()
         val from = Mono.just("${message.organizationId}:${message.creatorType.name.toLowerCase()}:${message.from}")
+        val to = Mono.just("${message.organizationId}:${message.type.name.toLowerCase()}:${message.to}")
         return this
-                .flatMap {
-                    if (it != -1) {
-                        redisTemplate.convertAndSend("im:message:${it}", data)
-                    } else this
+                .doOnNext {
+                    // 发送消息到kafka
+                    streamBridge.send("${it}.message", data)
                 }
-                .map {
-                    "${message.organizationId}:${message.type.name.toLowerCase()}:${message.to}"
-                }
-                .concatWith(from)
+                .then(from)
+                .concatWith(to)
                 .flatMap {
                     // 写扩散
                     zSet.add(it, data, message.seqId.toDouble())
@@ -49,10 +49,10 @@ class MessageService(
                 .flatMap {
                     when (it.type) {
                         CreatorType.CUSTOMER -> customerStatusService.findByUserId(it.organizationId, it.to)
-                                .map { cs -> cs.redisHashKey }
+                                .flatMap { cs -> Mono.justOrEmpty(cs.hashKey) }
                                 .syncMessage(it)
                         CreatorType.STAFF -> staffStatusService.findStaff(it.organizationId, it.to)
-                                .map { cs -> cs.redisHashKey }
+                                .flatMap { cs -> Mono.justOrEmpty(cs.hashKey) }
                                 .syncMessage(it)
                         else -> message
                     }
