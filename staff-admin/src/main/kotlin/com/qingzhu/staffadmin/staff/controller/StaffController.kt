@@ -4,7 +4,7 @@ import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistGroupDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.query.StaffQuery
-import com.qingzhu.staffadmin.staff.repo.dao.StaffRepository
+import com.qingzhu.staffadmin.staff.repository.StaffRepository
 import com.qingzhu.staffadmin.staff.service.StaffService
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.http.MediaType
@@ -23,12 +23,12 @@ class StaffController(
 ) {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    fun registerCustomerService(@RequestBody @Valid staffQuery: StaffQuery): Staff {
+    fun registerCustomerService(@RequestBody @Valid staffQuery: StaffQuery): Mono<Staff> {
         return staffRepository.save(staffQuery.toCustomerServiceRepresentative())
     }
 
     @GetMapping
-    fun findFirstByUsername(organizationId: Int, username: String?): InnerUser {
+    fun findFirstByUsername(organizationId: Int, username: String?): Mono<InnerUser> {
         return staffService.findFirstByOrganizationIdAndUsername(organizationId, username)
     }
 }

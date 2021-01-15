@@ -4,14 +4,11 @@ import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistGroupDto
 import com.qingzhu.staffadmin.staff.domain.dto.StaffDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
-import com.qingzhu.staffadmin.staff.repo.dao.StaffConfigRepository
-import com.qingzhu.staffadmin.staff.repo.dao.StaffRepository
+import com.qingzhu.staffadmin.staff.repository.StaffConfigRepository
+import com.qingzhu.staffadmin.staff.repository.StaffRepository
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toFlux
-import java.util.*
-
 
 @Service
 class StaffService(
@@ -19,34 +16,37 @@ class StaffService(
         private val staffConfigRepository: StaffConfigRepository
 ) {
 
-    fun findFirstByOrganizationIdAndUsername(organizationId: Int, username: String?): InnerUser {
-        return Optional.ofNullable(username).flatMap { staffRepository.findFirstByOrganizationIdAndUsername(organizationId, it) }.map {
+    fun findFirstByOrganizationIdAndUsername(organizationId: Int, username: String?): Mono<InnerUser> {
+        return Mono.justOrEmpty(username).flatMap { staffRepository.findFirstByOrganizationIdAndUsername(organizationId, it) }.map {
             InnerUser(it.organizationId, it.id ?: -1, it.username, it.password, it.role.name)
-        }.orElseThrow { UsernameNotFoundException("用户[$username]不存在") }
+        }.switchIfEmpty(Mono.error(UsernameNotFoundException("用户[$username]不存在")))
     }
 
     fun findStaffInfo(staffId: Long): Mono<StaffDto> {
-        return Mono.justOrEmpty(staffRepository.findById(staffId))
+        return staffRepository.findById(staffId)
                 .map { StaffDto.fromStaff(it) }
     }
 
     fun findStaffConfigByOrganizationIdAndStaffId(organizationId: Int, staffId: Long? = null): Mono<ReceptionistGroupDto> {
-        var staff: Optional<Staff> = Optional.empty()
+        var staff: Mono<Staff> = Mono.empty()
         val staffConfigFlux = if (staffId == null) {
-            staffConfigRepository.findAllByOrganizationId(organizationId).toFlux()
+            staffConfigRepository.findAllByOrganizationId(organizationId)
         } else {
             staff = staffRepository.findById(staffId)
-            staffConfigRepository.findAllByOrganizationIdAndStaffId(organizationId, staffId).toFlux()
+            staffConfigRepository.findAllByOrganizationIdAndStaffId(organizationId, staffId)
         }
 
-        return staffConfigFlux.collectMap({ it.shuntId }) { it.priority }.map {
-            ReceptionistGroupDto(
-                    organizationId,
-                    staffId,
-                    it.keys.toList(),
-                    it,
-                    staff.map(Staff::simultaneousService).orElse(0)
-            )
-        }
+        return staffConfigFlux
+                .collectMap({ it.shuntId }) { it.priority }
+                .transform {
+                    Mono.zip(staff, it)
+                }.map {
+                    ReceptionistGroupDto(
+                            organizationId,
+                            staffId,
+                            it.t2.keys.toList(),
+                            it.t2,
+                            it.t1.simultaneousService)
+                }
     }
 }

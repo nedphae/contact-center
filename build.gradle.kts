@@ -4,14 +4,24 @@ group = "com.qingzhu"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    id("org.springframework.boot") version "2.3.5.RELEASE" apply false
-    id("io.spring.dependency-management") version "1.0.9.RELEASE"
-    id("org.jetbrains.kotlin.plugin.noarg") version "1.3.72" apply false
-    kotlin("jvm") version "1.3.72"
-    kotlin("plugin.spring") version "1.3.72" apply false
-    kotlin("plugin.jpa") version "1.3.72" apply false
-    kotlin("kapt") version "1.3.72"
+    id("org.springframework.boot") version "2.4.1" apply false
+    id("io.spring.dependency-management") version "1.0.10.RELEASE"
+    id("org.jetbrains.kotlin.plugin.noarg") version "1.4.21" apply false
+    kotlin("jvm") version "1.4.21"
+    kotlin("plugin.spring") version "1.4.21" apply false
+    kotlin("plugin.jpa") version "1.4.21" apply false
+    kotlin("kapt") version "1.4.21"
     id("org.jetbrains.dokka") version "1.4.20"
+}
+
+allprojects {
+    repositories {
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
+        maven { url = uri("https://maven.aliyun.com/repository/spring") }
+        mavenCentral()
+        maven { url = uri("https://repo.spring.io/milestone") }
+        maven { url = uri("https://dl.bintray.com/arrow-kt/arrow-kt/") }
+    }
 }
 
 subprojects {
@@ -31,20 +41,8 @@ subprojects {
         }
     }
 
-    repositories {
-        mavenCentral()
-        maven {
-            url = uri("https://maven.aliyun.com/nexus/content/groups/public/")
-        }
-        maven {
-            url = uri("https://repo.spring.io/libs-milestone")
-        }
-        maven {
-            url = uri("https://dl.bintray.com/arrow-kt/arrow-kt/")
-        }
-    }
-
-    extra["springCloudVersion"] = "Hoxton.SR9"
+    extra["springCloudVersion"] = "2020.0.0"
+    extra["springDataBom"] = "2020.0.3"
 
     val arrowVersion = "0.10.5"
 
@@ -52,7 +50,7 @@ subprojects {
         // Kotlin 依赖
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
@@ -91,8 +89,6 @@ subprojects {
         implementation("org.springframework.security:spring-security-oauth2-resource-server")
         implementation("org.springframework.security:spring-security-oauth2-client")
         implementation("org.springframework.security:spring-security-oauth2-jose")
-        implementation("org.springframework.cloud:spring-cloud-starter-oauth2")
-        implementation("org.springframework.cloud:spring-cloud-starter-security")
 
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("io.projectreactor:reactor-test")
@@ -107,7 +103,7 @@ subprojects {
     dependencyManagement {
         imports {
             mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-            mavenBom("org.springframework.data:spring-data-bom:2020.0.3")
+            mavenBom("org.springframework.data:spring-data-bom:${property("springDataBom")}")
             // mavenBom("io.r2dbc:r2dbc-bom:Arabba-SR8")
         }
     }

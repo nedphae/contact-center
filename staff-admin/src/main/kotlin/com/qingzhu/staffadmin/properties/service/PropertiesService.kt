@@ -5,50 +5,56 @@ import arrow.fx.extensions.fx
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsFactory
 import com.qingzhu.staffadmin.properties.domain.entity.Properties
-import com.qingzhu.staffadmin.properties.repo.dao.jpa.PropertiesRepository
+import com.qingzhu.staffadmin.properties.repository.PropertiesRepository
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
-fun createMapFromProperties(properties: List<Properties>): String {
+fun createMapFromProperties(properties: Flux<Properties>): Mono<String> {
     // 使用 JavaPropsFactory 格式化成配置文件格式
     val propsReader = ObjectMapper(JavaPropsFactory())
-    val propertiesValue = properties.joinToString(separator = System.lineSeparator()) {
-        """${it.key}.value:${it.value}
-        |${it.key}.id:${it.id}
-    """.trimMargin()
-    }
-    val obj = propsReader.readValue(propertiesValue, Any::class.java)
-    val jsonWriter = ObjectMapper()
-    return jsonWriter.writeValueAsString(obj)
+    return properties.collectList()
+            .map { list ->
+                list.joinToString(separator = System.lineSeparator()) {
+                    """${it.key}.value:${it.value}
+|${it.key}.id:${it.id}
+""".trimMargin()
+                }
+            }
+            .map {
+                val obj = propsReader.readValue(it, Any::class.java)
+                val jsonWriter = ObjectMapper()
+                jsonWriter.writeValueAsString(obj)
+            }
 }
 
 @Service
 class PropertiesService(
         private val propertiesRepository: PropertiesRepository,
-        private val redisTemplate: RedisTemplate<String, String>
+        private val redisTemplate: ReactiveRedisTemplate<String, String>
 ) {
     /**
      * 系统内部使用的配置项目接口
      */
     @Cacheable("properties", key = "args")
-    fun findDistinctTopByKey(organizationId: Int, key: String): Properties {
+    fun findDistinctTopByKey(organizationId: Int, key: String): Mono<Properties> {
         val result = propertiesRepository.findDistinctTopByKey(key)
-        return result.orElse(Properties(null, organizationId, key, null, null))
+        return result.switchIfEmpty(Mono.just(Properties(null, organizationId, key, null, null)))
     }
 
-    fun getAllProperties(): IO<String> {
+    fun getAllProperties(): IO<Mono<String>> {
         return IO.fx {
             val properties = propertiesRepository.findAll()
             createMapFromProperties(properties)
         }
     }
 
-    fun saveAll(properties: Iterable<Properties>): IO<List<Properties>> {
+    fun saveAll(properties: Iterable<Properties>): IO<Flux<Properties>> {
         return IO.fx {
-            val result = propertiesRepository.saveAll(properties)
-            val keyList = result.map { "properties::${it.key}" }.toList()
-            redisTemplate.delete(keyList)
+            val result = propertiesRepository.saveAll(properties).cache()
+            redisTemplate.delete(result.map { "properties::${it.key}" })
             result
         }
     }

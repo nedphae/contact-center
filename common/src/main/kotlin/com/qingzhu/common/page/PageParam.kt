@@ -13,7 +13,7 @@ data class PageParam(
         val page: Int = 0,    //当前查询页码
         val size: Int = 20,   //每页显示条数
         val direction: Sort.Direction = Sort.Direction.DESC,  //排序规则
-        var properties: Array<out String> = arrayOf("id")   
+        var properties: Array<out String> = arrayOf("id")
 ) {
     fun toPageable(): Pageable {
         return PageRequest.of(page, size, direction, *properties)

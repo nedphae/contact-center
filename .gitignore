@@ -1,11 +1,9 @@
+HELP.md
 .gradle
 build/
-data/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**
-!**/src/test/**
-doc-old-version/
-logPath_IS_UNDEFINED/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
 ### STS ###
 .apt_generated
@@ -15,6 +13,9 @@ logPath_IS_UNDEFINED/
 .settings
 .springBeans
 .sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
 .idea
@@ -22,6 +23,8 @@ logPath_IS_UNDEFINED/
 *.iml
 *.ipr
 out/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -29,4 +32,6 @@ out/
 /dist/
 /nbdist/
 /.nb-gradle/
-contact-center/src/main/resources/templates/apps/kefu_vue/node_modules.zip
+
+### VS Code ###
+.vscode/

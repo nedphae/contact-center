@@ -1,10 +1,10 @@
-package com.qingzhu.staffadmin.staff.repo.dao
+package com.qingzhu.staffadmin.staff.repository
 
 import com.qingzhu.staffadmin.staff.domain.entity.StaffConfig
-import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import org.springframework.data.repository.reactive.ReactiveSortingRepository
 import reactor.core.publisher.Flux
 
-interface StaffConfigRepository : ReactiveCrudRepository<StaffConfig, Long> {
+interface StaffConfigRepository : ReactiveSortingRepository<StaffConfig, Long> {
     fun findAllByOrganizationId(organizationId: Int): Flux<StaffConfig>
     fun findAllByOrganizationIdAndStaffId(organizationId: Int, staffId: Long): Flux<StaffConfig>
 }

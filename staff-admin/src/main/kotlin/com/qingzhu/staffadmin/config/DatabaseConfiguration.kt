@@ -6,8 +6,7 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
 @Configuration
-@EnableR2dbcRepositories
+@EnableR2dbcRepositories("com.qingzhu.staffadmin.*.repository")
 @EnableR2dbcAuditing
 @EnableTransactionManagement
-class DatabaseConfiguration {
-}
+class DatabaseConfiguration
