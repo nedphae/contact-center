@@ -1,5 +1,6 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
+import com.qingzhu.staffadmin.staff.domain.AbstractAuditingEntity
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import java.time.LocalDateTime
@@ -18,7 +19,7 @@ data class StaffConfig(
         val shuntId: Long,
         // 配置优先级
         var priority: Int
-) {
+) : AbstractAuditingEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // @Column(columnDefinition = "serial")

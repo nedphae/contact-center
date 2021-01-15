@@ -1,5 +1,6 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
+import com.qingzhu.staffadmin.staff.domain.AbstractAuditingEntity
 import javax.persistence.*
 
 /**
@@ -10,7 +11,7 @@ import javax.persistence.*
 data class StaffGroup(
         // 公司id
         val organizationId: Int
-) {
+) : AbstractAuditingEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
