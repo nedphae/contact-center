@@ -2,6 +2,7 @@ package com.qingzhu.staffadmin.staff.domain.entity
 
 import com.qingzhu.common.domain.AbstractAuditingEntity
 import com.qingzhu.staffadmin.staff.authority.StaffAuthority
+import org.springframework.data.relational.core.mapping.Table as RTable
 import javax.persistence.*
 
 /**
@@ -13,6 +14,7 @@ import javax.persistence.*
 @Table(uniqueConstraints = [UniqueConstraint(columnNames = ["organizationId", "username"])],
         indexes = [Index(columnList = "organizationId"),
             Index(columnList = "username"), Index(columnList = "staffGroupId")])
+@RTable
 data class Staff(
         // 公司id
         val organizationId: Int,

@@ -4,16 +4,16 @@ import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistGroupDto
 import com.qingzhu.staffadmin.staff.domain.dto.StaffDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
-import com.qingzhu.staffadmin.staff.repository.StaffConfigRepository
-import com.qingzhu.staffadmin.staff.repository.StaffRepository
+import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
+import com.qingzhu.staffadmin.staff.repository.ReactiveStaffConfigRepository
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
 class StaffService(
-        private val staffRepository: StaffRepository,
-        private val staffConfigRepository: StaffConfigRepository
+        private val staffRepository: ReactiveStaffRepository,
+        private val staffConfigRepository: ReactiveStaffConfigRepository
 ) {
 
     fun findFirstByOrganizationIdAndUsername(organizationId: Int, username: String?): Mono<InnerUser> {

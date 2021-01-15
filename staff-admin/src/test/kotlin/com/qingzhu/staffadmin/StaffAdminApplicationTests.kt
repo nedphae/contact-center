@@ -4,8 +4,8 @@ import com.qingzhu.common.security.password.getBCryptPasswordEncoder
 import com.qingzhu.staffadmin.staff.authority.StaffAuthority
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
-import com.qingzhu.staffadmin.staff.repository.StaffGroupRepository
-import com.qingzhu.staffadmin.staff.repository.StaffRepository
+import com.qingzhu.staffadmin.staff.repository.ReactiveStaffGroupRepository
+import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,10 +27,10 @@ class StaffAdminApplicationTests {
     }
 
     @Autowired
-    private lateinit var staffRepository: StaffRepository
+    private lateinit var staffRepository: ReactiveStaffRepository
 
     @Autowired
-    private lateinit var staffGroupRepository: StaffGroupRepository
+    private lateinit var staffGroupRepository: ReactiveStaffGroupRepository
 
     /**
      * 插入预设数据

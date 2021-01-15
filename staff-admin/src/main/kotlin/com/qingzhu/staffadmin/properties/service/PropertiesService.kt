@@ -5,7 +5,7 @@ import arrow.fx.extensions.fx
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsFactory
 import com.qingzhu.staffadmin.properties.domain.entity.Properties
-import com.qingzhu.staffadmin.properties.repository.PropertiesRepository
+import com.qingzhu.staffadmin.properties.repository.ReactivePropertiesRepository
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Service
@@ -32,7 +32,7 @@ fun createMapFromProperties(properties: Flux<Properties>): Mono<String> {
 
 @Service
 class PropertiesService(
-        private val propertiesRepository: PropertiesRepository,
+        private val propertiesRepository: ReactivePropertiesRepository,
         private val redisTemplate: ReactiveRedisTemplate<String, String>
 ) {
     /**

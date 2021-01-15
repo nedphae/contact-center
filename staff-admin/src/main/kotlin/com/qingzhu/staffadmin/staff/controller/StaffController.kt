@@ -4,7 +4,7 @@ import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistGroupDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.query.StaffQuery
-import com.qingzhu.staffadmin.staff.repository.StaffRepository
+import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
 import com.qingzhu.staffadmin.staff.service.StaffService
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.http.MediaType
@@ -18,7 +18,7 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/staff")
 class StaffController(
-        private val staffRepository: StaffRepository,
+        private val staffRepository: ReactiveStaffRepository,
         private val staffService: StaffService
 ) {
     @PreAuthorize("hasRole('ADMIN')")

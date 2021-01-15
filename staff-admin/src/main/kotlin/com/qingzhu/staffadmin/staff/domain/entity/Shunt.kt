@@ -1,6 +1,7 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
 import com.qingzhu.common.domain.AbstractAuditingEntity
+import org.springframework.data.relational.core.mapping.Table as RTable
 import javax.persistence.*
 
 
@@ -10,6 +11,7 @@ import javax.persistence.*
 @Entity
 @Table(indexes = [Index(columnList = "organizationId"),
     Index(columnList = "shuntClassId")])
+@RTable
 data class Shunt(
         // 公司id
         val organizationId: Int,
