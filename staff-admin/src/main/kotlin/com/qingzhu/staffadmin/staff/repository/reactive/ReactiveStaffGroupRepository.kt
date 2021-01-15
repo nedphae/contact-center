@@ -1,18 +1,11 @@
-package com.qingzhu.staffadmin.staff.repository
+package com.qingzhu.staffadmin.staff.repository.reactive
 
 import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
-import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.reactive.ReactiveSortingRepository
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
-import java.util.*
 
 @Repository
 interface ReactiveStaffGroupRepository : ReactiveSortingRepository<StaffGroup, Long> {
     fun findDistinctTopByGroupName(groupName: String): Mono<StaffGroup>
-}
-
-@Repository
-interface StaffGroupRepository : JpaRepository<StaffGroup, Long> {
-    fun findDistinctTopByGroupName(groupName: String): Optional<StaffGroup>
 }

@@ -7,8 +7,8 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
 @Configuration
-@EnableR2dbcRepositories("com.qingzhu.staffadmin.*.repository")
+@EnableR2dbcRepositories("com.qingzhu.staffadmin.*.repository.reactive")
 @EnableR2dbcAuditing
 @EnableTransactionManagement
-@EnableJpaRepositories
+@EnableJpaRepositories("com.qingzhu.staffadmin.*.repository.jpa")
 class DatabaseConfiguration

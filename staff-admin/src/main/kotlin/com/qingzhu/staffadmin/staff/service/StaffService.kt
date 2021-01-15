@@ -4,8 +4,8 @@ import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistGroupDto
 import com.qingzhu.staffadmin.staff.domain.dto.StaffDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
-import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
-import com.qingzhu.staffadmin.staff.repository.ReactiveStaffConfigRepository
+import com.qingzhu.staffadmin.staff.repository.reactive.ReactiveStaffRepository
+import com.qingzhu.staffadmin.staff.repository.reactive.ReactiveStaffConfigRepository
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono

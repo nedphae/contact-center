@@ -4,10 +4,10 @@ import com.qingzhu.common.security.password.getBCryptPasswordEncoder
 import com.qingzhu.staffadmin.staff.authority.StaffAuthority
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
-import com.qingzhu.staffadmin.staff.repository.ReactiveStaffGroupRepository
-import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
-import com.qingzhu.staffadmin.staff.repository.StaffGroupRepository
-import com.qingzhu.staffadmin.staff.repository.StaffRepository
+import com.qingzhu.staffadmin.staff.repository.reactive.ReactiveStaffGroupRepository
+import com.qingzhu.staffadmin.staff.repository.reactive.ReactiveStaffRepository
+import com.qingzhu.staffadmin.staff.repository.jpa.StaffGroupRepository
+import com.qingzhu.staffadmin.staff.repository.jpa.StaffRepository
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
