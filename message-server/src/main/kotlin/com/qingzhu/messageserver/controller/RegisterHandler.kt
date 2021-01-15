@@ -1,9 +1,9 @@
 package com.qingzhu.messageserver.controller
 
 import com.qingzhu.messageserver.domain.dto.CustomerBaseStatusDto
-import com.qingzhu.messageserver.domain.dto.CustomerStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
-import com.qingzhu.messageserver.domain.dto.StaffStatusDto
+import com.qingzhu.messageserver.domain.entity.CustomerStatus
+import com.qingzhu.messageserver.domain.entity.StaffStatus
 import com.qingzhu.messageserver.service.CustomerStatusService
 import com.qingzhu.messageserver.service.StaffStatusService
 import kotlinx.coroutines.reactive.awaitSingle
@@ -18,14 +18,14 @@ class RegisterHandler(
 ) {
 
     suspend fun registerCustomer(sr: ServerRequest): ServerResponse {
-        return sr.bodyToMono<CustomerStatusDto>()
-                .map { it.toCustomerStatus() }.map { customerStatusService.saveStatus(it) }
+        return sr.bodyToMono<CustomerStatus>()
+                .map { customerStatusService.saveStatus(it) }
                 .flatMap { accepted().build() }.awaitSingle()
     }
 
     suspend fun registerStaff(sr: ServerRequest): ServerResponse {
-        return sr.bodyToMono<StaffStatusDto>()
-                .map { it.toStaffStatus() }.map { staffStatusService.saveStatus(it) }
+        return sr.bodyToMono<StaffStatus>()
+                .map { staffStatusService.saveStatus(it) }
                 .flatMap { accepted().build() }.awaitSingle()
     }
 

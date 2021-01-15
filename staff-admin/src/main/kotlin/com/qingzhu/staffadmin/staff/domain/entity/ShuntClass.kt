@@ -1,5 +1,6 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
+import com.qingzhu.staffadmin.staff.domain.AbstractAuditingEntity
 import javax.persistence.*
 
 /**
@@ -15,7 +16,7 @@ data class ShuntClass(
         val className: String,
         // 上级分类
         val catalogue: Long
-) {
+) : AbstractAuditingEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null

@@ -1,4 +1,4 @@
-package com.qingzhu.dispatcher.service
+package com.qingzhu.dispatcher.component
 
 import com.qingzhu.dispatcher.domain.dto.StaffDispatcherDto
 import reactor.core.publisher.Flux

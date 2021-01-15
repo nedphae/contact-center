@@ -98,3 +98,13 @@ enum class CreatorType {
     // 群聊
     GROUP
 }
+
+/**
+ * 客服标记的解决状态
+ * 0：未解决、1：已解决、2：解决中
+ */
+enum class SolveStatus(val type: String) {
+    UNSOLVED("未解决"),
+    SOLVED("已解决"),
+    SOLVING("解决中")
+}

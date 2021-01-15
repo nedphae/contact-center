@@ -1,6 +1,8 @@
 package com.qingzhu.messageserver.controller
 
-import com.qingzhu.messageserver.domain.dto.*
+import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
+import com.qingzhu.messageserver.domain.dto.StaffDispatcherDto
+import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.service.ConversationStatusService
 import com.qingzhu.messageserver.service.CustomerStatusService
 import com.qingzhu.messageserver.service.StaffStatusService
@@ -61,7 +63,6 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
         return sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("uid").map { uid ->
                 customerStatusService.findByUid(oi, uid)
-                        .map { CustomerBaseStatusDto(it.organizationId, it.userId) }
                         .transform { ok().body(it) }
             }.orElse(response)
         }.orElse(response).awaitSingle()
@@ -77,23 +78,21 @@ class ConversationStatusHandler(private val conversationStatusService: Conversat
         return sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("userId").map(String::toLong).map { uid ->
                 conversationStatusService.findByUserId(oi, uid)
-                        .map { ConversationBaseStatusDto.fromConversationStatus(it) }
                         .transform { ok().body(it) }
             }.orElse(response)
         }.orElse(response).awaitSingle()
     }
 
     suspend fun new(sr: ServerRequest): ServerResponse {
-        return sr.bodyToMono<ConversationStatusDto>()
+        return sr.bodyToMono<ConversationStatus>()
                 .flatMap { conversationStatusService.generate(it) }
-                .map { ConversationBaseStatusDto.fromConversationStatus(it) }
                 .transform {
                     ok().body(it)
                 }.awaitSingle()
     }
 
     suspend fun end(sr: ServerRequest): ServerResponse {
-        return sr.bodyToMono<ConversationEndDto>()
+        return sr.bodyToMono<ConversationStatus>()
                 .flatMap { conversationStatusService.endConversation(it) }
                 .transform { ok().build() }.awaitSingle()
     }

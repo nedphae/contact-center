@@ -1,16 +1,22 @@
-package com.qingzhu.dispatcher.service
+package com.qingzhu.dispatcher.component
 
+import com.qingzhu.common.component.BaseWebClient
 import com.qingzhu.dispatcher.domain.dto.*
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.reactive.function.client.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-@Service
-class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) {
-    private val webClient = webClientBuilder.baseUrl("http://message-server").build()
+@Component
+class MessageService(webClientBuilder: WebClient.Builder, baseUrl: String) :
+        BaseWebClient(webClientBuilder, baseUrl) {
+
+    @Autowired
+    constructor(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) :
+            this(webClientBuilder, "http://staff-admin")
 
     fun findIdleStaff(organizationId: Int, shuntId: Long): Flux<StaffDispatcherDto> {
         return webClient
@@ -48,7 +54,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
     }
 
     fun findConversationByUserId(@RequestParam("organizationId") organizationId: Int,
-                                 @RequestParam("userId") userId: Long): Mono<ConversationView> {
+                                 @RequestParam("userId") userId: Long): Mono<ConversationStatusDto> {
         return webClient
                 .get()
                 .uri {
@@ -75,28 +81,32 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
                 .bodyToFlux()
     }
 
-    fun createConversation(conversationStatusDto: Mono<ConversationStatusDto>): Mono<ConversationView> {
+    fun saveConversation(conversationStatusDto: Mono<ConversationStatusDto>): Mono<ConversationStatusDto> {
         return webClient
                 .post()
-                .uri("/status/conversation/new")
+                .uri("/status/conversation/save")
                 .body(conversationStatusDto)
                 .retrieve()
                 .bodyToMono()
     }
 
-    fun endConversation(conversationEndDto: Mono<ConversationEndDto>): Mono<Unit> {
+    fun endConversation(conversationStatusDto: Mono<ConversationStatusDto>): Mono<Unit> {
         return webClient
                 .put()
                 .uri("/status/conversation/end")
-                .body(conversationEndDto)
+                .body(conversationStatusDto)
                 .retrieve()
                 .bodyToMono()
     }
 }
 
-@Service
-class StaffAdminService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) {
-    private val webClient = webClientBuilder.baseUrl("http://message-server").build()
+@Component
+class StaffAdminService(webClientBuilder: WebClient.Builder, baseUrl: String) :
+        BaseWebClient(webClientBuilder, baseUrl) {
+
+    @Autowired
+    constructor(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) :
+            this(webClientBuilder, "http://staff-admin")
 
     fun getStaffInfo(organizationId: Int, staffId: Long): Mono<StaffDto> {
         return webClient

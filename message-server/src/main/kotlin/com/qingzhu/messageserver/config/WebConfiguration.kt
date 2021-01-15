@@ -68,7 +68,7 @@ class WebConfiguration : WebFluxConfigurer {
                     }
                     "/conversation".nest {
                         // 创建新会话 分配机器人客服
-                        POST("/new", conversationStatusHandler::new)
+                        POST("/save", conversationStatusHandler::new)
                         // 根据客户 userId 查找会话
                         GET("/find-by-user-id", conversationStatusHandler::findByUserId)
                         // 结束会话

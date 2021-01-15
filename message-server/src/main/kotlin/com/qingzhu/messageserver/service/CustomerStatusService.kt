@@ -5,7 +5,6 @@ import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
 import com.hazelcast.query.impl.predicates.EqualPredicate
 import com.qingzhu.messageserver.domain.dto.CustomerBaseStatusDto
-import com.qingzhu.messageserver.domain.dto.CustomerDispatcherDto
 import com.qingzhu.messageserver.domain.entity.CustomerStatus
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -46,10 +45,9 @@ class CustomerStatusService(
         }
     }
 
-    fun findStaffIdOrShuntId(organizationId: Int, userId: Long): Mono<CustomerDispatcherDto> {
+    fun findStaffIdOrShuntId(organizationId: Int, userId: Long): Mono<CustomerStatus> {
         val statusMap = getStatusMap(organizationId)
         return Mono.justOrEmpty(statusMap[userId])
-                .map { CustomerDispatcherDto.fromCustomerStatus(it!!) }
     }
 
     fun findByUserId(organizationId: Int, userId: Long): Mono<CustomerStatus> {

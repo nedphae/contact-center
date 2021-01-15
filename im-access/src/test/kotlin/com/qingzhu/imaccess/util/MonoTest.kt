@@ -74,10 +74,34 @@ internal class MonoTest {
                 }
     }
 
+    private fun createCache(): Mono<Int> {
+        return Mono.create<Int> {
+            print("no cache: ")
+            it.success(1)
+        }.cache()
+    }
+
+    @Test
+    fun testCache() {
+        val cache = createCache()
+        cache.subscribe { println(it) }
+        cache.subscribe { print("cache?: "); println(it) }
+    }
+
     @Test
     fun testOnErrorResume() {
         Mono.just(1)
-                .map { it / 0 }
+                .doOnNext { println(it) }
+                .then(Mono.just(1).map { it / 0 })
+                .onErrorResume {
+                    Mono.empty<Int>()
+                }
+                .switchIfEmpty(Mono.just(2))
+                .subscribe(::println)
+
+
+        Mono.just(1)
+                .doOnNext { num -> Mono.just(num).map { it / 0 }.subscribe { println(it) } }
                 .onErrorResume {
                     Mono.empty<Int>()
                 }

@@ -45,7 +45,7 @@ class MessageService(
      */
     fun send(message: Mono<Message>): Mono<Message> {
         return message
-                .publishOn(Schedulers.parallel())
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap {
                     when (it.type) {
                         CreatorType.CUSTOMER -> customerStatusService.findByUserId(it.organizationId, it.to)

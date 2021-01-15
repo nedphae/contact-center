@@ -10,13 +10,15 @@ internal class FluxTest {
     @Test
     fun testThen() {
         val start: Int? = null
-        Mono.justOrEmpty(start)
+        Mono.create<Int> {
+            // it.success(start)
+        }
                 .doOnNext {
                     println(it)
                 }
-                .then(Mono.just(2))
+                .or(Mono.just(2))
                 .subscribe {
-                    println(it)
+                    println("subscribe:${it}")
                 }
     }
 
@@ -26,7 +28,7 @@ internal class FluxTest {
                 .empty<Int>()
                 .collectList()
                 .filter { it.isNotEmpty() }
-                .switchIfEmpty(Mono.just(listOf(5,6,7,8)))
+                .switchIfEmpty(Mono.just(listOf(5, 6, 7, 8)))
                 .subscribe {
                     println(it)
                 }

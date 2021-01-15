@@ -1,6 +1,7 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
 import com.qingzhu.staffadmin.staff.authority.StaffAuthority
+import com.qingzhu.staffadmin.staff.domain.AbstractAuditingEntity
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import java.time.LocalDateTime
@@ -27,7 +28,7 @@ data class Staff(
         // 所属分组
         // @ManyToOne
         var staffGroupId: Long
-) {
+) : AbstractAuditingEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // @Column(columnDefinition = "serial")
@@ -60,10 +61,4 @@ data class Staff(
 
     // 个性签名
     var personalizedSignature: String? = null
-
-    @CreatedDate
-    var createTime: LocalDateTime = LocalDateTime.now()
-
-    @LastModifiedDate
-    var updateTime: LocalDateTime = LocalDateTime.now()
 }

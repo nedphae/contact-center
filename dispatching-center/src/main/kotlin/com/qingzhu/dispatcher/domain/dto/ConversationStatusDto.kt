@@ -1,18 +1,42 @@
-package com.qingzhu.messageserver.domain.entity
+package com.qingzhu.dispatcher.domain.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.common.constant.NoArg
-import com.qingzhu.messageserver.domain.constant.*
+import com.qingzhu.common.message.getConversationSnowFlake
+import com.qingzhu.dispatcher.domain.constant.*
 import java.time.LocalDateTime
+
+/**
+ * 返回给用户的会话信息 / 排队信息
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class ConversationViewDto(
+        val id: Long?,
+        // 公司id
+        val organizationId: Int,
+        // 客服id
+        val staffId: Long?,
+        val userId: Long,
+        val nickName: String?,
+        // 0=客服正常会话  1=机器人会话
+        val interaction: Int?,
+        // 会话结束时间
+        val endTime: LocalDateTime?,
+        // 当前排队信息
+        val queue: Long?
+) {
+    constructor(organizationId: Int, userId: Long, queue: Long?) : this(null, organizationId,
+            null, userId, null, null, null, queue)
+}
 
 /**
  * 关联到客户状态
  */
 @NoArg
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class ConversationStatus(
+data class ConversationStatusDto(
         // 会话id 唯一 雪花
-        val id: Long,
+        val id: Long = getConversationSnowFlake().getNextSequenceId(),
         // 公司id
         val organizationId: Int,
         // 冗余部分数据
@@ -29,25 +53,25 @@ data class ConversationStatus(
         // 来源类型
         val fromType: FromType,
         // 列队时间
-        val inQueueTime: Long,
+        val inQueueTime: Long = 0,
         // 0=机器人会话, 1=客服正常会话
         val interaction: Int,
         // 0：正常会话.1(2)：离线留言，3：排队超时
-        val cType: ConversationType,
+        val cType: ConversationType = ConversationType.NORMAL,
         // 客服id
         val staffId: Long,
         // 客服名字 或为 "机器人"
         var nickName: String,
         // 会话开始时间
-        val startTime: LocalDateTime,
+        val startTime: LocalDateTime = LocalDateTime.now(),
         // 客户id
         val userId: Long,
         // vip 层级 0=非VIP用户
         val vipLevel: Int?,
         // 与上一次来访的时间差 <=0则忽略
-        val visitRange: Long = -1,
+        var visitRange: Long = -1,
         // 转人工类型
-        val transferType: TransferType?,
+        var transferType: TransferType? = null,
         // 转接来源的会话ID,0代表无转接会话
         val humanTransferSessionId: Long = 0,
         // 转接来源分流客服名称
@@ -59,7 +83,7 @@ data class ConversationStatus(
         // 客服是否邀请会话 true 代表客服邀请会话，false :代表非客服邀请会话
         val isStaffInvited: Boolean = false,
         // 会话发起方  1：访客，2：客服
-        val beginner: CreatorType
+        val beginner: CreatorType = CreatorType.CUSTOMER
 ) {
     // 关联会话id
     var relatedId: Long? = null;
@@ -123,4 +147,42 @@ data class ConversationStatus(
 
     // 会话中止方  1：访客，2：客服，3：系统
     var terminator: CreatorType? = null
+
+    companion object {
+        fun fromStaffAndCustomer(staffDto: StaffDto,
+                                 customerDispatcherDto: CustomerDispatcherDto): ConversationStatusDto {
+            return ConversationStatusDto(
+                    organizationId = staffDto.organizationId,
+                    staffId = staffDto.staffId,
+                    nickName = staffDto.nickName,
+                    userId = customerDispatcherDto.userId,
+                    fromGroupId = staffDto.groupId,
+                    fromShuntId = customerDispatcherDto.shuntId,
+                    fromIp = customerDispatcherDto.ip,
+                    fromPage = customerDispatcherDto.referrer,
+                    fromTitle = customerDispatcherDto.title,
+                    fromType = customerDispatcherDto.fromType,
+                    interaction = staffDto.staffType,
+                    vipLevel = customerDispatcherDto.vipLevel
+            )
+        }
+    }
+
+}
+
+/**
+ * 会话评价
+ */
+class Evaluate(
+        // 评价模型
+        var evaluationType: Int,
+        // evaluationType:(evaluation)=>  2:(100满意1不满意);
+        // 3(100满意50一般1不满意); 5(100非常满意75满意50一般25不满意1非常不满意)
+        // 否则未评价
+        var evaluation: Int,
+        // 评价内容
+        var evaluationRemark: String,
+        // 用户标记的解决状态，0=未选择 1=已解决 2=未解决
+        var userResolvedStatus: Int
+) {
 }

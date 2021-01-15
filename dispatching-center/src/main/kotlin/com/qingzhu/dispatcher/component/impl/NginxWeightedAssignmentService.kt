@@ -1,12 +1,12 @@
-package com.qingzhu.dispatcher.service.impl
+package com.qingzhu.dispatcher.component.impl
 
+import arrow.core.extensions.list.foldable.isNotEmpty
 import com.qingzhu.common.util.JsonUtils
 import com.qingzhu.dispatcher.domain.dto.StaffDispatcherDto
 import com.qingzhu.dispatcher.domain.entity.WeightInfo
-import com.qingzhu.dispatcher.service.MessageService
-import com.qingzhu.dispatcher.service.AssignmentInterface
+import com.qingzhu.dispatcher.component.MessageService
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * Nginx加权平均分配
  */
-@Service
+@Component
 class NginxWeightedAssignmentService(
         private val redisTemplate: RedisTemplate<String, String>,
         private val messageService: MessageService
@@ -28,14 +28,15 @@ class NginxWeightedAssignmentService(
         val redisMap = opsForHash.entries(key)
                 .mapValues { JsonUtils.objectMapper.readValue<WeightInfo>(it.value, WeightInfo::class.java) }
                 .toMutableMap()
-        val staffDispatcherDtoList = messageService.findIdleStaff(organizationId, shuntId)
-        return if (staffDispatcherDtoList.isNullOrEmpty()) {
-            Mono.empty()
-        } else {
-            val (map, weightInfo) = getByList(shuntId, staffDispatcherDtoList, redisMap)
-            opsForHash.putAll(key, map.mapValues { JsonUtils.toJson(it.value) })
-            Mono.justOrEmpty(weightInfo.get().staffId)
-        }
+        val flux = messageService.findIdleStaff(organizationId, shuntId)
+        return flux
+                .collectList()
+                .filter { it.isNotEmpty() }
+                .flatMap {
+                    val (map, weightInfo) = getByList(shuntId, it, redisMap)
+                    opsForHash.putAll(key, map.mapValues { JsonUtils.toJson(it.value) })
+                    Mono.justOrEmpty(weightInfo.get().staffId)
+                }
     }
 
     private fun getByWeighted(weightInfoList: List<WeightInfo>): Optional<WeightInfo> {

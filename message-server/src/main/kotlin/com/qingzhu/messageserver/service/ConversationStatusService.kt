@@ -4,8 +4,6 @@ import com.hazelcast.config.IndexType
 import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
 import com.hazelcast.query.impl.predicates.EqualPredicate
-import com.qingzhu.messageserver.domain.dto.ConversationEndDto
-import com.qingzhu.messageserver.domain.dto.ConversationStatusDto
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -38,13 +36,9 @@ class ConversationStatusService(
     /**
      * TODO 添加 EntryListener 到 IMap， 删除 entry 同时会删除该 userId 关联的会话和 redis zSet 消息
      */
-    fun endConversation(conversationEndDto: ConversationEndDto): Mono<ConversationStatus> {
-        val statusMap = getStatusMap(conversationEndDto.organizationId)
-        return Mono.justOrEmpty(statusMap[conversationEndDto.id])
-                .map {
-                    // 设置会话结束
-                    it!!.updateByEnd(conversationEndDto)
-                }
+    fun endConversation(conversationStatus: ConversationStatus): Mono<ConversationStatus> {
+        val statusMap = getStatusMap(conversationStatus.organizationId)
+        return Mono.justOrEmpty(statusMap[conversationStatus.id])
                 .doOnNext {
                     statusMap.put(it.id, it, 15, TimeUnit.MINUTES)
                     staffStatusService.removeCustomer(it.organizationId,
@@ -52,9 +46,8 @@ class ConversationStatusService(
                 }
     }
 
-    fun generate(conversationStatusDto: ConversationStatusDto): Mono<ConversationStatus> {
+    fun generate(conversationStatusDto: ConversationStatus): Mono<ConversationStatus> {
         return Mono.just(conversationStatusDto)
-                .map { it.toConversationStatus() }
                 .doOnNext { saveStatus(it) }
     }
 
