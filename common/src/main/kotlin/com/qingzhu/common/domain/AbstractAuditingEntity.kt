@@ -1,4 +1,4 @@
-package com.qingzhu.staffadmin.staff.domain
+package com.qingzhu.common.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.data.annotation.CreatedBy

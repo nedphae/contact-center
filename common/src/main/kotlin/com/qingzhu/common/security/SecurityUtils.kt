@@ -30,7 +30,10 @@ object SecurityUtils {
     /**
      * 根据 认证凭证[authentication] 获取用户名
      */
-    private fun extractPrincipal(authentication: Authentication): String? {
+    private fun extractPrincipal(authentication: Authentication?): String? {
+        if(authentication == null) {
+            return null;
+        }
         return when (authentication.principal) {
             is UserDetails -> {
                 val springSecurityUser = authentication.principal as UserDetails

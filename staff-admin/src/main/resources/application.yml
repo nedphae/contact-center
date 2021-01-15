@@ -50,6 +50,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  r2dbc:
+    url: r2dbc:postgresql://10.0.0.101:5432/postgres?currentSchema=staffadmin
+    username: postgres
+    password: 5CPKuFFTyZ
+    pool:
+      enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://10.0.0.101:5432/postgres?currentSchema=staffadmin

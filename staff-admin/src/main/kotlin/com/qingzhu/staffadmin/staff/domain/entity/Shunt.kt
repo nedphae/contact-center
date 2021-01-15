@@ -1,6 +1,6 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
-import com.qingzhu.staffadmin.staff.domain.AbstractAuditingEntity
+import com.qingzhu.common.domain.AbstractAuditingEntity
 import javax.persistence.*
 
 
@@ -24,9 +24,4 @@ data class Shunt(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
-
-    // 技能组
-    // @OneToMany(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "receptionist_group_id")
-    // lateinit var staffConfigList: MutableSet<StaffConfig>
 }

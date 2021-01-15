@@ -1,5 +1,6 @@
 package com.qingzhu.staffadmin.properties.domain.entity
 
+import com.qingzhu.common.domain.AbstractAuditingEntity
 import javax.persistence.*
 
 @Entity
@@ -18,4 +19,4 @@ data class Properties(
         var label: String?,
         // 是否启用
         var available: Boolean = true
-) : java.io.Serializable
+) : AbstractAuditingEntity()

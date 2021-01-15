@@ -14,13 +14,10 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(project(":common"))
 
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.apache.kafka:kafka-streams")
     implementation("org.springframework.cloud:spring-cloud-stream")
     implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka")
     implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka-streams")
-    implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     // implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
@@ -29,12 +26,7 @@ dependencies {
     /** k8s 依赖 **/
     implementation("com.hazelcast:hazelcast-kubernetes:2.2")
 
-    runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
-    testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.springframework.cloud:spring-cloud-starter-contract-verifier")
-    // testImplementation("org.springframework.cloud:spring-cloud-stream-test-support")
-    testImplementation("org.springframework.cloud:spring-cloud-stream")
 }

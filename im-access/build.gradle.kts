@@ -16,21 +16,14 @@ dependencies {
     implementation("org.antlr:antlr4-runtime:4.8")
     implementation("com.lmax:disruptor:3.3.6")
 
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("com.corundumstudio.socketio:netty-socketio:1.7.17")
     implementation("org.apache.kafka:kafka-streams")
     implementation("org.springframework.cloud:spring-cloud-stream")
     implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka")
     implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka-streams")
-    implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
-    runtimeOnly("org.postgresql:postgresql")
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
-    testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.springframework.cloud:spring-cloud-starter-contract-verifier")
-    // testImplementation("org.springframework.cloud:spring-cloud-stream-test-support")
 }

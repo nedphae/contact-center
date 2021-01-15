@@ -63,10 +63,6 @@ subprojects {
         implementation("io.arrow-kt:arrow-syntax:$arrowVersion")
         kapt("io.arrow-kt:arrow-meta:$arrowVersion")
 
-        // rxjava
-        implementation("io.reactivex.rxjava2:rxjava:2.2.14")
-        implementation("io.reactivex.rxjava2:rxkotlin:2.4.0")
-
         // jackson 依赖
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
@@ -76,8 +72,19 @@ subprojects {
         // spring 依赖
         implementation("org.springframework.boot:spring-boot-starter")
         implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+        // spring cloud
         implementation("org.springframework.cloud:spring-cloud-starter-loadbalancer")
+        implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
+
+        implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("org.springframework.boot:spring-boot-devtools")
+
+        // jpa postgresql
+        implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+        implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+        runtimeOnly("io.r2dbc:r2dbc-postgresql")
+        runtimeOnly("org.postgresql:postgresql")
 
         // 安全配置
         implementation("org.springframework.boot:spring-boot-starter-security")
@@ -87,6 +94,12 @@ subprojects {
         implementation("org.springframework.cloud:spring-cloud-starter-oauth2")
         implementation("org.springframework.cloud:spring-cloud-starter-security")
 
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("io.projectreactor:reactor-test")
+        testImplementation("org.springframework.cloud:spring-cloud-starter-contract-verifier")
+        // testImplementation("org.springframework.cloud:spring-cloud-stream-test-support")
+        testImplementation("org.springframework.cloud:spring-cloud-stream")
+
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         kapt("org.springframework.boot:spring-boot-configuration-processor")
     }
@@ -94,6 +107,8 @@ subprojects {
     dependencyManagement {
         imports {
             mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+            mavenBom("org.springframework.data:spring-data-bom:2020.0.3")
+            // mavenBom("io.r2dbc:r2dbc-bom:Arabba-SR8")
         }
     }
 

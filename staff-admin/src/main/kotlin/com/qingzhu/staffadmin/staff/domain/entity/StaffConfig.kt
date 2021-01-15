@@ -1,9 +1,6 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
-import com.qingzhu.staffadmin.staff.domain.AbstractAuditingEntity
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedDate
-import java.time.LocalDateTime
+import com.qingzhu.common.domain.AbstractAuditingEntity
 import javax.persistence.*
 
 @Entity
@@ -24,10 +21,4 @@ data class StaffConfig(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // @Column(columnDefinition = "serial")
     var id: Long? = null
-
-    @CreatedDate
-    var createTime: LocalDateTime = LocalDateTime.now()
-
-    @LastModifiedDate
-    var updateTime: LocalDateTime = LocalDateTime.now()
 }

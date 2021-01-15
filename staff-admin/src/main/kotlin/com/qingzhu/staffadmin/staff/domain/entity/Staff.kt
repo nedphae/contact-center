@@ -1,10 +1,7 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
+import com.qingzhu.common.domain.AbstractAuditingEntity
 import com.qingzhu.staffadmin.staff.authority.StaffAuthority
-import com.qingzhu.staffadmin.staff.domain.AbstractAuditingEntity
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedDate
-import java.time.LocalDateTime
 import javax.persistence.*
 
 /**

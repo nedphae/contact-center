@@ -1,6 +1,6 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
-import com.qingzhu.staffadmin.staff.domain.AbstractAuditingEntity
+import com.qingzhu.common.domain.AbstractAuditingEntity
 import javax.persistence.*
 
 /**

@@ -1,6 +1,7 @@
 plugins {
     id("org.springframework.boot")
     id("io.spring.dependency-management")
+    id("org.jetbrains.kotlin.plugin.noarg")
     kotlin("jvm")
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
@@ -13,8 +14,6 @@ version = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation("org.apache.commons:commons-lang3:3.9")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks {
