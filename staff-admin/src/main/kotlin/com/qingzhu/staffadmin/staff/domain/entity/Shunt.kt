@@ -4,7 +4,6 @@ import com.qingzhu.common.domain.AbstractAuditingEntity
 import org.springframework.data.relational.core.mapping.Table as RTable
 import javax.persistence.*
 
-
 /**
  * 接待组 aka 技能组
  */
@@ -24,6 +23,5 @@ data class Shunt(
         val code: String
 ) : AbstractAuditingEntity() {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 }

@@ -4,10 +4,8 @@ import com.qingzhu.common.security.password.getBCryptPasswordEncoder
 import com.qingzhu.staffadmin.staff.authority.StaffAuthority
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
-import com.qingzhu.staffadmin.staff.repository.reactive.ReactiveStaffGroupRepository
-import com.qingzhu.staffadmin.staff.repository.reactive.ReactiveStaffRepository
-import com.qingzhu.staffadmin.staff.repository.jpa.StaffGroupRepository
-import com.qingzhu.staffadmin.staff.repository.jpa.StaffRepository
+import com.qingzhu.staffadmin.staff.repository.ReactiveStaffGroupRepository
+import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -33,12 +31,6 @@ class StaffAdminApplicationTests {
 
     @Autowired
     private lateinit var staffGroupRepositoryR: ReactiveStaffGroupRepository
-
-    @Autowired
-    private lateinit var staffRepository: StaffRepository
-
-    @Autowired
-    private lateinit var staffGroupRepository: StaffGroupRepository
 
     /**
      * 插入预设数据
@@ -74,29 +66,6 @@ class StaffAdminApplicationTests {
                 .expectNext(staff)
                 .expectErrorMessage("boom")
                 .verify()
-    }
-
-    @Test
-    fun testInsertStaff() {
-        val staffGroup = StaffGroup(9491).also {
-            it.groupName = "测试"
-        }
-
-        if (!staffGroupRepository.findDistinctTopByGroupName(staffGroup.groupName).isPresent) {
-            staffGroupRepository.save(staffGroup)
-        }
-
-        val staff = Staff(
-                organizationId = 9491,
-                username = "admin",
-                // 123456
-                password = "$2a$10\$PziqdyLYIKnxXd7192XBh.Kl9HpHcm4CEERw8M1xeyRunl3yZbY0m",
-                role = StaffAuthority.ROLE_ADMIN,
-                staffGroupId = staffGroup.id ?: 0
-        )
-        if (staffRepository.findFirstByOrganizationIdAndUsername(staff.organizationId, staff.username).isPresent.not()) {
-            staffRepository.save(staff)
-        }
     }
 
 }

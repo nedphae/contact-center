@@ -1,4 +1,4 @@
-package com.qingzhu.staffadmin.staff.repository.reactive
+package com.qingzhu.staffadmin.staff.repository
 
 import com.qingzhu.staffadmin.staff.domain.entity.StaffConfig
 import org.springframework.data.repository.reactive.ReactiveSortingRepository

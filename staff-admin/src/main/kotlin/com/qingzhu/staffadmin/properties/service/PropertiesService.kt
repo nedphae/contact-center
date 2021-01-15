@@ -5,7 +5,7 @@ import arrow.fx.extensions.fx
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsFactory
 import com.qingzhu.staffadmin.properties.domain.entity.Properties
-import com.qingzhu.staffadmin.properties.repository.reactive.ReactivePropertiesRepository
+import com.qingzhu.staffadmin.properties.repository.ReactivePropertiesRepository
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Service
