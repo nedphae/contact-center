@@ -9,4 +9,7 @@ interface ReactiveStaffConfigRepository : ReactiveSortingRepository<StaffConfig,
     fun findAllByOrganizationId(organizationId: Int): Flux<StaffConfig>
     fun findAllByOrganizationIdAndStaffId(organizationId: Int, staffId: Long): Flux<StaffConfig>
 }
-interface StaffConfigRepository : JpaRepository<StaffConfig, Long>
+interface StaffConfigRepository : JpaRepository<StaffConfig, Long> {
+    fun findAllByOrganizationId(organizationId: Int): List<StaffConfig>
+    fun findAllByOrganizationIdAndStaffId(organizationId: Int, staffId: Long): List<StaffConfig>
+}

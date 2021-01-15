@@ -6,6 +6,8 @@ import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffGroupRepository
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
+import com.qingzhu.staffadmin.staff.repository.StaffGroupRepository
+import com.qingzhu.staffadmin.staff.repository.StaffRepository
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,21 +29,27 @@ class StaffAdminApplicationTests {
     }
 
     @Autowired
-    private lateinit var staffRepository: ReactiveStaffRepository
+    private lateinit var staffRepositoryR: ReactiveStaffRepository
 
     @Autowired
-    private lateinit var staffGroupRepository: ReactiveStaffGroupRepository
+    private lateinit var staffGroupRepositoryR: ReactiveStaffGroupRepository
+
+    @Autowired
+    private lateinit var staffRepository: StaffRepository
+
+    @Autowired
+    private lateinit var staffGroupRepository: StaffGroupRepository
 
     /**
      * 插入预设数据
      */
     @Test
-    fun testInsertStaff() {
+    fun testInsertStaffR() {
         val staffGroup = StaffGroup(9491).also {
             it.groupName = "测试"
         }
-        val groupSave = staffGroupRepository.findDistinctTopByGroupName(staffGroup.groupName)
-                .switchIfEmpty(staffGroupRepository.save(staffGroup))
+        val groupSave = staffGroupRepositoryR.findDistinctTopByGroupName(staffGroup.groupName)
+                .switchIfEmpty(staffGroupRepositoryR.save(staffGroup))
 
         StepVerifier.create(groupSave)
                 .expectNext(staffGroup)
@@ -59,13 +67,36 @@ class StaffAdminApplicationTests {
 
         staff.realName = "新之助"
         staff.nickName = "蜡笔小新"
-        val staffSave = staffRepository.findFirstByOrganizationIdAndUsername(staff.organizationId, staff.username)
-                .switchIfEmpty(staffRepository.save(staff))
+        val staffSave = staffRepositoryR.findFirstByOrganizationIdAndUsername(staff.organizationId, staff.username)
+                .switchIfEmpty(staffRepositoryR.save(staff))
 
         StepVerifier.create(staffSave)
                 .expectNext(staff)
                 .expectErrorMessage("boom")
                 .verify()
+    }
+
+    @Test
+    fun testInsertStaff() {
+        val staffGroup = StaffGroup(9491).also {
+            it.groupName = "测试"
+        }
+
+        if (!staffGroupRepository.findDistinctTopByGroupName(staffGroup.groupName).isPresent) {
+            staffGroupRepository.save(staffGroup)
+        }
+
+        val staff = Staff(
+                organizationId = 9491,
+                username = "admin",
+                // 123456
+                password = "$2a$10\$PziqdyLYIKnxXd7192XBh.Kl9HpHcm4CEERw8M1xeyRunl3yZbY0m",
+                role = StaffAuthority.ROLE_ADMIN,
+                staffGroupId = staffGroup.id ?: 0
+        )
+        if (staffRepository.findFirstByOrganizationIdAndUsername(staff.organizationId, staff.username).isPresent.not()) {
+            staffRepository.save(staff)
+        }
     }
 
 }

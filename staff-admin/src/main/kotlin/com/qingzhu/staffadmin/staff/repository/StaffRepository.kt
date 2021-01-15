@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.reactive.ReactiveSortingRepository
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
+import java.util.*
 
 @Repository
 interface ReactiveStaffRepository : ReactiveSortingRepository<Staff, Long> {
@@ -12,4 +13,6 @@ interface ReactiveStaffRepository : ReactiveSortingRepository<Staff, Long> {
 }
 
 @Repository
-interface StaffRepository : JpaRepository<Staff, Long>
+interface StaffRepository : JpaRepository<Staff, Long> {
+    fun findFirstByOrganizationIdAndUsername(organizationId: Int, username: String): Optional<Staff>
+}
