@@ -31,6 +31,8 @@ CREATE INDEX idx_shunt_class ON staffadmin.shunt USING btree (shunt_class_id);
  */
 @Table
 data class Shunt(
+        @Id
+        var id: Long? = null,
         // 公司id
         val organizationId: Int,
         // 接待组 名称
@@ -40,7 +42,4 @@ data class Shunt(
         val shuntClassId: Long,
         // 接待组范围代码
         val code: String
-) : AbstractAuditingEntity() {
-    @Id
-    var id: Long? = null
-}
+) : AbstractAuditingEntity()

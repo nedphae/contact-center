@@ -13,6 +13,8 @@ import org.springframework.data.relational.core.mapping.Table
 
 @Table
 data class Staff(
+        @Id
+        var id: Long? = null,
         // 公司id
         val organizationId: Int,
         // 用户名
@@ -23,36 +25,24 @@ data class Staff(
         var role: StaffAuthority,
         // 所属分组
         // @ManyToOne
-        var staffGroupId: Long
-) : AbstractAuditingEntity() {
-    @Id
-    var id: Long? = null
-
-    // 实名
-    lateinit var realName: String
-
-    // 昵称
-    lateinit var nickName: String
-
-    // 同时接待量（默认设置为8）
-    var simultaneousService: Int = 8
-
-    // 工单
-    // 每日上限
-    var maxTicketPerDay: Int = 999
-
-    // 总上限
-    var maxTicketAllTime: Int = 999
-
-    // 是否是机器人 0 机器人， 1人工
-    var staffType: Int = 1
-
-    // 性别
-    var gender: Int = 0
-
-    // 手机
-    var mobilePhone: String? = null
-
-    // 个性签名
-    var personalizedSignature: String? = null
-}
+        var staffGroupId: Long,
+        // 实名
+        var realName: String,
+        // 昵称
+        var nickName: String,
+        // 同时接待量（默认设置为8）
+        var simultaneousService: Int = 8,
+        // 工单
+        // 每日上限
+        var maxTicketPerDay: Int = 999,
+        // 总上限
+        var maxTicketAllTime: Int = 999,
+        // 是否是机器人 0 机器人， 1人工
+        var staffType: Int = 1,
+        // 性别
+        var gender: Int = 0,
+        // 手机
+        var mobilePhone: String? = null,
+        // 个性签名
+        var personalizedSignature: String? = null
+) : AbstractAuditingEntity()

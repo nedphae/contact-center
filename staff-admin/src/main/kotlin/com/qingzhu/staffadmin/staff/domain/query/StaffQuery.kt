@@ -19,7 +19,9 @@ data class StaffQuery(
         @field: Size(message = "用户角色不能为空", min = 1)
         val role: String,
         @field: NotNull(message = "用户分组不能为空")
-        val groupId: Long
+        val groupId: Long,
+        val realName: String,
+        val nickName: String
 ) {
     fun toCustomerServiceRepresentative(): Staff {
         return Staff(
@@ -27,7 +29,9 @@ data class StaffQuery(
                 username = username,
                 password = getBCryptPasswordEncoder().encode(password),
                 role = StaffAuthority.valueOf(role),
-                staffGroupId = groupId
+                staffGroupId = groupId,
+                realName = realName,
+                nickName = nickName
         )
     }
 }

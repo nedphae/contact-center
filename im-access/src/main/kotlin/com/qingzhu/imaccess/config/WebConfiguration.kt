@@ -23,7 +23,7 @@ class WebConfiguration : WebFluxConfigurer {
     @Bean
     fun handlerMapping(): HandlerMapping {
         val map = mapOf("/echo" to EchoHandler(), "/test" to EchoHandler())
-        val order = -1 // before annotated controllers
+        val order = 0 // before annotated controllers
 
         return SimpleUrlHandlerMapping(map, order)
     }

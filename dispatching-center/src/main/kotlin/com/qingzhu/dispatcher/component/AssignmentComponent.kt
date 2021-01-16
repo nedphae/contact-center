@@ -26,7 +26,6 @@ class AssignmentComponent(
     fun getCustomerDispatcherWithCache(organizationId: Int, userId: Long): Mono<CustomerDispatcherDto> {
         return messageService.findStaffIdOrShuntIdOfCustomer(organizationId, userId)
                 .cache()
-                .filter { it.shuntId != -1L }
     }
 
     /**

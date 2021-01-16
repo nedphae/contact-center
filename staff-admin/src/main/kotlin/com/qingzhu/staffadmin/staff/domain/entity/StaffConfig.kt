@@ -6,6 +6,8 @@ import org.springframework.data.relational.core.mapping.Table
 
 @Table
 data class StaffConfig(
+        @Id
+        var id: Long? = null,
         // 公司id
         val organizationId: Int,
         // 配置的客服 (每个客服可以有多个配置)
@@ -15,7 +17,4 @@ data class StaffConfig(
         val shuntId: Long,
         // 配置优先级
         var priority: Int
-) : AbstractAuditingEntity() {
-    @Id
-    var id: Long? = null
-}
+) : AbstractAuditingEntity()

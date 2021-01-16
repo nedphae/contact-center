@@ -45,7 +45,7 @@ data class ConversationStatus(
         // vip 层级 0=非VIP用户
         val vipLevel: Int?,
         // 与上一次来访的时间差 <=0则忽略
-        val visitRange: Long = -1,
+        val visitRange: Long = 0,
         // 转人工类型
         val transferType: TransferType?,
         // 转接来源的会话ID,0代表无转接会话

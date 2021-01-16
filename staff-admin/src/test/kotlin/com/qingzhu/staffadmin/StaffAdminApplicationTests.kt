@@ -37,15 +37,13 @@ class StaffAdminApplicationTests {
      */
     @Test
     fun testInsertStaff() {
-        val staffGroup = StaffGroup(9491).also {
-            it.groupName = "测试"
-        }
+        val staffGroup = StaffGroup(null, 9491, groupName = "测试")
         val groupSave = staffGroupRepositoryR.findDistinctTopByGroupName(staffGroup.groupName)
                 .switchIfEmpty(staffGroupRepositoryR.save(staffGroup))
 
         StepVerifier.create(groupSave)
                 .consumeNextWith {
-                    it.groupName == "测试"
+                    it.groupName === "测试"
                 }
                 .verifyComplete()
 
@@ -55,17 +53,16 @@ class StaffAdminApplicationTests {
                 // 123456
                 password = getBCryptPasswordEncoder().encode("123456"),
                 role = StaffAuthority.ROLE_ADMIN,
-                staffGroupId = staffGroup.id ?: 0
+                staffGroupId = staffGroup.id ?: 0,
+                realName = "新之助",
+                nickName = "蜡笔小新"
         )
-
-        staff.realName = "新之助"
-        staff.nickName = "蜡笔小新"
         val staffSave = staffRepositoryR.findFirstByOrganizationIdAndUsername(staff.organizationId, staff.username)
                 .switchIfEmpty(staffRepositoryR.save(staff))
 
         StepVerifier.create(staffSave)
                 .consumeNextWith {
-                    it.username == "admin"
+                    it.username === "admin"
                 }
                 .verifyComplete()
     }

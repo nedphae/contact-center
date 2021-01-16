@@ -7,7 +7,7 @@ import org.mapstruct.factory.Mappers
 
 data class InnerUser(
         val organizationId: Int,
-        val id: Long,
+        val id: Long = 0,
         val username: String,
         var password: String,
         var role: String

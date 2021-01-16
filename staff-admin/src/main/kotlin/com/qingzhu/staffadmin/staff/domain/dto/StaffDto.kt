@@ -18,7 +18,7 @@ data class StaffDto(
         fun fromStaff(staff: Staff): StaffDto {
             return StaffDto(
                     organizationId = staff.organizationId,
-                    staffId = staff.id ?: -1,
+                    staffId = staff.id!!,
                     groupId = staff.staffGroupId,
                     username = staff.username,
                     realName = staff.realName,
