@@ -1,16 +1,14 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
 import com.qingzhu.common.domain.AbstractAuditingEntity
-import org.springframework.data.relational.core.mapping.Table as RTable
-import javax.persistence.*
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Table
 
 /**
  * 技能组分类
  */
-@Entity
-@Table(indexes = [Index(columnList = "organizationId"),
-    Index(columnList = "catalogue")])
-@RTable
+
+@Table
 data class ShuntClass(
         // 公司id
         val organizationId: Int,
@@ -20,6 +18,5 @@ data class ShuntClass(
         val catalogue: Long
 ) : AbstractAuditingEntity() {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 }

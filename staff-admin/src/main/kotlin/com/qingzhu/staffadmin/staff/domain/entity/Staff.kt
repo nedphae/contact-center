@@ -2,19 +2,16 @@ package com.qingzhu.staffadmin.staff.domain.entity
 
 import com.qingzhu.common.domain.AbstractAuditingEntity
 import com.qingzhu.staffadmin.staff.authority.StaffAuthority
-import org.springframework.data.relational.core.mapping.Table as RTable
-import javax.persistence.*
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Table
 
 /**
  * 客服登录用户
  * 替换现有系统的 user 用户表，
  * 使用 OAuth2 做用户认证
  */
-@Entity
-@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["organizationId", "username"])],
-        indexes = [Index(columnList = "organizationId"),
-            Index(columnList = "username"), Index(columnList = "staffGroupId")])
-@RTable
+
+@Table
 data class Staff(
         // 公司id
         val organizationId: Int,
@@ -29,8 +26,6 @@ data class Staff(
         var staffGroupId: Long
 ) : AbstractAuditingEntity() {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // @Column(columnDefinition = "serial")
     var id: Long? = null
 
     // 实名
@@ -50,7 +45,7 @@ data class Staff(
     var maxTicketAllTime: Int = 999
 
     // 是否是机器人 0 机器人， 1人工
-    val staffType: Int = 1
+    var staffType: Int = 1
 
     // 性别
     var gender: Int = 0

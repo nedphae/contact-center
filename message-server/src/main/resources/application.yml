@@ -12,14 +12,12 @@ spring:
     password: test123
     timeout: 5000
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://10.0.0.101:5432/postgres?currentSchema=message
+  r2dbc:
+    url: r2dbc:postgresql://10.0.0.101:5432/postgres?currentSchema=message
     username: postgres
     password: 5CPKuFFTyZ
+    pool:
+      enabled: true
 
   # security:
   #   oauth2:

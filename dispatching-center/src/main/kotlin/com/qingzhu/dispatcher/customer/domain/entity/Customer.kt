@@ -1,11 +1,13 @@
 package com.qingzhu.dispatcher.customer.domain.entity
 
-import javax.persistence.*
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Table
 
-@Entity
-@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["organizationId", "uid"])],
-        indexes = [Index(columnList = "organizationId"),
-            Index(columnList = "uid"), Index(columnList = "mobile")])
+// @Entity
+// @Table(uniqueConstraints = [UniqueConstraint(columnNames = ["organizationId", "uid"])],
+//         indexes = [Index(columnList = "organizationId"),
+//             Index(columnList = "uid"), Index(columnList = "mobile")])
+@Table
 data class Customer(
         // 公司id
         val organizationId: Int,
@@ -25,7 +27,5 @@ data class Customer(
         var vipLevel: Int?
 ) {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // @Column(columnDefinition = "serial")
     var id: Long? = null
 }

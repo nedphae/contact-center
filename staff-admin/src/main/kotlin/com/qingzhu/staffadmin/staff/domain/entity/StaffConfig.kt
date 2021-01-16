@@ -1,13 +1,10 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
 import com.qingzhu.common.domain.AbstractAuditingEntity
-import org.springframework.data.relational.core.mapping.Table as RTable
-import javax.persistence.*
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Table
 
-@Entity
-@Table(indexes = [Index(columnList = "organizationId"),
-    Index(columnList = "staffId"), Index(columnList = "shuntId")])
-@RTable
+@Table
 data class StaffConfig(
         // 公司id
         val organizationId: Int,
@@ -20,7 +17,5 @@ data class StaffConfig(
         var priority: Int
 ) : AbstractAuditingEntity() {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // @Column(columnDefinition = "serial")
     var id: Long? = null
 }

@@ -8,10 +8,6 @@ server:
 spring:
   application:
     name: dispatching-center
-  data:
-    jpa:
-      repositories:
-        enabled: true
   cloud:
     inetutils:
       ignored-interfaces:
@@ -29,12 +25,21 @@ spring:
       ribbon:
         enabled: false
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://10.0.0.101:5432/postgres?currentSchema=dispathcer
+  r2dbc:
+    url: r2dbc:postgresql://10.0.0.101:5432/postgres?currentSchema=dispathcer
     username: postgres
     password: 5CPKuFFTyZ
+    pool:
+      enabled: true
+
+  security:
+    oauth2:
+      client:
+        provider:
+          authProvider:
+            token-uri: http://oauth2-auth-server/oauth/token
+        registration:
+          authProvider:
+            client-id: inner_client
+            client-secret: test_secret
+            authorization-grant-type: client_credentials

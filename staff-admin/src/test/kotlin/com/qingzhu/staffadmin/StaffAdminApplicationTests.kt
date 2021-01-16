@@ -36,7 +36,7 @@ class StaffAdminApplicationTests {
      * 插入预设数据
      */
     @Test
-    fun testInsertStaffR() {
+    fun testInsertStaff() {
         val staffGroup = StaffGroup(9491).also {
             it.groupName = "测试"
         }
@@ -44,9 +44,10 @@ class StaffAdminApplicationTests {
                 .switchIfEmpty(staffGroupRepositoryR.save(staffGroup))
 
         StepVerifier.create(groupSave)
-                .expectNext(staffGroup)
-                .expectErrorMessage("boom")
-                .verify()
+                .consumeNextWith {
+                    it.groupName == "测试"
+                }
+                .verifyComplete()
 
         val staff = Staff(
                 organizationId = 9491,
@@ -63,9 +64,10 @@ class StaffAdminApplicationTests {
                 .switchIfEmpty(staffRepositoryR.save(staff))
 
         StepVerifier.create(staffSave)
-                .expectNext(staff)
-                .expectErrorMessage("boom")
-                .verify()
+                .consumeNextWith {
+                    it.username == "admin"
+                }
+                .verifyComplete()
     }
 
 }

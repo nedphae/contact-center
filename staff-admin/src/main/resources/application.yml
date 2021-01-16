@@ -51,8 +51,7 @@ spring:
     username: postgres
     password: 5CPKuFFTyZ
     pool:
-      enabled: false
-
+      enabled: true
 
   security:
     oauth2:

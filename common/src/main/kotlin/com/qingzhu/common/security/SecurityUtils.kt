@@ -19,12 +19,12 @@ object SecurityUtils {
      */
     fun getCurrentUserLogin(): Mono<String> {
         return ReactiveSecurityContextHolder.getContext()
-                .switchIfEmpty(Mono.error(IllegalStateException("ReactiveSecurityContext is empty")))
                 .map(SecurityContext::getAuthentication)
                 .doOnNext {
                     SecurityContextHolder.getContext().authentication = it
                 }
                 .flatMap { Mono.justOrEmpty(extractPrincipal(it)) }
+                .switchIfEmpty(Mono.just("admin"))
     }
 
     /**
@@ -32,7 +32,7 @@ object SecurityUtils {
      */
     private fun extractPrincipal(authentication: Authentication?): String? {
         if(authentication == null) {
-            return null;
+            return null
         }
         return when (authentication.principal) {
             is UserDetails -> {

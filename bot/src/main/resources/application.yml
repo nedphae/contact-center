@@ -21,15 +21,12 @@ spring:
       repositories:
         enabled: true
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://10.0.0.101:5432/postgres?currentSchema=bot
+  r2dbc:
+    url: r2dbc:postgresql://10.0.0.101:5432/postgres?currentSchema=bot
     username: postgres
     password: 5CPKuFFTyZ
+    pool:
+      enabled: true
 
   elasticsearch:
     rest:
