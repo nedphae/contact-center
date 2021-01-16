@@ -24,7 +24,8 @@ object SecurityUtils {
                     SecurityContextHolder.getContext().authentication = it
                 }
                 .flatMap { Mono.justOrEmpty(extractPrincipal(it)) }
-                .switchIfEmpty(Mono.just("admin"))
+                // 内部定时器调用时没有用户 所以默认 sys
+                .switchIfEmpty(Mono.just("sys"))
     }
 
     /**

@@ -58,7 +58,7 @@ class SecurityConfiguration {
                     decoder.setJwtValidator(delegatingOAuth2TokenValidator)
                     decoder.setClaimSetConverter {
                         val convertedClaims = delegate.convert(it)
-                        val username = "anonymous_user"
+                        val username = "sys"
                         convertedClaims!!["sub"] = username
                         convertedClaims
                     }

@@ -13,7 +13,6 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 import org.springframework.security.web.server.SecurityWebFilterChain
 import java.math.BigInteger
 import java.security.KeyFactory
-import java.security.KeyPair
 import java.security.PublicKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.RSAPublicKeySpec
@@ -55,7 +54,7 @@ class SecurityConfiguration {
                     decoder.setJwtValidator(delegatingOAuth2TokenValidator)
                     decoder.setClaimSetConverter {
                         val convertedClaims = delegate.convert(it)
-                        val username = "anonymous_user"
+                        val username = "sys"
                         convertedClaims!!["sub"] = username
                         convertedClaims
                     }

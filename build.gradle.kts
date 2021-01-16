@@ -12,6 +12,7 @@ plugins {
     kotlin("plugin.jpa") version "1.4.21" apply false
     kotlin("kapt") version "1.4.21"
     id("org.jetbrains.dokka") version "1.4.20"
+    id("net.ltgt.apt") version "0.15"
 }
 
 allprojects {
@@ -32,6 +33,7 @@ subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-kapt")
     apply(plugin = "org.jetbrains.dokka")
+    apply(plugin = "net.ltgt.apt-idea")
 
     java.sourceCompatibility = JavaVersion.VERSION_11
 
@@ -96,7 +98,11 @@ subprojects {
         // testImplementation("org.springframework.cloud:spring-cloud-stream-test-support")
         testImplementation("org.springframework.cloud:spring-cloud-stream")
 
-        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+        // mapstruct
+        implementation("org.mapstruct:mapstruct:1.4.1.Final")
+        kapt("org.mapstruct:mapstruct-processor:1.4.1.Final")
+        kaptTest("org.mapstruct:mapstruct-processor:1.4.1.Final")
+
         kapt("org.springframework.boot:spring-boot-configuration-processor")
     }
 
