@@ -92,18 +92,20 @@ subprojects {
         implementation("org.springframework.security:spring-security-oauth2-client")
         implementation("org.springframework.security:spring-security-oauth2-jose")
 
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
-        testImplementation("io.projectreactor:reactor-test")
-        testImplementation("org.springframework.cloud:spring-cloud-starter-contract-verifier")
-        // testImplementation("org.springframework.cloud:spring-cloud-stream-test-support")
-        testImplementation("org.springframework.cloud:spring-cloud-stream")
-
         // mapstruct
         implementation("org.mapstruct:mapstruct:1.4.1.Final")
         kapt("org.mapstruct:mapstruct-processor:1.4.1.Final")
         kaptTest("org.mapstruct:mapstruct-processor:1.4.1.Final")
 
         kapt("org.springframework.boot:spring-boot-configuration-processor")
+
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("io.projectreactor:reactor-test")
+        testImplementation("org.springframework.cloud:spring-cloud-starter-contract-verifier")
+        // testImplementation("org.springframework.cloud:spring-cloud-stream-test-support")
+        testImplementation("org.springframework.cloud:spring-cloud-stream")
+        testImplementation("com.squareup.okhttp3:mockwebserver")
+        // testRuntimeOnly("com.squareup.okhttp3:mockwebserver3-junit5:4.9.0")
     }
 
     dependencyManagement {

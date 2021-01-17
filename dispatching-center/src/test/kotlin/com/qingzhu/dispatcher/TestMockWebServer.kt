@@ -1,6 +1,5 @@
-package com.qingzhu.dispatcher.service
+package com.qingzhu.dispatcher
 
-import com.qingzhu.dispatcher.DispatcherApplicationTests
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -8,32 +7,16 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.data.redis.core.ReactiveListOperations
-import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
+import reactor.test.StepVerifier
 
-internal class AssignmentServiceTest : DispatcherApplicationTests() {
+internal class TestMockWebServer {
     private lateinit var server: MockWebServer
     private lateinit var webClient: WebClient
 
-    // Mock redis
-    @MockBean
-    private lateinit var redisTemplate: ReactiveRedisTemplate<String, String>
-
-    @MockBean
-    private lateinit var listOps: ReactiveListOperations<String, String>
-
-    private lateinit var assignmentService: AssignmentService
-
     @BeforeEach
     fun statMockServer() {
-        // mock redis
-        Mockito.`when`(redisTemplate.opsForList()).thenReturn(listOps)
-        Mockito.doNothing().`when`(listOps).leftPush(anyString(), anyString())
-
         this.server = MockWebServer()
         this.webClient = WebClient
                 .builder()
@@ -46,30 +29,30 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
         server.shutdown()
     }
 
-    /**
-     * set [MockWebServer] response with [Dispatcher]
-     */
-    fun prepareResponse() {
+    @Test
+    fun testServer() {
         this.server.dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 val response = MockResponse()
                         .setHeader("Content-Type", "application/json")
                         .setResponseCode(200)
                 return when (request.path) {
-                    "/status/staff/idle" -> {
-                        response.setBody("")
+                    "/test" -> {
+                        response.setBody("good test")
                     }
                     else -> MockResponse().setResponseCode(404)
                 }
             }
         }
-    }
 
-    @Test
-    fun assignmentAuto() {
-    }
+        val result = this.webClient
+                .get()
+                .uri("/test")
+                .retrieve()
+                .bodyToMono<String>()
 
-    @Test
-    fun assignmentStaff() {
+        StepVerifier.create(result)
+                .expectNext("good test")
+                .verifyComplete()
     }
 }

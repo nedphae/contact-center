@@ -6,6 +6,7 @@ import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffGroupRepository
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -32,18 +33,28 @@ class StaffAdminApplicationTests {
     @Autowired
     private lateinit var staffGroupRepositoryR: ReactiveStaffGroupRepository
 
+    @Test
+    fun testUpdate() {
+        val update = staffGroupRepositoryR.findById(1)
+                .doOnNext { it.groupName = "客服组" }
+                .flatMap(this.staffGroupRepositoryR::save)
+        StepVerifier.create(update)
+                .consumeNextWith { assertEquals("客服组", it.groupName) }
+                .verifyComplete()
+    }
+
     /**
      * 插入预设数据
      */
     @Test
     fun testInsertStaff() {
-        val staffGroup = StaffGroup(null, 9491, groupName = "测试")
+        val staffGroup = StaffGroup(null, 9491, groupName = "客服组")
         val groupSave = staffGroupRepositoryR.findDistinctTopByGroupName(staffGroup.groupName)
                 .switchIfEmpty(staffGroupRepositoryR.save(staffGroup))
 
         StepVerifier.create(groupSave)
                 .consumeNextWith {
-                    it.groupName === "测试"
+                    it.groupName === "客服组"
                 }
                 .verifyComplete()
 

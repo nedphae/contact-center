@@ -15,5 +15,5 @@ data class StaffGroup(
         // 公司id
         val organizationId: Int,
         // 部门名称
-        val groupName: String,
+        var groupName: String,
 ) : AbstractAuditingEntity()
