@@ -3,8 +3,8 @@ package com.qingzhu.imaccess.parser
 import com.qingzhu.common.domain.shared.AbstractSpecification
 import com.qingzhu.common.domain.shared.Specification
 import com.qingzhu.imaccess.util.ParserUtils
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 
 /**
  * 服务器的语法分析

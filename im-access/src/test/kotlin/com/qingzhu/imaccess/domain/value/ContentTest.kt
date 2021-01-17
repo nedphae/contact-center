@@ -3,7 +3,7 @@ package com.qingzhu.imaccess.domain.value
 import com.qingzhu.common.util.toJson
 import com.qingzhu.imaccess.domain.constant.CreatorType
 import com.qingzhu.imaccess.domain.constant.MessageType
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Flux
 

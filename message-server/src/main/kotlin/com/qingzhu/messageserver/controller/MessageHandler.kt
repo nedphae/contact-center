@@ -4,8 +4,10 @@ import com.qingzhu.messageserver.domain.dto.Message
 import com.qingzhu.messageserver.service.MessageService
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.reactive.function.server.*
+import org.springframework.web.reactive.function.server.ServerRequest
+import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
+import org.springframework.web.reactive.function.server.bodyToMono
 
 /**
  * 消息控制器

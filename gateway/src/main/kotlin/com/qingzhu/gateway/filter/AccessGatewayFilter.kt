@@ -25,7 +25,7 @@ class AccessGatewayFilter(
      */
     override fun filter(exchange: ServerWebExchange, chain: GatewayFilterChain): Mono<Void> {
         val ignoreUrls = listOf("/oauth/token", "/socket.io/")
-        if (ignoreUrls.contains(exchange.request.path.value())){
+        if (ignoreUrls.contains(exchange.request.path.value())) {
             return chain.filter(exchange)
         }
         // 解析 jwt, 获取机构 id 保存到 http request parameter

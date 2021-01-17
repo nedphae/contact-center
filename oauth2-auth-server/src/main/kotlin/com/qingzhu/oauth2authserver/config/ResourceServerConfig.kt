@@ -22,6 +22,7 @@ class ResourceServerConfig : ResourceServerConfigurerAdapter() {
                 .tokenStore(tokenStore)
                 .resourceId("oauth2")
     }
+
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http.csrf().disable()

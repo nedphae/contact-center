@@ -1,8 +1,8 @@
 package com.qingzhu.staffadmin.properties.domain.entity
 
 import com.qingzhu.common.domain.AbstractAuditingEntity
-import org.springframework.data.relational.core.mapping.Table as RTable
 import javax.persistence.*
+import org.springframework.data.relational.core.mapping.Table as RTable
 
 @Entity
 @Table(indexes = [Index(columnList = "key", unique = true), Index(columnList = "label")])

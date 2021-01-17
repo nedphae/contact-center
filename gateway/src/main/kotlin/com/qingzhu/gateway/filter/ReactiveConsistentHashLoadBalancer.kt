@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.cloud.client.ServiceInstance
 import org.springframework.cloud.client.loadbalancer.LoadBalancerUriTools
 import org.springframework.cloud.client.loadbalancer.Response
-import org.springframework.cloud.gateway.config.LoadBalancerProperties
+import org.springframework.cloud.gateway.config.GatewayLoadBalancerProperties
 import org.springframework.cloud.gateway.filter.GatewayFilterChain
 import org.springframework.cloud.gateway.filter.GlobalFilter
 import org.springframework.cloud.gateway.filter.ReactiveLoadBalancerClientFilter
@@ -25,10 +25,10 @@ import java.net.URI
 @Component
 class ReactiveConsistentHashLoadBalancer(
         private val hashLoadBalancer: HashRobinLoadBalancer,
-        private val properties: LoadBalancerProperties
+        private val properties: GatewayLoadBalancerProperties
 ) : GlobalFilter, Ordered {
 
-    companion object{
+    companion object {
         private const val LOAD_BALANCER_CLIENT_FILTER_ORDER = 77777
         private val log = LogFactory.getLog(ReactiveLoadBalancerClientFilter::class.java)
     }
@@ -62,7 +62,7 @@ class ReactiveConsistentHashLoadBalancer(
         }.then(chain.filter(exchange))
     }
 
-    private fun choose(exchange: ServerWebExchange) : Mono<Response<ServiceInstance>> {
+    private fun choose(exchange: ServerWebExchange): Mono<Response<ServiceInstance>> {
         return hashLoadBalancer.choose(exchange)
     }
 

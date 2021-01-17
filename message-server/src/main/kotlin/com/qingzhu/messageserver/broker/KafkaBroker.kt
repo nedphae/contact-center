@@ -4,8 +4,8 @@ import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.kstream.KStream
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import reactor.core.publisher.EmitterProcessor
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Sinks
 import java.util.function.Consumer
 import java.util.function.Supplier
 
@@ -20,8 +20,8 @@ import java.util.function.Supplier
 class KafkaBroker {
 
     @Bean
-    fun processor(): EmitterProcessor<String> {
-        return EmitterProcessor.create()
+    fun processor(): Sinks.Many<String> {
+        return Sinks.many().multicast().onBackpressureBuffer()
     }
 
     /**
@@ -29,8 +29,8 @@ class KafkaBroker {
      * see [org.springframework.cloud.function.context.PollableBean]
      */
     @Bean
-    fun message(processor: EmitterProcessor<String>): Supplier<Flux<String>> {
-        return Supplier { processor }
+    fun message(processor: Sinks.Many<String>): Supplier<Flux<String>> {
+        return Supplier { processor.asFlux() }
     }
 
     /**

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 
 @Component
-class SpringSecurityAuditorAware: ReactiveAuditorAware<String> {
+class SpringSecurityAuditorAware : ReactiveAuditorAware<String> {
     override fun getCurrentAuditor(): Mono<String> {
         return getCurrentUserLogin()
     }

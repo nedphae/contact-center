@@ -18,4 +18,5 @@ abstract class AbstractHandler(private vararg val namespace: SocketIONamespace) 
         return organizationId to registerId
     }
 }
+
 const val registerName = "regId"

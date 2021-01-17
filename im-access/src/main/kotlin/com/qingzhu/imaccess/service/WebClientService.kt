@@ -5,7 +5,9 @@ import com.qingzhu.imaccess.domain.value.Message
 import com.qingzhu.imaccess.domain.view.ConversationView
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.*
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.body
+import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
 
 /**
@@ -37,7 +39,7 @@ class DispatchingCenter(@Qualifier("innerWebClient") webClientBuilder: WebClient
                 .bodyToMono()
     }
 
-    fun assignmentStaff(organizationId: Int, userId: Long): Mono<ConversationView>{
+    fun assignmentStaff(organizationId: Int, userId: Long): Mono<ConversationView> {
         return webClient
                 .put()
                 .uri {
@@ -100,7 +102,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
                 .bodyToMono()
     }
 
-    fun findCustomerByUid(organizationId: Int, uid: String): Mono<CustomerBaseStatusDto>{
+    fun findCustomerByUid(organizationId: Int, uid: String): Mono<CustomerBaseStatusDto> {
         return webClient
                 .get()
                 .uri {

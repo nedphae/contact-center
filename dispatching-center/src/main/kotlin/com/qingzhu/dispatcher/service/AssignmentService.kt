@@ -5,7 +5,9 @@ import com.qingzhu.dispatcher.domain.constant.CloseReason
 import com.qingzhu.dispatcher.domain.constant.CreatorType
 import com.qingzhu.dispatcher.domain.constant.RelatedType
 import com.qingzhu.dispatcher.domain.constant.TransferType
-import com.qingzhu.dispatcher.domain.dto.*
+import com.qingzhu.dispatcher.domain.dto.ConversationStatusDto
+import com.qingzhu.dispatcher.domain.dto.ConversationViewDto
+import com.qingzhu.dispatcher.domain.dto.StaffChangeStatusDto
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -49,7 +51,7 @@ class AssignmentService(private val assignmentComponent: AssignmentComponent) {
                     it.success()
                 }.cache()
         return mono
-                .transform { assignmentCustomerAndSendEvent(it)}
+                .transform { assignmentCustomerAndSendEvent(it) }
                 .onErrorResume {
                     // 分配失败就重新分配到其他客服
                     assignmentComponent.getStaff(organizationId, userId)

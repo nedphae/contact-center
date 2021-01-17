@@ -4,14 +4,13 @@ import com.lmax.disruptor.dsl.Disruptor
 import com.qingzhu.common.util.ApplicationContextManager
 import com.qingzhu.imaccess.config.DisruptorEvent
 import com.qingzhu.imaccess.config.EventType
-import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.kstream.KStream
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import reactor.core.publisher.EmitterProcessor
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.core.publisher.Sinks
 import java.util.function.Consumer
 import java.util.function.Supplier
 
@@ -27,7 +26,7 @@ class KafkaBroker(
     companion object {
         // 由随机数改为IP地址
         val hashKey: String by lazy {
-             ApplicationContextManager.applicationContext.environment
+            ApplicationContextManager.applicationContext.environment
                     .getProperty("spring.kafka.client-id") ?: "im"
         }
     }
@@ -35,8 +34,8 @@ class KafkaBroker(
     private val logger = LoggerFactory.getLogger(KafkaBroker::class.java)
 
     @Bean
-    fun processor(): EmitterProcessor<KeyValue<String, String>> {
-        return EmitterProcessor.create<KeyValue<String, String>>()
+    fun processor(): Sinks.Many<String> {
+        return Sinks.many().multicast().onBackpressureBuffer()
     }
 
     /**
@@ -44,8 +43,8 @@ class KafkaBroker(
      * see [org.springframework.cloud.function.context.PollableBean]
      */
     @Bean
-    fun message(processor: EmitterProcessor<KeyValue<String, String>>): Supplier<Flux<KeyValue<String, String>>> {
-        return Supplier { processor }
+    fun message(processor: Sinks.Many<String>): Supplier<Flux<String>> {
+        return Supplier { processor.asFlux() }
     }
 
     /**

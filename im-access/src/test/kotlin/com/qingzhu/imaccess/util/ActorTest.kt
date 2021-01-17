@@ -1,9 +1,9 @@
 package com.qingzhu.imaccess.util
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.channels.actor
 import org.junit.jupiter.api.Test
-import kotlin.system.*
+import kotlin.system.measureTimeMillis
 
 // 计数器 Actor 的各种类型
 sealed class CounterMsg

@@ -40,7 +40,7 @@ class HashRobinLoadBalancer(
     }
 
     private fun getInstanceResponse(request: ServerHttpRequest,
-            instances: List<ServiceInstance>): Response<ServiceInstance> {
+                                    instances: List<ServiceInstance>): Response<ServiceInstance> {
         if (instances.isEmpty()) {
             log.warn("No servers available for service: hash load balancer")
             return EmptyResponse()

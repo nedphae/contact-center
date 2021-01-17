@@ -1,7 +1,10 @@
 package com.qingzhu.oauth2authserver.config
 
+import com.nimbusds.jose.jwk.JWKSet
+import com.nimbusds.jose.jwk.RSAKey
+import com.qingzhu.oauth2authserver.security.StaffTokenEnhancer
+import net.minidev.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -22,10 +25,6 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import java.security.KeyPair
-import com.nimbusds.jose.jwk.JWKSet
-import com.nimbusds.jose.jwk.RSAKey
-import com.qingzhu.oauth2authserver.security.StaffTokenEnhancer
-import net.minidev.json.JSONObject
 import java.security.interfaces.RSAPublicKey
 
 @Configuration
@@ -33,11 +32,9 @@ import java.security.interfaces.RSAPublicKey
 class AuthorizationServerConfig : AuthorizationServerConfigurerAdapter() {
 
     @Autowired
-    @Qualifier("authenticationManagerBean")
     private lateinit var authenticationManager: AuthenticationManager
 
     @Autowired
-    @Qualifier("userDetailsService")
     private lateinit var userDetailsService: UserDetailsService
 
     private val accessTokenValiditySeconds = 3600 //资源令牌验证过期时间

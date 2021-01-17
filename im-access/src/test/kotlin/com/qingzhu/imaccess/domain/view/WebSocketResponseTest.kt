@@ -3,7 +3,6 @@ package com.qingzhu.imaccess.domain.view
 import com.qingzhu.common.message.Header
 import com.qingzhu.common.util.JsonUtils
 import com.qingzhu.common.util.toJson
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 

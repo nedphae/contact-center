@@ -2,9 +2,9 @@ package com.qingzhu.dispatcher.component.impl
 
 import arrow.core.extensions.list.foldable.isNotEmpty
 import com.qingzhu.common.util.JsonUtils
+import com.qingzhu.dispatcher.component.MessageService
 import com.qingzhu.dispatcher.domain.dto.StaffDispatcherDto
 import com.qingzhu.dispatcher.domain.entity.WeightInfo
-import com.qingzhu.dispatcher.component.MessageService
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono

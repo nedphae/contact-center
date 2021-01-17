@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.stream.function.StreamBridge
 import org.springframework.messaging.support.MessageBuilder
-import reactor.core.publisher.EmitterProcessor
+import reactor.core.publisher.Sinks
 import java.util.concurrent.TimeUnit
 
 
@@ -95,8 +95,9 @@ class MessageServerApplicationTests {
 
     @Autowired
     private lateinit var streamBridge: StreamBridge
+
     @Autowired
-    private lateinit var processor: EmitterProcessor<String>
+    private lateinit var processor: Sinks.Many<String>
 
     /**
      * 测试 processor 生产消息
@@ -105,20 +106,20 @@ class MessageServerApplicationTests {
     @Test
     fun message() {
         // Executors.newSingleThreadExecutor().submit {
-            var i = 0
-            while (i < 100) {
-                val str = "streamBridge send some message: $i"
-                val message = MessageBuilder.withPayload(str)
-                        .setHeader("hashKey", "1")
-                        .build()
-                // processor.onNext(str)
-                streamBridge.send("im.test", message)
-                i++
-                if (i % 10 == 0) {
-                    Thread.sleep(1000)
-                    println("next 100")
-                }
+        var i = 0
+        while (i < 100) {
+            val str = "streamBridge send some message: $i"
+            val message = MessageBuilder.withPayload(str)
+                    .setHeader("hashKey", "1")
+                    .build()
+            processor.tryEmitNext(str)
+            // streamBridge.send("im.test", message)
+            i++
+            if (i % 10 == 0) {
+                Thread.sleep(1000)
+                println("next 100")
             }
+        }
         // }
     }
 

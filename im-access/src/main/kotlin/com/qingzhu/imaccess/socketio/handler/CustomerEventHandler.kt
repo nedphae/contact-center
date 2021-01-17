@@ -7,7 +7,9 @@ import com.corundumstudio.socketio.annotation.OnDisconnect
 import com.corundumstudio.socketio.annotation.OnEvent
 import com.qingzhu.imaccess.domain.constant.SocketIONamespace
 import com.qingzhu.imaccess.domain.dto.CustomerBaseStatusDto
-import com.qingzhu.imaccess.domain.query.*
+import com.qingzhu.imaccess.domain.query.CustomerConfig
+import com.qingzhu.imaccess.domain.query.WebSocketRequest
+import com.qingzhu.imaccess.domain.query.subscribeWithData
 import com.qingzhu.imaccess.service.DispatchingCenter
 import com.qingzhu.imaccess.service.MessageService
 import com.qingzhu.imaccess.service.RegisterService

@@ -1,8 +1,8 @@
 package com.qingzhu.gateway
 
 import com.qingzhu.gateway.config.SecurityConfiguration
-import org.junit.Test
 import kotlinx.coroutines.*
+import org.junit.jupiter.api.Test
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 import java.util.concurrent.TimeoutException
 import kotlin.coroutines.resume

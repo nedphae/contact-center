@@ -1,13 +1,12 @@
 package com.qingzhu.dispatcher.component.impl
 
 import arrow.core.extensions.list.foldable.isNotEmpty
-import com.qingzhu.dispatcher.domain.dto.StaffDispatcherDto
 import com.qingzhu.dispatcher.component.AssignmentInterface
+import com.qingzhu.dispatcher.domain.dto.StaffDispatcherDto
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.security.SecureRandom
-import kotlin.collections.ArrayList
 
 /**
  * 随机加权平均分配

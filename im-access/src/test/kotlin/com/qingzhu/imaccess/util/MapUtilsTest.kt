@@ -2,7 +2,6 @@ package com.qingzhu.imaccess.util
 
 import com.corundumstudio.socketio.transport.NamespaceClient
 import com.qingzhu.imaccess.domain.constant.CreatorType
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 internal class MapUtilsTest {

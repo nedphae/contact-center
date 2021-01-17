@@ -2,8 +2,8 @@ package com.qingzhu.imaccess.util
 
 import com.qingzhu.imaccess.domain.constant.CreatorType
 import com.qingzhu.imaccess.domain.constant.MessageType
-import com.qingzhu.imaccess.domain.value.Message
 import com.qingzhu.imaccess.domain.value.Content
+import com.qingzhu.imaccess.domain.value.Message
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
