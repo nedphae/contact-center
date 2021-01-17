@@ -11,7 +11,7 @@
 | 🏃       | work in progress |
 | ✋       | blocked task     |
 | ❌       | deprecated       |
-| ⚫        | work in plan     |
+| ⚫        | planning         |
 
 ##### 后续开发计划
 
