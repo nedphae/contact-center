@@ -11,13 +11,13 @@ data class InnerUser(
         val username: String,
         var password: String,
         var role: String
-) {
-    companion object {
-        val mapper: StaffInnerMapper = Mappers.getMapper(StaffInnerMapper::class.java)
-    }
-}
+)
 
 @Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface StaffInnerMapper {
     fun mapToInner(staff: Staff): InnerUser
+
+    companion object {
+        val mapper: StaffInnerMapper = Mappers.getMapper(StaffInnerMapper::class.java)
+    }
 }

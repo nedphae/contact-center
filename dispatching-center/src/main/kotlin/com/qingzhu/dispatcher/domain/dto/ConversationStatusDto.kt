@@ -1,16 +1,19 @@
 package com.qingzhu.dispatcher.domain.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.qingzhu.common.constant.NoArg
+import com.qingzhu.common.constant.Default
 import com.qingzhu.common.message.getConversationSnowFlake
 import com.qingzhu.dispatcher.domain.constant.*
+import org.mapstruct.Mapper
+import org.mapstruct.ReportingPolicy
+import org.mapstruct.factory.Mappers
 import java.time.LocalDateTime
 
 /**
  * 返回给用户的会话信息 / 排队信息
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class ConversationViewDto(
+data class ConversationViewDto @Default constructor(
         val id: Long?,
         // 公司id
         val organizationId: Int,
@@ -29,10 +32,18 @@ data class ConversationViewDto(
             null, userId, null, null, null, queue)
 }
 
+@Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+interface ConversationStatusAndViewMapper {
+    fun map2View(staff: ConversationStatusDto): ConversationViewDto
+
+    companion object {
+        val mapper: ConversationStatusAndViewMapper = Mappers.getMapper(ConversationStatusAndViewMapper::class.java)
+    }
+}
+
 /**
  * 关联到客户状态
  */
-@NoArg
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ConversationStatusDto(
         // 会话id 唯一 雪花
@@ -86,7 +97,7 @@ data class ConversationStatusDto(
         val beginner: CreatorType = CreatorType.CUSTOMER
 ) {
     // 关联会话id
-    var relatedId: Long? = null;
+    var relatedId: Long? = null
 
     // 关联会话类型
     var relatedType: RelatedType = RelatedType.NO
@@ -184,5 +195,4 @@ class Evaluate(
         var evaluationRemark: String,
         // 用户标记的解决状态，0=未选择 1=已解决 2=未解决
         var userResolvedStatus: Int
-) {
-}
+)

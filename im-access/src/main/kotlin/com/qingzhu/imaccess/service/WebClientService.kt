@@ -120,7 +120,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
 class StaffAdminService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) {
     private val webClient = webClientBuilder.baseUrl("http://staff-admin").build()
 
-    fun getReceptionistGroup(organizationId: Int, staffId: Long): Mono<ReceptionistGroupDto> {
+    fun getReceptionistGroup(organizationId: Int, staffId: Long): Mono<ReceptionistShuntDto> {
         return webClient
                 .get()
                 .uri {

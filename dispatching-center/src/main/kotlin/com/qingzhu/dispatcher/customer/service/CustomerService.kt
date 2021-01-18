@@ -17,14 +17,14 @@ class CustomerService(
     fun saveAndGetCustomer(customerDto: CustomerDto): Mono<CustomerDto> {
         val customer = customerDto.toCustomer()
         val dbCustomer = customerRepository.findFirstByOrganizationIdAndUid(customer.organizationId, customer.uid)
-        return Mono.justOrEmpty(dbCustomer).map {
+        return dbCustomer.map {
             BeanUtils.copyProperties(customer, it, *customer.getNullPropertyNames())
             it
         }.switchIfEmpty {
             Mono.just(customer)
         }.flatMap {
             // need id
-            Mono.justOrEmpty(customerRepository.save(it)).map { dto -> CustomerDto.fromCustomer(dto) }
+            customerRepository.save(it).map { dto -> CustomerDto.fromCustomer(dto) }
         }
     }
 }

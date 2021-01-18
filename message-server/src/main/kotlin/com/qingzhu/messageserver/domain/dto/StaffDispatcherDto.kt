@@ -8,7 +8,7 @@ data class StaffDispatcherDto(
         // 客服id
         val staffId: Long,
         // 不同接待组的优先级
-        var priorityOfGroup: Pair<Long, Int?>,
+        var priorityOfShunt: Pair<Long, Int?>,
         // 最大接待数量
         var maxServiceCount: Int,
         // 当前接待量
@@ -21,7 +21,7 @@ data class StaffDispatcherDto(
             return StaffDispatcherDto(
                     organizationId = staffStatus.organizationId,
                     staffId = staffStatus.staffId,
-                    priorityOfGroup = shuntId to staffStatus.priorityOfGroup[shuntId],
+                    priorityOfShunt = shuntId to staffStatus.priorityOfShunt[shuntId],
                     maxServiceCount = staffStatus.maxServiceCount,
                     currentServiceCount = staffStatus.currentServiceCount,
                     staffType = staffStatus.staffType

@@ -20,7 +20,7 @@ internal class InnerUserTest {
                 realName = "新之助",
                 nickName = "蜡笔小新"
         )
-        val innerUser = InnerUser.mapper.mapToInner(staff)
+        val innerUser = StaffInnerMapper.mapper.mapToInner(staff)
         println(innerUser)
         assertEquals(staff.username, innerUser.username)
     }

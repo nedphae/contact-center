@@ -5,6 +5,7 @@ import com.qingzhu.dispatcher.domain.constant.CloseReason
 import com.qingzhu.dispatcher.domain.constant.CreatorType
 import com.qingzhu.dispatcher.domain.constant.RelatedType
 import com.qingzhu.dispatcher.domain.constant.TransferType
+import com.qingzhu.dispatcher.domain.dto.ConversationStatusAndViewMapper
 import com.qingzhu.dispatcher.domain.dto.ConversationStatusDto
 import com.qingzhu.dispatcher.domain.dto.ConversationViewDto
 import com.qingzhu.dispatcher.domain.dto.StaffChangeStatusDto
@@ -21,7 +22,7 @@ class AssignmentService(private val assignmentComponent: AssignmentComponent) {
      * 根据 机构id[organizationId] 和 用户id[userId] 自动分配客服，并返回会话信息
      * TODO: 获取设置的用户信息里的客服ID 和 分组 配置
      */
-    fun assignmentAuto(organizationId: Int, userId: Long): Mono<ConversationStatusDto> {
+    fun assignmentAuto(organizationId: Int, userId: Long): Mono<ConversationViewDto> {
         val mono = assignmentComponent.getLastConversationWithCache(organizationId, userId)
         // 添加 10 分钟内自动转接人工
         return mono
@@ -37,6 +38,9 @@ class AssignmentService(private val assignmentComponent: AssignmentComponent) {
                 )
                 // 保存会话状态
                 .transform { assignmentComponent.saveConversation(it) }
+                .map {
+                    ConversationStatusAndViewMapper.mapper.map2View(it)
+                }
     }
 
     /**
@@ -54,6 +58,11 @@ class AssignmentService(private val assignmentComponent: AssignmentComponent) {
                 .transform { assignmentCustomerAndSendEvent(it) }
                 .onErrorResume {
                     // 分配失败就重新分配到其他客服
+                    assignmentComponent.getStaff(organizationId, userId)
+                            .doOnNext { cs -> cs.transferType = TransferType.INITIATIVE }
+                }
+                .switchIfEmpty {
+                    // 不存在历史座席就分配到新客服
                     assignmentComponent.getStaff(organizationId, userId)
                             .doOnNext { cs -> cs.transferType = TransferType.INITIATIVE }
                 }
@@ -92,11 +101,10 @@ class AssignmentService(private val assignmentComponent: AssignmentComponent) {
                             }
                 }
                 .map {
-                    ConversationViewDto(it.id, organizationId, it.staffId, userId, it.nickName,
-                            it.interaction, null, null)
+                    ConversationStatusAndViewMapper.mapper.map2View(it)
                 }
                 .switchIfEmpty {
-                    // staff 方法获取客服为空时 进行排队
+                    // getStaff 方法获取客服为空时 进行排队
                     assignmentComponent.pushIntoQueue(organizationId, userId)
                 }
     }

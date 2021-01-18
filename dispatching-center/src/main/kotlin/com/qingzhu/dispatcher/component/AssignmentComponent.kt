@@ -18,7 +18,7 @@ class AssignmentComponent(
         private val weightedAssignmentService: WeightedAssignmentService,
         redisTemplate: ReactiveRedisTemplate<String, String>
 ) {
-    private val listOps: ReactiveListOperations<String, String> = redisTemplate.opsForList()
+    private val listOps: ReactiveListOperations<String, String> by lazy { redisTemplate.opsForList() }
 
     /**
      * 根据 机构id[organizationId] 和用户id[userId] 获取用户在状态服务器的调度相关信息

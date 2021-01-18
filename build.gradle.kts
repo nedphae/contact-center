@@ -6,7 +6,7 @@ version = "1.0-SNAPSHOT"
 plugins {
     id("org.springframework.boot") version "2.4.1" apply false
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
-    id("org.jetbrains.kotlin.plugin.noarg") version "1.4.21" apply false
+    id("org.jetbrains.kotlin.plugin.noarg") version "1.4.21"
     kotlin("jvm") version "1.4.21"
     kotlin("plugin.spring") version "1.4.21" apply false
     kotlin("plugin.jpa") version "1.4.21" apply false
@@ -35,6 +35,10 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "net.ltgt.apt-idea")
 
+    noArg {
+        annotation("com.qingzhu.common.constant.NoArg")
+    }
+
     java.sourceCompatibility = JavaVersion.VERSION_11
 
     configurations {
@@ -46,30 +50,33 @@ subprojects {
     extra["springCloudVersion"] = "2020.0.0"
     extra["springDataBom"] = "2020.0.3"
 
-    val arrowVersion = "0.10.5"
+    val arrowVersion = "0.11.0"
 
     dependencies {
-        // Kotlin 依赖
+        // Kotlin
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
-        // Typed Functional Programming in Kotlin
-        implementation("io.arrow-kt:arrow-core:$arrowVersion")
-        implementation("io.arrow-kt:arrow-fx:$arrowVersion")
-        implementation("io.arrow-kt:arrow-optics:$arrowVersion")
-        implementation("io.arrow-kt:arrow-syntax:$arrowVersion")
-        kapt("io.arrow-kt:arrow-meta:$arrowVersion")
+        // Functional Programming in Kotlin
+        implementation("io.arrow-kt:arrow-core")
+        implementation("io.arrow-kt:arrow-fx")
+        implementation("io.arrow-kt:arrow-fx-coroutines")
+        implementation("io.arrow-kt:arrow-optics")
+        implementation("io.arrow-kt:arrow-syntax")
+        implementation("io.arrow-kt:arrow-aql")
+        kapt("io.arrow-kt:arrow-meta")
 
-        // jackson 依赖
+        // jackson
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
         implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-properties")
         implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+        implementation("org.zalando:problem-spring-webflux:0.26.2")
 
-        // spring 依赖
+        // spring
         implementation("org.springframework.boot:spring-boot-starter")
         implementation("org.springframework.boot:spring-boot-starter-webflux")
 
@@ -86,7 +93,7 @@ subprojects {
         runtimeOnly("io.r2dbc:r2dbc-postgresql")
         runtimeOnly("org.postgresql:postgresql")
 
-        // 安全配置
+        // security
         implementation("org.springframework.boot:spring-boot-starter-security")
         implementation("org.springframework.security:spring-security-oauth2-resource-server")
         implementation("org.springframework.security:spring-security-oauth2-client")
@@ -112,6 +119,7 @@ subprojects {
         imports {
             mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
             mavenBom("org.springframework.data:spring-data-bom:${property("springDataBom")}")
+            mavenBom("io.arrow-kt:arrow-stack:$arrowVersion")
             // mavenBom("io.r2dbc:r2dbc-bom:Arabba-SR8")
         }
     }

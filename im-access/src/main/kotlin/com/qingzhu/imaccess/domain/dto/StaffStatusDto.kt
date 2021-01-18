@@ -23,24 +23,24 @@ data class StaffStatusDto(
         // 角色种类
         var role: String,
         // 所处接待组
-        var receptionistGroup: List<Long>,
+        var shunt: List<Long>,
         // 不同接待组的优先级
-        var priorityOfGroup: Map<Long, Int>,
+        var priorityOfShunt: Map<Long, Int>,
         // 在线状态
         var onlineStatus: OnlineStatus = OnlineStatus.ONLINE,
         // 最大接待数量
         var maxServiceCount: Int = 8
 ) : BaseDto() {
     companion object {
-        fun fromStaffConfigAndStaff(staffConfig: StaffConfig, receptionistGroupDto: ReceptionistGroupDto): StaffStatusDto {
+        fun fromStaffConfigAndStaff(staffConfig: StaffConfig, receptionistShuntDto: ReceptionistShuntDto): StaffStatusDto {
             return StaffStatusDto(
                     organizationId = staffConfig.organizationId!!,
                     staffId = staffConfig.staffId!!,
                     role = staffConfig.role,
-                    receptionistGroup = receptionistGroupDto.receptionistGroup,
-                    priorityOfGroup = receptionistGroupDto.priorityOfGroup,
+                    shunt = receptionistShuntDto.shunt,
+                    priorityOfShunt = receptionistShuntDto.priorityOfShunt,
                     onlineStatus = staffConfig.onlineStatus,
-                    maxServiceCount = receptionistGroupDto.maxServiceCount
+                    maxServiceCount = receptionistShuntDto.maxServiceCount
             )
         }
     }

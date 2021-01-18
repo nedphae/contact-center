@@ -36,8 +36,8 @@ internal class TestMockWebServer {
                 val response = MockResponse()
                         .setHeader("Content-Type", "application/json")
                         .setResponseCode(200)
-                return when (request.path) {
-                    "/test" -> {
+                return when {
+                    request.path.startsWith("/test") -> {
                         response.setBody("good test")
                     }
                     else -> MockResponse().setResponseCode(404)
@@ -47,7 +47,7 @@ internal class TestMockWebServer {
 
         val result = this.webClient
                 .get()
-                .uri("/test")
+                .uri("/test?id=123")
                 .retrieve()
                 .bodyToMono<String>()
 

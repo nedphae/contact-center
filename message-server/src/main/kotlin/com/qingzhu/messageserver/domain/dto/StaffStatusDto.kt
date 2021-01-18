@@ -28,9 +28,9 @@ data class StaffStatusDto(
         // 角色种类
         var role: StaffRole,
         // 所处接待组
-        var receptionistGroup: List<Long>,
+        var shunt: List<Long>,
         // 不同接待组的优先级
-        var priorityOfGroup: Map<Long, Int>,
+        var priorityOfShunt: Map<Long, Int>,
         // 客服所处服务器 hash 值
         var hashKey: String? = null,
         // 在线状态
@@ -42,8 +42,8 @@ data class StaffStatusDto(
             organizationId = organizationId,
             staffId = staffId,
             role = role,
-            receptionistGroup = receptionistGroup,
-            priorityOfGroup = priorityOfGroup,
+            shunt = shunt,
+            priorityOfShunt = priorityOfShunt,
             hashKey = hashKey,
             maxServiceCount = maxServiceCount
     ).also {

@@ -1,7 +1,7 @@
 package com.qingzhu.staffadmin.staff.controller
 
 import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
-import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistGroupDto
+import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistShuntDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.query.StaffQuery
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
@@ -42,13 +42,13 @@ class StaffHandler(private val staffService: StaffService) {
             staffService.findStaffInfo(si)
         }.orElse(Mono.empty())
         return ok().contentType(MediaType.APPLICATION_JSON)
-                .body<ReceptionistGroupDto>(result).awaitSingle()
+                .body(result).awaitSingle()
     }
 
     suspend fun findStaffConfigByOrganizationIdAndStaffId(sr: ServerRequest): ServerResponse {
         return sr.queryParam("organizationId").map(String::toInt).map { oi ->
             ok().contentType(MediaType.APPLICATION_JSON)
-                    .body<ReceptionistGroupDto>(sr.queryParam("staffId").map(String::toLong).map { si ->
+                    .body<ReceptionistShuntDto>(sr.queryParam("staffId").map(String::toLong).map { si ->
                         staffService.findStaffConfigByOrganizationIdAndStaffId(oi, si)
                     }.orElseGet {
                         staffService.findStaffConfigByOrganizationIdAndStaffId(oi)

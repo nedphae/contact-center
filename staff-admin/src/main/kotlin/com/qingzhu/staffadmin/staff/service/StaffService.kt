@@ -1,7 +1,7 @@
 package com.qingzhu.staffadmin.staff.service
 
 import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
-import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistGroupDto
+import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistShuntDto
 import com.qingzhu.staffadmin.staff.domain.dto.StaffDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffConfigRepository
@@ -27,7 +27,7 @@ class StaffService(
                 .map { StaffDto.fromStaff(it) }
     }
 
-    fun findStaffConfigByOrganizationIdAndStaffId(organizationId: Int, staffId: Long? = null): Mono<ReceptionistGroupDto> {
+    fun findStaffConfigByOrganizationIdAndStaffId(organizationId: Int, staffId: Long? = null): Mono<ReceptionistShuntDto> {
         var staff: Mono<Staff> = Mono.empty()
         val staffConfigFlux = if (staffId == null) {
             staffConfigRepository.findAllByOrganizationId(organizationId)
@@ -41,7 +41,7 @@ class StaffService(
                 .transform {
                     Mono.zip(staff, it)
                 }.map {
-                    ReceptionistGroupDto(
+                    ReceptionistShuntDto(
                             organizationId,
                             staffId,
                             it.t2.keys.toList(),

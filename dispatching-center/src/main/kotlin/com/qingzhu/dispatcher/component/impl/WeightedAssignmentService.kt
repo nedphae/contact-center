@@ -34,7 +34,7 @@ class WeightedAssignmentService : AssignmentInterface {
 
         init {
             staffDispatcherDtoList.forEach {
-                tot += it.priorityOfGroup.second ?: 0
+                tot += it.priorityOfShunt.second ?: 0
                 sum.add(tot)
             }
         }

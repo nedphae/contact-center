@@ -32,8 +32,8 @@ class NginxWeightedAssignmentService(
         return flux
                 .collectList()
                 .filter { it.isNotEmpty() }
-                .flatMap {
-                    val (map, weightInfo) = getByList(shuntId, it, redisMap)
+                .flatMap { mutableList ->
+                    val (map, weightInfo) = getByList(shuntId, mutableList, redisMap)
                     opsForHash.putAll(key, map.mapValues { JsonUtils.toJson(it.value) })
                     Mono.justOrEmpty(weightInfo.get().staffId)
                 }
@@ -66,11 +66,11 @@ class NginxWeightedAssignmentService(
                     (weightInfoMap[it.staffId]?.apply {
                         this.max = it.maxServiceCount
                         this.current = it.currentServiceCount
-                        this.weight = it.priorityOfGroup.second ?: 0
+                        this.weight = it.priorityOfShunt.second ?: 0
                     } ?: WeightInfo(
                             it.organizationId,
                             it.staffId,
-                            it.priorityOfGroup.second ?: 0,
+                            it.priorityOfShunt.second ?: 0,
                             it.maxServiceCount,
                             it.currentServiceCount
                     )).apply {
