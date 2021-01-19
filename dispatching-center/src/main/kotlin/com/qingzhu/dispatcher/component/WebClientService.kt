@@ -2,7 +2,6 @@ package com.qingzhu.dispatcher.component
 
 import com.qingzhu.common.component.BaseWebClient
 import com.qingzhu.dispatcher.domain.dto.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.RequestParam
@@ -14,12 +13,8 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Component
-class MessageService(webClientBuilder: WebClient.Builder, baseUrl: String) :
-        BaseWebClient(webClientBuilder, baseUrl) {
-
-    @Autowired
-    constructor(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) :
-            this(webClientBuilder, "http://staff-admin")
+class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) :
+        BaseWebClient(webClientBuilder, "http://staff-admin") {
 
     fun findIdleStaff(organizationId: Int, shuntId: Long): Flux<StaffDispatcherDto> {
         return webClient
@@ -104,12 +99,8 @@ class MessageService(webClientBuilder: WebClient.Builder, baseUrl: String) :
 }
 
 @Component
-class StaffAdminService(webClientBuilder: WebClient.Builder, baseUrl: String) :
-        BaseWebClient(webClientBuilder, baseUrl) {
-
-    @Autowired
-    constructor(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) :
-            this(webClientBuilder, "http://staff-admin")
+class StaffAdminService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) :
+        BaseWebClient(webClientBuilder, "http://staff-admin") {
 
     fun getStaffInfo(organizationId: Int, staffId: Long): Mono<StaffDto> {
         return webClient

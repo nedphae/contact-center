@@ -32,8 +32,6 @@ import reactor.test.StepVerifier
 
 internal class AssignmentServiceTest : DispatcherApplicationTests() {
     private lateinit var server: MockWebServer
-    private lateinit var webClientBuilder: WebClient.Builder
-    private lateinit var baseUrl: String
 
     // Mock redis
     @MockBean
@@ -42,17 +40,20 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
     @MockBean
     private lateinit var listOps: ReactiveListOperations<String, String>
 
+    @MockBean(name = "innerWebClient")
+    private lateinit var webClientBuilder: WebClient.Builder
+
     private lateinit var assignmentService: AssignmentService
 
     @BeforeEach
-    fun statMockServer() {
+    fun startMockServer() {
         // mock redis
         Mockito.`when`(redisTemplate.opsForList()).thenReturn(listOps)
         Mockito.`when`(listOps.leftPush(anyString(), anyString())).thenReturn(Mono.just(1L))
-
         this.server = MockWebServer()
-        this.baseUrl = this.server.url("/").toString()
-        this.webClientBuilder = WebClient.builder()
+        val baseUrl = this.server.url("/").toString()
+        Mockito.`when`(webClientBuilder.baseUrl(anyString())).thenReturn(webClientBuilder)
+        Mockito.`when`(webClientBuilder.build()).thenReturn(WebClient.builder().baseUrl(baseUrl).build())
     }
 
     @AfterEach
@@ -76,7 +77,7 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
     /**
      * set [MockWebServer] response with [Dispatcher]
      */
-    fun prepareResponse(testBot: Boolean = false) {
+    private fun prepareResponse(testBot: Boolean = false) {
         this.server.dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 val response = MockResponse()
@@ -107,8 +108,8 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
         }
 
         val assignmentComponent = AssignmentComponent(
-                MessageService(webClientBuilder, baseUrl),
-                StaffAdminService(webClientBuilder, baseUrl),
+                MessageService(webClientBuilder),
+                StaffAdminService(webClientBuilder),
                 WeightedAssignmentService(),
                 redisTemplate
         )
