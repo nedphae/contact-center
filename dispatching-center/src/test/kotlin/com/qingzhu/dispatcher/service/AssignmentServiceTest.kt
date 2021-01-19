@@ -18,7 +18,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertIterableEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
@@ -70,7 +70,7 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
             StaffDispatcherDto(9491, 3, 1L to 15, 30, 10, 0),
             StaffDispatcherDto(9491, 4, 1L to 15, 30, 10, 0)
     )
-    private final val staffDto = StaffDto(9491, 3, 1, "bot", "乔巴", "狸猫", 0, "", 1)
+    private final val staffDto = StaffDto(9491, 5, 1, "bot", "乔巴", "狸猫", 0, "", 1)
     private final val conversationStatusDto = ConversationStatusDto.fromStaffAndCustomer(staffDto, customerDispatcherDto)
 
     /**
@@ -115,6 +115,27 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
         this.assignmentService = AssignmentService(assignmentComponent)
     }
 
+    /**
+     * test if user visit again in 10 minutes, the status cache has the conversation data
+     */
+    @Test
+    fun assignmentAutoIn10M() {
+        prepareResponse()
+        val result = (1..10).asFlow()
+                .asFlux()
+                .flatMap {
+                    this.assignmentService.assignmentAuto(9491, 1)
+                }
+                .collectList()
+        StepVerifier.create(result)
+                .assertNext {
+                    val idSet = it.sortedBy { dto -> dto.staffId }.map { dto -> dto.staffId }.toSet()
+                    println(idSet.toJson())
+                    assertIterableEquals(listOf(5L), idSet)
+                }
+                .verifyComplete()
+    }
+
     @Test
     fun assignmentAuto() {
         prepareResponse(true)
@@ -127,8 +148,9 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
 
         StepVerifier.create(result)
                 .assertNext {
-                    println(it.toJson())
-                    assertTrue(it.map { dto -> dto.staffId }.containsAll(listOf(3L, 4L)))
+                    val idSet = it.sortedBy { dto -> dto.staffId }.map { dto -> dto.staffId }.toSet()
+                    println(idSet.toJson())
+                    assertIterableEquals(listOf(3L, 4L), idSet)
                 }
                 .verifyComplete()
     }
@@ -145,8 +167,9 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
 
         StepVerifier.create(result)
                 .assertNext {
-                    println(it.toJson())
-                    assertTrue(it.map { dto -> dto.staffId }.containsAll(listOf(1L, 2L)))
+                    val idSet = it.sortedBy { dto -> dto.staffId }.map { dto -> dto.staffId }.toSet()
+                    println(idSet.toJson())
+                    assertIterableEquals(listOf(1L, 2L), idSet)
                 }
                 .verifyComplete()
     }

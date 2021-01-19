@@ -23,7 +23,7 @@ internal class PropertiesServiceKtTest {
     @Test
     fun testVerify() {
         val source: Flux<String> = Flux.just("John", "Monica", "Mark", "Cloe", "Frank", "Casper", "Olivia", "Emily", "Cate")
-                .filter { name -> name.length === 4 }
+                .filter { name -> name.length == 4 }
                 .map(String::toUpperCase)
 
         StepVerifier
