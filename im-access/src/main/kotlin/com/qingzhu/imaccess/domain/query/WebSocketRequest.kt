@@ -19,11 +19,11 @@ import java.util.*
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArg
 data class WebSocketRequest<T>(
-        // 执行的命令
+        /** 执行的命令 */
         // val path: String?,
-        // 消息头
+        /** 消息头 */
         val header: Header,
-        // 消息体
+        /** 消息体 */
         val body: T
 ) : java.io.Serializable {
     companion object {

@@ -15,9 +15,9 @@ data class DetailData(
          * 保留关键字对应的数据项中，index、label属性将无效
          */
         val key: String,
-        // 该数据显示的值，类型不做限定
+        /** 该数据显示的值，类型不做限定 */
         val value: String,
-        // 该项数据显示的名称
+        /** 该项数据显示的名称 */
         val label: String,
         /**
          * 用于排序，显示数据时数据项按index值升序排列；
@@ -36,5 +36,4 @@ data class DetailData(
          * 若不指定，默认为false不隐藏。
          */
         val hidden: Boolean = false
-) {
-}
+)

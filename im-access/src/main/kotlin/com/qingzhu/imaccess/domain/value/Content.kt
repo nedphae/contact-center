@@ -4,17 +4,19 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.common.constant.NoArg
 import com.qingzhu.imaccess.domain.constant.MessageType
 
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArg
 data class Content(
-        // 内容类型 文字，图片，文件，系统消息
+        /** Content type:
+         *
+         * text, picture, file, system message(text)
+         */
         val contentType: MessageType,
-        // 文字
+        /** text */
         var textContent: TextContent? = null,
-        // 图片
+        /** picture */
         var photoContent: PhotoContent? = null,
-        // 附件
+        /** file */
         var attachments: Attachments? = null
 
 ) {
@@ -23,23 +25,19 @@ data class Content(
     )
 
     data class PhotoContent(
-            // 媒体id
             val mediaId: String,
-            // 图片名称
             val filename: String,
-            // 图片大小
             val picSize: Int,
-            // 图片类型
+            /** pic type */
             val type: Int
     )
 
     data class Attachments(
-            // 媒体id
             val mediaId: String,
             val size: Int,
-            // 根据类型显示不同图标
+            /** Display different icons according to the type */
             val type: Int,
-            // 文件 路径
+            /** file path */
             val url: String
     )
 }

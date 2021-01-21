@@ -14,35 +14,35 @@ import java.time.LocalDateTime
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArg
 data class Message(
-        /**
-         * 客户端生成唯一id (去重使用)
-         * uuid 为聊天消息去重
-         * [com.qingzhu.common.message.Header.mid] 为服务器消息去重
-         */
-        val uuid: String,
-        // 会话id
-        val conversationId: Long,
-        // 消息来源 (服务器设置)
-        var from: Long? = null,
-        // 消息送至
-        var to: Long? = null,
-        // 消息类型 接收者类型
-        val type: CreatorType,
-        // 创建者类型
-        val creatorType: CreatorType,
-        // 内容
-        val content: Content,
-        // 昵称
-        val nickName: String? = null
+		/**
+		 * 客户端生成唯一id (去重使用)
+		 * uuid 为聊天消息去重
+		 * [com.qingzhu.common.message.Header.mid] 为服务器消息去重
+		 */
+		val uuid: String,
+		/** 会话id */
+		val conversationId: Long,
+		/** 消息来源 (服务器设置) */
+		var from: Long? = null,
+		/** 消息送至 */
+		var to: Long? = null,
+		/** 消息类型 接收者类型 */
+		val type: CreatorType,
+		/** 创建者类型 */
+		val creatorType: CreatorType,
+		/** 内容 */
+		val content: Content,
+		/** 昵称 */
+		val nickName: String? = null
 ) {
-    /**
-     * 服务器生成的雪花ID
-     * 排序使用
-     */
-    val seqId: Long = getChatMessageSnowFlake().getNextSequenceId()
+	/**
+	 * 服务器生成的雪花ID
+	 * 排序使用
+	 */
+	val seqId: Long = getChatMessageSnowFlake().getNextSequenceId()
 
-    val createdAt: LocalDateTime = LocalDateTime.now()
+	val createdAt: LocalDateTime = LocalDateTime.now()
 
-    // 公司id
-    var organizationId: Int? = null
+	/** 公司id */
+	var organizationId: Int? = null
 }

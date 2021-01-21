@@ -5,7 +5,7 @@ import com.qingzhu.imaccess.domain.constant.FromType
 import com.qingzhu.imaccess.domain.query.CustomerConfig
 
 data class CustomerBaseStatusDto(
-        // 公司id
+        /** 公司id */
         val organizationId: Int,
         val userId: Long
 )

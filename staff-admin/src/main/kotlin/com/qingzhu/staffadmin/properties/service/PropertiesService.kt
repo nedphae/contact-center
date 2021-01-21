@@ -19,8 +19,8 @@ fun createMapFromProperties(properties: Flux<Properties>): Mono<String> {
             .map { list ->
                 list.joinToString(separator = System.lineSeparator()) {
                     """${it.key}.value:${it.value}
-|${it.key}.id:${it.id}
-""".trimMargin()
+                        ${it.key}.id:${it.id}
+                        """.trimMargin()
                 }
             }
             .map {

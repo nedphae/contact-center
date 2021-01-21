@@ -4,42 +4,40 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.common.constant.NoArg
 import com.qingzhu.messageserver.domain.constant.MessageType
 
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArg
 data class Content(
-        // 内容类型 文字，图片，文件，系统消息
-        val contentType: MessageType,
-        // 文字
-        var textContent: TextContent? = null,
-        // 图片
-        var photoContent: PhotoContent? = null,
-        // 附件
-        var attachments: Attachments? = null
+		/** Content type:
+		 *
+		 * text, picture, file, system message(text)
+		 */
+		val contentType: MessageType,
+		/** text */
+		var textContent: TextContent? = null,
+		/** picture */
+		var photoContent: PhotoContent? = null,
+		/** file */
+		var attachments: Attachments? = null
 
 ) {
-    data class TextContent(
-            val test: String
-    )
+	data class TextContent(
+			val text: String
+	)
 
-    data class PhotoContent(
-            // 媒体id
-            val mediaId: String,
-            // 图片名称
-            val filename: String,
-            // 图片大小
-            val picSize: Int,
-            // 图片类型
-            val type: Int
-    )
+	data class PhotoContent(
+			val mediaId: String,
+			val filename: String,
+			val picSize: Int,
+			/** pic type */
+			val type: Int
+	)
 
-    data class Attachments(
-            // 媒体id
-            val mediaId: String,
-            val size: Int,
-            // 根据类型显示不同图标
-            val type: Int,
-            // 文件 路径
-            val url: String
-    )
+	data class Attachments(
+			val mediaId: String,
+			val size: Int,
+			/** Display different icons according to the type */
+			val type: Int,
+			/** file path */
+			val url: String
+	)
 }

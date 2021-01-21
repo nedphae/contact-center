@@ -5,7 +5,7 @@ import com.qingzhu.imaccess.domain.constant.CreatorType
 import java.util.concurrent.ConcurrentHashMap
 
 object MapUtils {
-    // 保存 Client 的map到底是现在这种还是 用 clientId 保存？
+    /** 保存 Client 的map到底是现在这种还是 用 clientId 保存？ */
     val clientMap = ConcurrentHashMap<Int, ConcurrentHashMap<CreatorType, ConcurrentHashMap<Long, SocketIOClient>>>()
 
     /**
@@ -15,7 +15,9 @@ object MapUtils {
         var orgMap = clientMap[organizationId]
         if (orgMap == null) {
             orgMap = ConcurrentHashMap()
-            // 线程安全双检
+            /**
+             * 线程安全双检
+             */
             val map = clientMap.putIfAbsent(organizationId, orgMap)
             if (map != null) {
                 orgMap = map

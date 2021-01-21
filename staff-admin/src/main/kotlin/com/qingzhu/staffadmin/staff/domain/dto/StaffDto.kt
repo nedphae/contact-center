@@ -3,9 +3,9 @@ package com.qingzhu.staffadmin.staff.domain.dto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 
 data class StaffDto(
-        // 公司id
+        /** 公司id */
         val organizationId: Int,
-        // 客服id
+        /** 客服id */
         val staffId: Long,
         val groupId: Long,
         val username: String,

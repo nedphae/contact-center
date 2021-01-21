@@ -82,7 +82,7 @@ class CustomerEventHandler(
      */
     @OnEvent(SocketEvent.turnToStaff)
     fun onTurnToStaff(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<Long>) {
-        // 获取客户的接待组ID
+        /** 获取客户的接待组ID */
         val (organizationId, userId) = getOrganizationIdAndRegisterName(socketIOClient)
         Mono.justOrEmpty(dispatchingCenter.assignmentStaff(organizationId, userId))
                 .subscribeWithData(ackRequest, request)

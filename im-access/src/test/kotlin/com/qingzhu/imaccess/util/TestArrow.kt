@@ -3,6 +3,7 @@ package com.qingzhu.imaccess.util
 import arrow.aql.extensions.list.select.query
 import arrow.aql.extensions.list.select.value
 import arrow.aql.extensions.listk.select.select
+import arrow.aql.extensions.listk.where.where
 import arrow.core.*
 import arrow.core.extensions.either.applicative.applicative
 import arrow.core.extensions.either.applicative.map
@@ -26,9 +27,9 @@ class TestArrow {
 
     @Test
     fun testSelect() {
-        val result: List<Int> =
-                listOf(1, 2, 3).query {
-                    select { this + 1 }
+        val result: List<Int> = listOf(1, 2, 3)
+                .query {
+                    select { this + 1 }.where { this > 2 }
                 }.value()
         println(result)
     }

@@ -33,7 +33,8 @@ class AckBuilder<T>(
 
 /**
  * --------------- ack ---------------
- * 回复消息，使用 JSON 空值过滤
+ *
+ * Reply message, use JSON null value filter
  */
 fun <T> messageAck(request: AckRequest, webSocketResponse: WebSocketResponse<T>) {
     if (request.isAckRequested) {
@@ -86,8 +87,7 @@ suspend inline fun <reified T> SocketIOClient.syncSend(event: String, data: Any)
             }
         }
 
-// --------------- async ---------------
-
+/** --------------- async --------------- */
 inline fun <reified T> SocketIOClient.sendWithCallback(
         event: String, data: Any, crossinline onTimeout: () -> Unit = {},
         crossinline onSuccess: (data: WebSocketResponse<T>) -> Unit = {}) {

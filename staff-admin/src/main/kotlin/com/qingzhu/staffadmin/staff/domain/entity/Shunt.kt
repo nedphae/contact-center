@@ -9,15 +9,15 @@ import org.springframework.data.relational.core.mapping.Table
  */
 @Table
 data class Shunt(
-        @Id
-        var id: Long? = null,
-        // 公司id
-        val organizationId: Int,
-        // 接待组 名称
-        val name: String,
-        // 接待组所属分类
-        // @ManyToOne
-        val shuntClassId: Long,
-        // 接待组范围代码
-        val code: String
+		@Id
+		var id: Long? = null,
+		/** 公司id */
+		val organizationId: Int,
+		/** 接待组 名称 */
+		val name: String,
+		// 接待组所属分类
+		/** @ManyToOne */
+		val shuntClassId: Long,
+		/** 接待组范围代码 */
+		val code: String
 ) : AbstractAuditingEntity()

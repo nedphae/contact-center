@@ -86,25 +86,18 @@ enum class ConversationType(val type: String) {
  */
 @JsonFormat(shape = JsonFormat.Shape.NUMBER)
 enum class CreatorType {
-    // 系统
     SYS,
-
-    // 工作人员
     STAFF,
-
-    // 客户
     CUSTOMER,
-
-    // 群聊
     GROUP
 }
 
 /**
- * 客服标记的解决状态
- * 0：未解决、1：已解决、2：解决中
+ * staff flag resolution status
+ * 0：unsolved、1：solved、2：solving
  */
 enum class SolveStatus(val type: String) {
-    UNSOLVED("未解决"),
-    SOLVED("已解决"),
-    SOLVING("解决中")
+    UNSOLVED("unsolved"),
+    SOLVED("solved"),
+    SOLVING("solving")
 }
