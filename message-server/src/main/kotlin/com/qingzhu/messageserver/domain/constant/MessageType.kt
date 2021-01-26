@@ -2,7 +2,6 @@ package com.qingzhu.messageserver.domain.constant
 
 import com.fasterxml.jackson.annotation.JsonFormat
 
-@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 enum class MessageType {
     // 系统消息
     SYS,

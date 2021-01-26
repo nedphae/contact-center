@@ -15,7 +15,7 @@ internal class InnerUserTest {
                 username = "admin",
                 // 123456
                 password = getBCryptPasswordEncoder().encode("123456"),
-                role = StaffAuthority.ROLE_ADMIN,
+                role = StaffAuthority.ADMIN,
                 staffGroupId = 1,
                 realName = "新之助",
                 nickName = "蜡笔小新"

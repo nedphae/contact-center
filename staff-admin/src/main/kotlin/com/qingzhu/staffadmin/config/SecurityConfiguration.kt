@@ -29,6 +29,7 @@ class SecurityConfiguration {
                 .authorizeExchange()
                 .pathMatchers("/actuator/**").permitAll()
                 .pathMatchers("/**").hasAuthority("SCOPE_staff")
+                // .pathMatchers("/staff/**").hasAuthority("ROLE_ADMIN")
                 .anyExchange().authenticated()
                 .and()
                 .oauth2Client()

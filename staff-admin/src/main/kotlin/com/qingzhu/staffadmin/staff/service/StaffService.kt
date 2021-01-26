@@ -6,6 +6,7 @@ import com.qingzhu.staffadmin.staff.domain.dto.StaffDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffConfigRepository
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -22,6 +23,7 @@ class StaffService(
         }.switchIfEmpty(Mono.error(UsernameNotFoundException("用户[$username]不存在")))
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     fun findStaffInfo(staffId: Long): Mono<StaffDto> {
         return staffRepository.findById(staffId)
                 .map { StaffDto.fromStaff(it) }

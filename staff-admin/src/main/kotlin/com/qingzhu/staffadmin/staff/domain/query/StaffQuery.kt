@@ -17,7 +17,7 @@ data class StaffQuery(
         @field: Length(message = "密码长度必须大于6小于100", min = 6, max = 100)
         val password: String,
         @field: Size(message = "用户角色不能为空", min = 1)
-        val role: String,
+        val role: StaffAuthority,
         @field: NotNull(message = "用户分组不能为空")
         val groupId: Long,
         val realName: String,
@@ -28,7 +28,7 @@ data class StaffQuery(
                 organizationId = organizationId,
                 username = username,
                 password = getBCryptPasswordEncoder().encode(password),
-                role = StaffAuthority.valueOf(role),
+                role = role,
                 staffGroupId = groupId,
                 realName = realName,
                 nickName = nickName

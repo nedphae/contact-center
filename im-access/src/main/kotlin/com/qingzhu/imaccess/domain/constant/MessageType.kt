@@ -2,7 +2,6 @@ package com.qingzhu.imaccess.domain.constant
 
 import com.fasterxml.jackson.annotation.JsonFormat
 
-@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 enum class MessageType {
     SYS,
     TEXT,

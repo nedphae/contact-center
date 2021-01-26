@@ -26,7 +26,7 @@ class JWTAuthorizationListener(
                 val roleList = jwt.getClaimAsStringList("authorities")
                 val organizationId = jwt.getClaimAsString("oid")
                 val staffId = jwt.getClaimAsString("sid")
-                data?.urlParams?.set("role", roleList.map { it.removePrefix("ROLE_") })
+                data?.urlParams?.set("role", roleList)
                 data?.urlParams?.set("oid", listOf(organizationId))
                 data?.urlParams?.set("sid", listOf(staffId))
                 verify = true

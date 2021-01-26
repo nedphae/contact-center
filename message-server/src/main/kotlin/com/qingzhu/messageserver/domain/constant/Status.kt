@@ -9,17 +9,3 @@ enum class OnlineStatus {
     BUSY,
     AWAY
 }
-
-enum class StaffRole {
-    // 管理员
-    ADMIN,
-
-    // 客服
-    STAFF,
-
-    // 组长
-    LEADER,
-
-    // 质检
-    QA
-}

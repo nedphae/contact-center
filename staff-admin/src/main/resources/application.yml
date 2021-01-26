@@ -1,6 +1,6 @@
 logging:
   level:
-    root: debug
+    root: info
 
 server:
   port: 8112

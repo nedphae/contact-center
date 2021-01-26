@@ -1,5 +1,7 @@
 package com.qingzhu.messageserver.domain.constant
 
+import com.fasterxml.jackson.annotation.JsonFormat
+
 /**
  * 0-客服关闭；1-访客离开页面失效关闭；2-访客离开超时关闭；3-访客申请其他客服关闭；
  * 4-网络差客服掉线关闭；5-客服转接关闭；6-管理员接管关闭；7-访客主动关闭；
@@ -7,6 +9,7 @@ package com.qingzhu.messageserver.domain.constant
  * 11-访客排队超时清队列；12-访客放弃排队；13-客服离线清队列；
  * 16-系统关闭会话；其他-机器人转人工。
  */
+@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 enum class CloseReason(val reason: String) {
     STAFF_CLOSE("客服关闭"),
     USER_LEFT("访客离开页面失效关闭"),
@@ -29,6 +32,7 @@ enum class CloseReason(val reason: String) {
  * 来源类型
  * web/ios/android/wx(微信)/wx_ma(微信小程序)/wb(微博)/open(开放接口)
  */
+@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 enum class FromType(val type: String) {
     WEB("web"),
     IOS("ios"),
@@ -43,6 +47,7 @@ enum class FromType(val type: String) {
  * 关联会话类型
  * 0=无关联 1=机器人会话转接人工 2=历史会话发起 3=客服间转接 4=被接管
  */
+@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 enum class RelatedType(val type: String) {
     NO("无关联"),
     FROM_BOT("机器人会话转接人工"),
@@ -56,6 +61,7 @@ enum class RelatedType(val type: String) {
  * 回复引导转人工、拦截词转人工、连续未知转人工、
  * 差评转人工、情绪识别转人工、图片转人工
  */
+@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 enum class TransferType(val type: String) {
     INITIATIVE("主动转人工"),
     KEYWORD("关键词转人工"),
@@ -71,6 +77,7 @@ enum class TransferType(val type: String) {
  * 会话类型
  * 0：正常会话.1(2)：离线留言，3：排队超时
  */
+@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 enum class ConversationType(val type: String) {
     NORMAL("正常会话"),
     OFFLINE_COMMENT("离线留言"),
@@ -81,6 +88,7 @@ enum class ConversationType(val type: String) {
  * 客服标记的解决状态
  * 0：未解决、1：已解决、2：解决中
  */
+@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 enum class SolveStatus(val type: String) {
     UNSOLVED("未解决"),
     SOLVED("已解决"),

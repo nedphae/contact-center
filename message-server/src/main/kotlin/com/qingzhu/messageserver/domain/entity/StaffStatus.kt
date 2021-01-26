@@ -1,7 +1,7 @@
 package com.qingzhu.messageserver.domain.entity
 
+import com.qingzhu.messageserver.domain.authority.StaffAuthority
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
-import com.qingzhu.messageserver.domain.constant.StaffRole
 import java.util.*
 
 data class StaffStatus(
@@ -12,7 +12,7 @@ data class StaffStatus(
          * 每个客服只能保存一个状态 */
         val staffId: Long,
         /** 角色种类 */
-        var role: StaffRole,
+        var role: StaffAuthority,
         /** 所处接待组 */
         var shunt: List<Long>,
         /** 不同接待组的优先级 */
