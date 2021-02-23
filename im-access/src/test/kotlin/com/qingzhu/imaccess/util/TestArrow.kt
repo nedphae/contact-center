@@ -27,6 +27,7 @@ class TestArrow {
 
     @Test
     fun testSelect() {
+        listOf(1, 2, 3).partition { it > 2 }
         val result: List<Int> = listOf(1, 2, 3)
                 .query {
                     select { this + 1 }.where { this > 2 }

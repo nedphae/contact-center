@@ -16,9 +16,9 @@ spring:
       ignored-interfaces:
         - eth*
       preferred-networks:
-        - 10.0.*
+        - 192.168.*
     consul:
-      host: 10.0.0.105
+      host: 192.168.50.102
       port: 8500
       discovery:
         prefer-ip-address: true
@@ -29,9 +29,9 @@ spring:
       ddl-auto: update
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://10.0.0.101:5432/postgres?currentSchema=oauth
+    url: jdbc:postgresql://192.168.50.103:5432/postgres?currentSchema=oauth
     username: postgres
-    password: 5CPKuFFTyZ
+    password: UBhLbJ3yIZ
 
 im:
   security:

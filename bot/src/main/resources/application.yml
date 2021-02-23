@@ -22,24 +22,24 @@ spring:
         enabled: true
 
   r2dbc:
-    url: r2dbc:postgresql://10.0.0.101:5432/postgres?currentSchema=bot
+    url: r2dbc:postgresql://192.168.50.103:5432/postgres?currentSchema=bot
     username: postgres
-    password: 5CPKuFFTyZ
+    password: UBhLbJ3yIZ
     pool:
       enabled: true
 
   elasticsearch:
     rest:
-      uris: ["http://10.0.0.107:9200"]
+      uris: ["http://192.168.50.108:9200"]
 
   cloud:
     inetutils:
       ignored-interfaces:
         - eth*
       preferred-networks:
-        - 10.0.*
+        - 192.168.*
     consul:
-      host: 10.0.0.105
+      host: 192.168.50.102
       port: 8500
       discovery:
         prefer-ip-address: true

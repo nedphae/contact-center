@@ -117,7 +117,7 @@ class MessageServerApplicationTests {
             i++
             if (i % 10 == 0) {
                 Thread.sleep(1000)
-                println("next 100")
+                println("next 10")
             }
         }
         // }
