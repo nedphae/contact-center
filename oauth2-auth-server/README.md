@@ -1,15 +1,5 @@
 # 客服系统 权限设计
 
-#### 现有权限缺陷
-
-现有系统权限为使用 SpringMVC HandlerInterceptor 实现，登录验证使用 Spring Session.
-
-改为微服务情况时，Session 的验证，API 权限的验证都会变的复杂，即使改为网关验证权限也会存在单个服务的安全问题，而且网关验证就需要保存所有服务的权限数据，容易降低网关节点的并发量.
-
-同时每次添加新 API 都需要给角色重新赋权，增加了开发时间.
-
-#### 权限模块改进
-
 依托于 Spring OAuth2 进行权限设计，使用 Spring Security GlobalMethodSecurity 根据设计好的角色在开发时就可以进行API权限设计.
 
 同时使用 JWT 作为认证 Token，降低了服务端进行鉴权时的资源消耗.
