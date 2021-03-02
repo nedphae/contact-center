@@ -6,10 +6,9 @@ import java.util.*
 /**
  * 知识库主题 vo
  */
-@Document(indexName = "uk_xiaoe_topic")
+@Document(indexName = "knowledgebase-topic")
 data class Topic(
 		val id: String = UUID.randomUUID().toString().replace("-", ""),
-		val sessionid: String,
 		/** 标题 */
 		var title: String,
 		/** 内容 */

@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * Nginx加权平均分配
  */
+@Deprecated("使用随机算法替换")
 @Component
 class NginxWeightedAssignmentService(
         private val redisTemplate: RedisTemplate<String, String>,
