@@ -63,7 +63,7 @@ class StaffAdminApplicationTests {
                 username = "admin",
                 // 123456
                 password = getBCryptPasswordEncoder().encode("123456"),
-                role = StaffAuthority.ADMIN,
+                role = StaffAuthority.ROLE_ADMIN,
                 staffGroupId = staffGroup.id ?: 0,
                 realName = "新之助",
                 nickName = "蜡笔小新"

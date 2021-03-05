@@ -26,9 +26,9 @@ spring:
         enabled: false
 
   r2dbc:
-    url: r2dbc:postgresql://192.168.50.103:5432/postgres?currentSchema=dispathcer
+    url: r2dbc:postgresql://192.168.50.108:5432/postgres?currentSchema=dispathcer
     username: postgres
-    password: UBhLbJ3yIZ
+    password: t1wL0T6536
     pool:
       enabled: true
 

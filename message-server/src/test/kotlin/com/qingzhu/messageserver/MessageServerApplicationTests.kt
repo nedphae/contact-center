@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.stream.function.StreamBridge
+import org.springframework.kafka.support.KafkaHeaders
+import org.springframework.messaging.Message
 import org.springframework.messaging.support.MessageBuilder
 import reactor.core.publisher.Sinks
 import java.util.concurrent.TimeUnit
@@ -97,7 +99,7 @@ class MessageServerApplicationTests {
     private lateinit var streamBridge: StreamBridge
 
     @Autowired
-    private lateinit var processor: Sinks.Many<String>
+    private lateinit var many: Sinks.Many<Message<String>>
 
     /**
      * 测试 processor 生产消息
@@ -108,11 +110,15 @@ class MessageServerApplicationTests {
         // Executors.newSingleThreadExecutor().submit {
         var i = 0
         while (i < 100) {
-            val str = "streamBridge send some message: $i"
+            val str = "测试分区1: $i"
             val message = MessageBuilder.withPayload(str)
-                    .setHeader("hashKey", "1")
-                    .build()
-            processor.tryEmitNext(str)
+                // 选择分区
+                // .setHeader(KafkaHeaders.PARTITION_ID, 1)
+                // 设置分区 key
+                // .setHeader("partitionKey", str.hashCode() % 4)
+                .setHeader(KafkaHeaders.MESSAGE_KEY, "bar".encodeToByteArray())
+                .build()
+            many.tryEmitNext(message)
             // streamBridge.send("im.test", message)
             i++
             if (i % 10 == 0) {
