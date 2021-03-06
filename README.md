@@ -16,7 +16,8 @@
 | 鉴权服务     | [oauth2-auth-server](oauth2-auth-server) |
 | 客服信息     | [staff-admin](staff-admin)               |
 
-
+### 项目图示
+![流程图](doc/img/系统架构图.png)
 
 ### 开发计划注解图例
 

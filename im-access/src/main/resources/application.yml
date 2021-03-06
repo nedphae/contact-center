@@ -65,9 +65,10 @@ spring:
                 applicationId: messageStreamProcess
       bindings:
         message-out-0:
-          destination: ${spring.kafka.client-id:im}.message
+          # 使用 StatefulSet 创建固定名称的 pod
+          destination: ${spring.cloud.client.hostname:im}.message
         messageStreamProcess-in-0:
-          destination: ${spring.kafka.client-id:im}.message
+          destination: ${spring.cloud.client.hostname:im}.message
 
   security:
     oauth2:
