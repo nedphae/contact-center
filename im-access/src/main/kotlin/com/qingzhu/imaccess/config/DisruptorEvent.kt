@@ -17,7 +17,7 @@ sealed class EventType<T> {
 
     data class None(val channel: String) : EventType<Exception>() {
         override fun deserializeToPair(): Exception {
-            throw RuntimeException("未知的redis通道：$channel")
+            throw RuntimeException("未知的消息类型：$channel")
         }
     }
 }

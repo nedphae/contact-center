@@ -20,8 +20,8 @@ import reactor.kotlin.core.publisher.toMono
  */
 @Service
 class MessageHandler(
-        private val messageService: MessageService,
-        private val messageFilterService: MessageFilterService
+    private val messageService: MessageService,
+    private val messageFilterService: MessageFilterService
 ) : AbstractHandler(SocketIONamespace.STAFF, SocketIONamespace.CUSTOMER) {
     /**
      * 发送聊天消息
@@ -29,18 +29,18 @@ class MessageHandler(
     @OnEvent(SocketEvent.Message.send)
     fun onSend(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<Message>) {
         request.toMonoMonad(socketIOClient)
-                .doOnNext {
-                    val (organizationId, from) = getOrganizationIdAndRegisterName(socketIOClient)
-                    it.organizationId = organizationId
-                    // 重写 发送方
-                    it.from = from
-                }
-                // 过滤消息
-                .transform(messageFilterService::filter)
-                .messageSubscribe(ackRequest, request) {
-                    messageService.send(it.toMono())
-                    MessageResponse.fromMessage(it)
-                }
+            .doOnNext {
+                val (organizationId, from) = getOrganizationIdAndRegisterName(socketIOClient)
+                it.organizationId = organizationId
+                // 重写 发送方
+                it.from = from
+            }
+            // 过滤消息
+            .transform(messageFilterService::filter)
+            .messageSubscribe(ackRequest, request) {
+                messageService.send(it.toMono())
+                MessageResponse.fromMessage(it)
+            }
         // TODO 客户特定时间没有说话就踢出咨询 修改放到接入服务器进行
         // socketio 支持多次监听同一事件
     }

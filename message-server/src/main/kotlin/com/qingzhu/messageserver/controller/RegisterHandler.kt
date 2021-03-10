@@ -1,8 +1,9 @@
 package com.qingzhu.messageserver.controller
 
 import com.qingzhu.messageserver.domain.dto.CustomerBaseStatusDto
+import com.qingzhu.messageserver.domain.dto.CustomerStatusDto
+import com.qingzhu.messageserver.domain.dto.CustomerStatusMapper
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
-import com.qingzhu.messageserver.domain.entity.CustomerStatus
 import com.qingzhu.messageserver.domain.entity.StaffStatus
 import com.qingzhu.messageserver.service.CustomerStatusService
 import com.qingzhu.messageserver.service.StaffStatusService
@@ -15,33 +16,38 @@ import org.springframework.web.reactive.function.server.bodyToMono
 
 @RestController
 class RegisterHandler(
-        private val customerStatusService: CustomerStatusService,
-        private val staffStatusService: StaffStatusService
+    private val customerStatusService: CustomerStatusService,
+    private val staffStatusService: StaffStatusService
 ) {
 
     suspend fun registerCustomer(sr: ServerRequest): ServerResponse {
-        return sr.bodyToMono<CustomerStatus>()
-                .map { customerStatusService.saveStatus(it) }
-                .flatMap { accepted().build() }.awaitSingle()
+        return sr.bodyToMono<CustomerStatusDto>()
+            .map {
+                val status = CustomerStatusMapper.mapper.mapFromDto(it)
+                it.accessServer?.let { it1 -> status.accessServerSet.add(it1) }
+                status
+            }
+            .map { customerStatusService.saveStatus(it) }
+            .flatMap { accepted().build() }.awaitSingle()
     }
 
     suspend fun registerStaff(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<StaffStatus>()
-                .map { staffStatusService.saveStatus(it) }
-                .flatMap { accepted().build() }.awaitSingle()
+            .map { staffStatusService.saveStatus(it) }
+            .flatMap { accepted().build() }.awaitSingle()
     }
 
     suspend fun unregisterCustomer(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<CustomerBaseStatusDto>()
-                .doOnNext {
-                    customerStatusService.setStatusOffline(it)
-                    // TODO: 通知调度中心 关闭会话 重新调度
-                }
-                .flatMap { accepted().build() }.awaitSingle()
+            .doOnNext {
+                customerStatusService.setStatusOffline(it)
+                // TODO: 通知调度中心 关闭会话 重新调度
+            }
+            .flatMap { accepted().build() }.awaitSingle()
     }
 
     suspend fun unregisterStaff(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<StaffChangeStatusDto>()
-                .map { staffStatusService.setStatusOffline(it) }.flatMap { accepted().build() }.awaitSingle()
+            .map { staffStatusService.setStatusOffline(it) }.flatMap { accepted().build() }.awaitSingle()
     }
 }

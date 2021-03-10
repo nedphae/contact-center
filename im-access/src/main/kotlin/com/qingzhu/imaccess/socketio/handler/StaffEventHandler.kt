@@ -5,6 +5,7 @@ import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.annotation.OnConnect
 import com.corundumstudio.socketio.annotation.OnDisconnect
 import com.corundumstudio.socketio.annotation.OnEvent
+import com.qingzhu.imaccess.domain.constant.CreatorType
 import com.qingzhu.imaccess.domain.constant.SocketIONamespace
 import com.qingzhu.imaccess.domain.query.StaffConfig
 import com.qingzhu.imaccess.domain.query.WebSocketRequest
@@ -12,6 +13,8 @@ import com.qingzhu.imaccess.domain.query.subscribeWithoutData
 import com.qingzhu.imaccess.service.RegisterService
 import com.qingzhu.imaccess.socketio.AbstractHandler
 import com.qingzhu.imaccess.socketio.registerName
+import com.qingzhu.imaccess.util.Key
+import com.qingzhu.imaccess.util.MapUtils
 import org.springframework.stereotype.Service
 
 /**
@@ -34,22 +37,25 @@ class StaffEventHandler(private val registerService: RegisterService) : Abstract
     @OnEvent("register")
     fun onRegister(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<StaffConfig>) {
         request.toMonoMonad(socketIOClient)
-                .doOnNext {
-                    it.staffId = socketIOClient.handshakeData.getSingleUrlParam("sid").toLong()
-                    it.organizationId = socketIOClient.handshakeData.getSingleUrlParam("oid").toInt()
-                    socketIOClient[registerName] = it.staffId
-                    socketIOClient["organizationId"] = it.organizationId
-                }
-                .doOnNext {
-                    // 向消息服务存储客服消息
-                    registerService.registerStaff(it)
-                }
-                .subscribeWithoutData(ackRequest, request)
+            .doOnNext {
+                it.staffId = socketIOClient.handshakeData.getSingleUrlParam("sid").toLong()
+                it.organizationId = socketIOClient.handshakeData.getSingleUrlParam("oid").toInt()
+                socketIOClient[registerName] = it.staffId
+                socketIOClient["organizationId"] = it.organizationId
+            }
+            .doOnNext {
+                val key = Key(it.organizationId!!, CreatorType.STAFF, it.staffId!!)
+                MapUtils.put(key, socketIOClient)
+                // 向消息服务存储客服消息
+                registerService.registerStaff(it)
+            }
+            .subscribeWithoutData(ackRequest, request)
     }
 
     @OnDisconnect
     fun onDisconnect(socketIOClient: SocketIOClient) {
         val (organizationId, staffId) = getOrganizationIdAndRegisterName(socketIOClient)
         registerService.unRegisterStaff(organizationId, staffId)
+        MapUtils.remove(Key(organizationId, CreatorType.STAFF, staffId), socketIOClient)
     }
 }

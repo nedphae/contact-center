@@ -5,6 +5,7 @@ import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.annotation.OnConnect
 import com.corundumstudio.socketio.annotation.OnDisconnect
 import com.corundumstudio.socketio.annotation.OnEvent
+import com.qingzhu.imaccess.domain.constant.CreatorType
 import com.qingzhu.imaccess.domain.constant.SocketIONamespace
 import com.qingzhu.imaccess.domain.dto.CustomerBaseStatusDto
 import com.qingzhu.imaccess.domain.query.CustomerConfig
@@ -16,6 +17,8 @@ import com.qingzhu.imaccess.service.RegisterService
 import com.qingzhu.imaccess.socketio.AbstractHandler
 import com.qingzhu.imaccess.socketio.constant.SocketEvent
 import com.qingzhu.imaccess.socketio.registerName
+import com.qingzhu.imaccess.util.Key
+import com.qingzhu.imaccess.util.MapUtils
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -57,7 +60,10 @@ class CustomerEventHandler(
                                     // 向消息服务存储用户消息
                                     registerService.registerCustomer(it)
                                 }
-                                .map { CustomerBaseStatusDto(it.organizationId, it.userId) }
+                                .map {
+                                    MapUtils.put(Key(it.organizationId, CreatorType.CUSTOMER, it.userId), socketIOClient)
+                                    CustomerBaseStatusDto(it.organizationId, it.userId)
+                                }
                 )
                 .flatMap {
                     // 存在就直接调用调度系统分配客服
@@ -74,6 +80,7 @@ class CustomerEventHandler(
     fun onDisconnect(socketIOClient: SocketIOClient) {
         val (organizationId, userId) = getOrganizationIdAndRegisterName(socketIOClient)
         registerService.unRegisterCustomer(organizationId, userId)
+        MapUtils.remove(Key(organizationId, CreatorType.CUSTOMER, userId), socketIOClient)
     }
 
     /**

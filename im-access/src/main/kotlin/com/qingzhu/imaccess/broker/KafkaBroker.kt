@@ -21,13 +21,13 @@ import java.util.function.Supplier
  */
 @Configuration
 class KafkaBroker(
-        val disruptorForContext: Disruptor<DisruptorEvent>
+    val disruptorForContext: Disruptor<DisruptorEvent>
 ) {
     companion object {
-        // 由随机数改为IP地址
-        val hashKey: String by lazy {
+        // 由随机数改为服务器名称（K8S Pod名称）
+        val accessServer: String by lazy {
             ApplicationContextManager.applicationContext.environment
-                    .getProperty("spring.kafka.client-id") ?: "im"
+                .getProperty("spring.cloud.client.hostname") ?: "im"
         }
     }
 
@@ -55,27 +55,27 @@ class KafkaBroker(
     fun messageStreamProcess(): Consumer<KStream<Any?, String>> {
         return Consumer { input ->
             input
-                    .mapValues { value ->
-                        Mono.just(EventType.Msg(value))
-                                .doOnNext {
-                                    val next = disruptorForContext.ringBuffer.next()
-                                    val nextEvent = disruptorForContext.ringBuffer.get(next)
+                .mapValues { value ->
+                    Mono.just(EventType.Msg(value))
+                        .doOnNext {
+                            val next = disruptorForContext.ringBuffer.next()
+                            val nextEvent = disruptorForContext.ringBuffer.get(next)
 
-                                    nextEvent.type = it
+                            nextEvent.type = it
 
-                                    disruptorForContext.ringBuffer.publish(next)
-                                }
-                                .onErrorContinue { ex, _ ->
-                                    logger.error("内部异常：{}", ex)
-                                }
-                    }
-                    .foreach { _, value ->
-                        value.subscribe {
-                            if (logger.isDebugEnabled) {
-                                logger.debug("消息：{}", it)
-                            }
+                            disruptorForContext.ringBuffer.publish(next)
+                        }
+                        .onErrorContinue { ex, _ ->
+                            logger.error("内部异常：{}", ex)
+                        }
+                }
+                .foreach { _, value ->
+                    value.subscribe {
+                        if (logger.isDebugEnabled) {
+                            logger.debug("消息：{}", it)
                         }
                     }
+                }
         }
     }
 }

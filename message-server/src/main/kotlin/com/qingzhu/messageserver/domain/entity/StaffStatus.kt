@@ -17,8 +17,8 @@ data class StaffStatus(
         var shunt: List<Long>,
         /** 不同接待组的优先级 */
         var priorityOfShunt: Map<Long, Int>,
-        /** 客服所处服务器 hash 值 */
-        var hashKey: String? = null,
+        /** 客服所处服务器名称 */
+        var accessServerSet: MutableSet<String> = HashSet(),
         /** 最大接待数量 */
         var maxServiceCount: Int,
         /** 客服类型，0 表示机器人，1 表示人工会话。 */

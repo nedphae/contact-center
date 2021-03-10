@@ -19,6 +19,10 @@ class MessageService(
 ) {
     private val zSet: ReactiveZSetOperations<String, String> = redisTemplate.opsForZSet()
 
+    /**
+     * 客服/客户离线一方离线状态仍然可以发送消息
+     * 每次客服登录或客户打开咨询界面时，拉起同步库最新消息
+     */
     private fun Mono<String>.syncMessage(message: Message): Mono<Message> {
         val data = message.toJson()
         val from = Mono.just("${message.organizationId}:${message.creatorType.name.toLowerCase()}:${message.from}")

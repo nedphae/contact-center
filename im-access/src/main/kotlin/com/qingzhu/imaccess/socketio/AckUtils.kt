@@ -62,7 +62,7 @@ fun messageAck(request: AckRequest, header: Header) {
 inline fun <reified T> SocketIOClient.sendAndAwait(event: String, data: Any): WebSocketResponse<T> {
     val client = this
     return runBlocking(Dispatchers.IO) {
-        client.syncSend<T>(event, data)
+        client.syncSend(event, data)
     }
 }
 
