@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.messageserver.domain.authority.StaffAuthority
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import com.qingzhu.messageserver.domain.entity.StaffStatus
+import org.mapstruct.Mapper
+import org.mapstruct.ReportingPolicy
+import org.mapstruct.factory.Mappers
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class StaffChangeStatusDto(
@@ -18,7 +21,6 @@ data class StaffChangeStatusDto(
 /**
  * 设置客服状态(初始状态)
  */
-@Deprecated("直接使用其Domain对象")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class StaffStatusDto(
     /** 公司id */
@@ -32,22 +34,27 @@ data class StaffStatusDto(
     var shunt: List<Long>,
     /** 不同接待组的优先级 */
     var priorityOfShunt: Map<Long, Int>,
-    /** 客服所处服务器 hash 值 */
-    var accessServer: String? = null,
+    /** 客服所处服务器名 */
+    val clientAccessServer: Pair<String, String>,
     /** 在线状态 */
     var onlineStatus: OnlineStatus = OnlineStatus.ONLINE,
     /** 最大接待数量 */
-    var maxServiceCount: Int = 8
+    var maxServiceCount: Int
 ) {
-    fun toStaffStatus(): StaffStatus = StaffStatus(
-        organizationId = organizationId,
-        staffId = staffId,
-        role = role,
-        shunt = shunt,
-        priorityOfShunt = priorityOfShunt,
-        accessServer = accessServer,
-        maxServiceCount = maxServiceCount
-    ).also {
-        it.onlineStatus = onlineStatus
+    fun toStaffStatus(): StaffStatus = StaffStatusMapper.mapper.fromDtoWithMap(this)
+}
+
+@Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+abstract class StaffStatusMapper {
+    protected abstract fun mapFromDto(staff: StaffStatusDto): StaffStatus
+
+    fun fromDtoWithMap(staff: StaffStatusDto): StaffStatus {
+        val status = mapFromDto(staff)
+        status.clientAccessServerMap += staff.clientAccessServer
+        return status
+    }
+
+    companion object {
+        val mapper: StaffStatusMapper = Mappers.getMapper(StaffStatusMapper::class.java)
     }
 }

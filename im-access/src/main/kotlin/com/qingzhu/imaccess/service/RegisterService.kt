@@ -22,8 +22,10 @@ class RegisterService(
      */
     fun registerStaff(staffConfig: StaffConfig): Mono<StaffStatusDto> {
         return staffAdminService
-                .getReceptionistGroup(staffConfig.organizationId!!, staffConfig.staffId!!)
-                .map { StaffStatusDto.fromStaffConfigAndStaff(staffConfig, it) }
+            .getReceptionistGroup(staffConfig.organizationId!!, staffConfig.staffId!!)
+            .transformDeferredContextual { t, u ->
+                t.map { StaffStatusDto.fromStaffConfigAndStaff(staffConfig, it, u["clientId"]) }
+            }
                 .transform { dto -> messageService.registerStaff(dto).transform { dto } }
     }
 
@@ -34,7 +36,9 @@ class RegisterService(
         val customerDto = CustomerDto.fromCustomerConfig(customerConfig)
         // 客户信息现在保存到了 调度服务器 TODO: 后期再拆分到单独的服务器
         return dispatchingCenter.updateCustomer(customerDto.toMono())
-                .map { CustomerStatusDto.fromCustomerConfig(customerConfig, it) }
+            .transformDeferredContextual { t, u ->
+                t.map { CustomerStatusDto.fromCustomerConfig(customerConfig, it, u["clientId"]) }
+            }
                 // 注册信息
                 .transform { dto -> messageService.registerCustomer(dto).transform { dto } }
     }

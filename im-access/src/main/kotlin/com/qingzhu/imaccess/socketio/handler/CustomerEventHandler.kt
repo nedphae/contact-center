@@ -27,9 +27,9 @@ import reactor.core.publisher.Mono
  */
 @Service
 class CustomerEventHandler(
-        private val registerService: RegisterService,
-        private val dispatchingCenter: DispatchingCenter,
-        private val messageService: MessageService
+    private val registerService: RegisterService,
+    private val dispatchingCenter: DispatchingCenter,
+    private val messageService: MessageService
 ) : AbstractHandler(SocketIONamespace.CUSTOMER) {
 
     @OnConnect
@@ -43,37 +43,38 @@ class CustomerEventHandler(
     fun onRegister(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<CustomerConfig>) {
         val customerConfig = request.toMonoMonad(socketIOClient)
         customerConfig
-                .doOnNext {
-                    // 设置 IP
-                    it.ip = socketIOClient.handshakeData.httpHeaders["X-Forwarded-For"]
-                }
-                //添加 10 分钟内自动转接人工
-                .flatMap {
-                    // 检查 是否在缓存中 缓存10分钟
-                    messageService.findCustomerByUid(it.organizationId, it.uid)
-                }
-                // 如果缓存中还有状态，就不用再次注册了
-                .switchIfEmpty(
-                        // 缓存中不存在客户信息就重新注册
-                        customerConfig
-                                .flatMap {
-                                    // 向消息服务存储用户消息
-                                    registerService.registerCustomer(it)
-                                }
-                                .map {
-                                    MapUtils.put(Key(it.organizationId, CreatorType.CUSTOMER, it.userId), socketIOClient)
-                                    CustomerBaseStatusDto(it.organizationId, it.userId)
-                                }
-                )
-                .flatMap {
-                    // 存在就直接调用调度系统分配客服
-                    dispatchingCenter.assignmentAuto(it!!.organizationId, it.userId)
-                }
-                .doOnNext {
-                    socketIOClient[registerName] = it.userId
-                    socketIOClient["organizationId"] = it.organizationId
-                }
-                .subscribeWithData(ackRequest, request)
+            .doOnNext {
+                // 设置 IP
+                it.ip = socketIOClient.handshakeData.httpHeaders["X-Forwarded-For"]
+            }
+            //添加 10 分钟内自动转接人工
+            .flatMap {
+                // 检查 是否在缓存中 缓存10分钟
+                messageService.findCustomerByUid(it.organizationId, it.uid)
+            }
+            // 如果缓存中还有状态，就不用再次注册了
+            .switchIfEmpty(
+                // 缓存中不存在客户信息就重新注册
+                customerConfig
+                    .flatMap {
+                        // 向消息服务存储用户消息
+                        registerService.registerCustomer(it)
+                    }
+                    .map {
+                        MapUtils.put(Key(it.organizationId, CreatorType.CUSTOMER, it.userId), socketIOClient)
+                        CustomerBaseStatusDto(it.organizationId, it.userId)
+                    }
+            )
+            .flatMap {
+                // 存在就直接调用调度系统分配客服
+                dispatchingCenter.assignmentAuto(it!!.organizationId, it.userId)
+            }
+            .doOnNext {
+                socketIOClient[registerName] = it.userId
+                socketIOClient["organizationId"] = it.organizationId
+            }
+            .contextWrite { it.put("clientId", socketIOClient.sessionId.toString()) }
+            .subscribeWithData(ackRequest, request)
     }
 
     @OnDisconnect
@@ -92,6 +93,6 @@ class CustomerEventHandler(
         /** 获取客户的接待组ID */
         val (organizationId, userId) = getOrganizationIdAndRegisterName(socketIOClient)
         Mono.justOrEmpty(dispatchingCenter.assignmentStaff(organizationId, userId))
-                .subscribeWithData(ackRequest, request)
+            .subscribeWithData(ackRequest, request)
     }
 }

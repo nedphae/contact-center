@@ -1,9 +1,8 @@
-package com.qingzhu.messageserver.domain.dto
+package com.qingzhu.messageserver.domain.value
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.common.constant.NoArg
 import com.qingzhu.messageserver.domain.constant.CreatorType
-import com.qingzhu.messageserver.domain.value.Content
 import java.time.LocalDateTime
 
 /**

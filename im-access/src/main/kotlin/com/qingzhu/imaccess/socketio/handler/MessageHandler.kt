@@ -4,6 +4,7 @@ import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.annotation.OnEvent
 import com.qingzhu.imaccess.domain.constant.SocketIONamespace
+import com.qingzhu.imaccess.domain.dto.MessageDto
 import com.qingzhu.imaccess.domain.query.WebSocketRequest
 import com.qingzhu.imaccess.domain.query.messageSubscribe
 import com.qingzhu.imaccess.domain.value.Message
@@ -38,7 +39,7 @@ class MessageHandler(
             // 过滤消息
             .transform(messageFilterService::filter)
             .messageSubscribe(ackRequest, request) {
-                messageService.send(it.toMono())
+                messageService.send(MessageDto(socketIOClient.sessionId.toString(), it).toMono())
                 MessageResponse.fromMessage(it)
             }
         // TODO 客户特定时间没有说话就踢出咨询 修改放到接入服务器进行

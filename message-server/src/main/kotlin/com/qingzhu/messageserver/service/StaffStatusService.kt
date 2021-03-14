@@ -27,6 +27,8 @@ class StaffStatusService(
 
     /**
      * 设置客服状态
+     * 非原子化更新，可能数据丢失
+     * [hazelcast 原子状态设置](https://docs.hazelcast.com/imdg/latest/computing/entry-processor.html)
      */
     fun saveStatus(staffStatus: StaffStatus) {
         val statusMap = getStatusMap(staffStatus.organizationId)

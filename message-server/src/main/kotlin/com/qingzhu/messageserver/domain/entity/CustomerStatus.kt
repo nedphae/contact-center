@@ -3,7 +3,7 @@ package com.qingzhu.messageserver.domain.entity
 import com.qingzhu.messageserver.domain.constant.FromType
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import java.util.*
-import kotlin.collections.HashSet
+import kotlin.collections.HashMap
 
 data class CustomerStatus(
     /** 公司id */
@@ -25,7 +25,7 @@ data class CustomerStatus(
     /** 机器人优先开关（访客分配） */
     val robotShuntSwitch: Int?,
     /** 客户所处服务器名称 */
-    var accessServerSet: MutableSet<String> = HashSet(),
+    val clientAccessServerMap: MutableMap<String, String> = HashMap(),
     /** vip等级 1-10 */
     val vipLevel: Int?,
     /** 客户来源类型 */
@@ -39,7 +39,8 @@ data class CustomerStatus(
     //是否在线
     var onlineStatus: OnlineStatus = OnlineStatus.ONLINE
 
-    fun setOffline(accessServer: String) = apply { this.onlineStatus = OnlineStatus.OFFLINE; this.accessServerSet.remove(accessServer) }
+    fun setOffline(accessServer: String) =
+        apply { this.onlineStatus = OnlineStatus.OFFLINE; this.clientAccessServerMap.remove(accessServer) }
 
     fun setOnline() = apply { this.onlineStatus = OnlineStatus.ONLINE }
 

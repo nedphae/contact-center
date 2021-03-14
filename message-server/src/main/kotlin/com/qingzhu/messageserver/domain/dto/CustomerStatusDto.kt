@@ -12,7 +12,7 @@ data class CustomerBaseStatusDto(
     /** 公司id */
     val organizationId: Int,
     val userId: Long,
-    val accessServer: String
+    val accessServerClient: String
 )
 
 data class CustomerStatusDto(
@@ -34,8 +34,8 @@ data class CustomerStatusDto(
     val shuntId: Long,
     /** 机器人优先开关（访客分配） */
     val robotShuntSwitch: Int?,
-    /** 客服所处服务器 hash 值 */
-    var accessServer: String? = null,
+    /** 客服所处服务器名 */
+    val clientAccessServer: Pair<String, String>,
     /** vip等级 1-10 */
     val vipLevel: Int?,
     /** 客户来源类型 */
@@ -49,14 +49,19 @@ data class CustomerStatusDto(
     //是否在线
     var onlineStatus: OnlineStatus = OnlineStatus.ONLINE
 
-    fun setOffline() = apply { this.onlineStatus = OnlineStatus.OFFLINE; this.accessServer = null }
-
-    fun setOnline() = apply { this.onlineStatus = OnlineStatus.ONLINE }
+    fun toCustomerStatus(): CustomerStatus = CustomerStatusMapper.mapper.fromDtoWithMap(this)
 }
 
 @Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-interface CustomerStatusMapper {
-    fun mapFromDto(staff: CustomerStatusDto): CustomerStatus
+abstract class CustomerStatusMapper {
+    protected abstract fun mapFromDto(staff: CustomerStatusDto): CustomerStatus
+
+    fun fromDtoWithMap(customerStatusDto: CustomerStatusDto): CustomerStatus {
+        val status = mapFromDto(customerStatusDto)
+        // plusAssign 必须有一个不可变对象，MutableMap 或者 var
+        status.clientAccessServerMap += customerStatusDto.clientAccessServer
+        return status
+    }
 
     companion object {
         val mapper: CustomerStatusMapper = Mappers.getMapper(CustomerStatusMapper::class.java)

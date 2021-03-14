@@ -43,12 +43,13 @@ class StaffEventHandler(private val registerService: RegisterService) : Abstract
                 socketIOClient[registerName] = it.staffId
                 socketIOClient["organizationId"] = it.organizationId
             }
-            .doOnNext {
+            .flatMap {
                 val key = Key(it.organizationId!!, CreatorType.STAFF, it.staffId!!)
                 MapUtils.put(key, socketIOClient)
                 // 向消息服务存储客服消息
                 registerService.registerStaff(it)
             }
+            .contextWrite { it.put("clientId", socketIOClient.sessionId.toString()) }
             .subscribeWithoutData(ackRequest, request)
     }
 

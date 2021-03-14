@@ -1,6 +1,6 @@
-package com.qingzhu.imaccess.domain.dto
+package com.qingzhu.messageserver.domain.dto
 
-import com.qingzhu.imaccess.domain.value.Message
+import com.qingzhu.messageserver.domain.value.Message
 
 data class MessageDto(
     /** 发送消息的客户端id */

@@ -11,17 +11,21 @@ internal class InnerUserTest {
     @Test
     fun testMapping() {
         val staff = Staff(
-                organizationId = 9491,
-                username = "admin",
-                // 123456
-                password = getBCryptPasswordEncoder().encode("123456"),
-                role = StaffAuthority.ROLE_ADMIN,
-                staffGroupId = 1,
-                realName = "新之助",
-                nickName = "蜡笔小新"
+            organizationId = 9491,
+            username = "admin",
+            // 123456
+            password = getBCryptPasswordEncoder().encode("123456"),
+            role = StaffAuthority.ROLE_ADMIN,
+            staffGroupId = 1,
+            realName = "新之助",
+            nickName = "蜡笔小新"
         )
-        val innerUser = StaffInnerMapper.mapper.mapToInner(staff)
+        var innerUser = StaffInnerMapper.mapper.mapToInner(staff)
         println(innerUser)
+        // 默认方法修改密码为 123456
+        innerUser = StaffInnerMapper.mapper.mapToInnerWithPassword(staff)
+        println(innerUser)
+        assertEquals("123456", innerUser.password)
         assertEquals(staff.username, innerUser.username)
     }
 }

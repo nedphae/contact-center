@@ -14,8 +14,17 @@ data class InnerUser(
 )
 
 @Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-interface StaffInnerMapper {
-    fun mapToInner(staff: Staff): InnerUser
+abstract class StaffInnerMapper {
+    abstract fun mapToInner(staff: Staff): InnerUser
+
+    /**
+     * Test default fun
+     */
+    fun mapToInnerWithPassword(staff: Staff): InnerUser {
+        val innerUser = mapToInner(staff)
+        innerUser.password = "123456"
+        return innerUser
+    }
 
     companion object {
         val mapper: StaffInnerMapper = Mappers.getMapper(StaffInnerMapper::class.java)

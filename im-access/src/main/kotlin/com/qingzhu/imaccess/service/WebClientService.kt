@@ -1,7 +1,6 @@
 package com.qingzhu.imaccess.service
 
 import com.qingzhu.imaccess.domain.dto.*
-import com.qingzhu.imaccess.domain.value.Message
 import com.qingzhu.imaccess.domain.view.ConversationView
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -57,13 +56,13 @@ class DispatchingCenter(@Qualifier("innerWebClient") webClientBuilder: WebClient
 class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) {
     private val webClient = webClientBuilder.baseUrl("http://message-server").build()
 
-    fun send(message: Mono<Message>): Mono<Unit> {
+    fun send(message: Mono<MessageDto>): Mono<Unit> {
         return webClient
-                .post()
-                .uri("/message/send")
-                .body(message)
-                .retrieve()
-                .bodyToMono()
+            .post()
+            .uri("/message/send")
+            .body(message)
+            .retrieve()
+            .bodyToMono()
     }
 
     fun registerCustomer(customerDto: Mono<CustomerStatusDto>): Mono<Unit> {
