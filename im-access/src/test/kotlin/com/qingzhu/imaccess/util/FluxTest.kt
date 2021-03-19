@@ -1,9 +1,11 @@
 package com.qingzhu.imaccess.util
 
 import arrow.core.extensions.list.foldable.isNotEmpty
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.test.StepVerifier
 
 internal class FluxTest {
 
@@ -53,11 +55,15 @@ internal class FluxTest {
             .subscribe {
                 println(it)
             }
-        Flux
-            .just(1, 2, 3, 4)
+        val distinct = Flux
+            .just(1, 1, 2, 3, 4, 4)
+            .distinct()
             .collectList()
-            .subscribe {
+        StepVerifier.create(distinct)
+            .assertNext {
                 println(it)
+                Assertions.assertIterableEquals(listOf(1, 2, 3, 4), it)
             }
+            .verifyComplete()
     }
 }

@@ -1,10 +1,10 @@
 package com.qingzhu.common.message
 
 import org.junit.Assert.assertTrue
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.util.*
 
-class SnowFlakeTest {
+internal class SnowFlakeTest {
 
     @Test
     fun getNextSequenceId() {

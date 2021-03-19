@@ -31,27 +31,30 @@ class MessageService(
         val data = message.toJson()
         val from = Mono.just("${message.organizationId}:${message.creatorType.name.toLowerCase()}:${message.from}")
         val to = Mono.just("${message.organizationId}:${message.type.name.toLowerCase()}:${message.to}")
-        return this
-            .flatMapMany {
-                customerStatusService.findByUserId(messageDto.message.organizationId, it.customerId)
-                    .flatMapIterable { cs -> cs.clientAccessServerMap.entries }
-                    .concatWith(
-                        staffStatusService.findStaff(messageDto.message.organizationId, it.staffId)
-                            .flatMapIterable { cs -> cs.clientAccessServerMap.entries }
-                    )
-            }
-            // 推送到登陆的其他客户端
-            .filter { entry -> entry.key != messageDto.client }
-            .map { entry -> entry.value }
-            .doOnNext {
-                // 发送消息到kafka
-                streamBridge.send("${it}.message", data)
-            }
-            .then(from)
+        /**
+         * 先写到 redis 再进行推送，相比较于先推送再写redis，延迟虽然增加了
+         * 但是用户每次登陆后检查redis大概率不会丢失数据（可能会有重复）
+         */
+        return from
             .concatWith(to)
             .flatMap {
                 // 写扩散
                 zSet.add(it, data, message.seqId.toDouble())
+            }
+            .then(this)
+            .flatMapMany {
+                customerStatusService.findByUserId(message.organizationId, it.customerId)
+                    .flatMapIterable { cs -> cs.clientAccessServerMap.entries }
+                    .concatWith(staffStatusService.findStaff(message.organizationId, it.staffId)
+                        .flatMapIterable { cs -> cs.clientAccessServerMap.entries })
+            }
+            // 推送到登陆的其他客户端
+            .filter { entry -> entry.key != messageDto.client }
+            .map { entry -> entry.value }
+            .distinct()
+            .doOnNext {
+                // 发送消息到kafka
+                streamBridge.send("${it}.message", data)
             }
             .collectList()
             .map { message }
