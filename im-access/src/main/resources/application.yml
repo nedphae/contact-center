@@ -11,9 +11,9 @@ spring:
 
   redis:
     database: 0
-    host: 192.168.50.101
+    host: 192.168.50.103
     port: 6379
-    password: UWLCcn&w#J0&REq.
+    password: G!Ps&eEwtsxd7NGf
     timeout: 5000
 
   r2dbc:
@@ -36,8 +36,8 @@ spring:
       preferred-networks:
         - 192.168.*
     consul:
-      host: 192.168.50.102
-      port: 8500
+      host: 192.168.50.108
+      port: 80
       discovery:
         prefer-ip-address: true
         instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
@@ -54,7 +54,7 @@ spring:
         max-messages-per-poll: 1
       kafka:
         binder:
-          brokers: 192.168.50.105:9092
+          brokers: 192.168.50.107:9092
           replication-factor: 1
         streams:
           binder:

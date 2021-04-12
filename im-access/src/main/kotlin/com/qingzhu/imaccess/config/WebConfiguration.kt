@@ -1,5 +1,6 @@
 package com.qingzhu.imaccess.config
 
+import com.qingzhu.imaccess.controller.FileUploadDownloadHandler
 import com.qingzhu.imaccess.controller.WebSocketAddressController
 import com.qingzhu.imaccess.socketio.EchoHandler
 import org.springframework.context.annotation.Bean
@@ -38,11 +39,14 @@ class WebConfiguration : WebFluxConfigurer {
     }
 
     @Bean
-    fun routerFunction(webSocketAddressController: WebSocketAddressController): RouterFunction<*> {
+    fun routerFunction(webSocketAddressController: WebSocketAddressController,
+                       fileUploadDownloadHandler: FileUploadDownloadHandler): RouterFunction<*> {
         return coRouter {
             accept(APPLICATION_JSON).nest {
                 GET("/websocket-address", webSocketAddressController::getWebSocketAddress)
             }
+            POST("/chat/img", fileUploadDownloadHandler::upload)
+            GET("/chat/img/{img}", fileUploadDownloadHandler::download)
         }
     }
 }

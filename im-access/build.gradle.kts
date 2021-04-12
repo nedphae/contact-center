@@ -23,6 +23,10 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka-streams")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
+    implementation("io.minio:minio:8.2.0")
+    implementation("commons-io:commons-io:2.8.0")
+
+
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }

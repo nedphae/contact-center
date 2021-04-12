@@ -12,4 +12,13 @@ internal class MapUtilsTest {
         println(v)
         println(MapUtils.clientMap)
     }
+
+    @Test
+    fun testMod() {
+        // test &  // h & (length-1) = h % length
+        val h = 91
+        val length = 92
+        println(h and (length - 1))
+        println(h % length)
+    }
 }

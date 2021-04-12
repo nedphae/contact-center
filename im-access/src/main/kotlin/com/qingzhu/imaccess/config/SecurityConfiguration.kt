@@ -27,6 +27,7 @@ class SecurityConfiguration {
         http
                 .authorizeExchange()
                 .pathMatchers("/actuator/**").permitAll()
+                .pathMatchers("/chat/img/**").permitAll()
                 .pathMatchers("/websocket-address/**").hasAuthority("SCOPE_im")
                 .anyExchange().authenticated()
                 .and()

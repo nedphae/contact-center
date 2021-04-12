@@ -94,7 +94,7 @@ internal class MonoTest {
                 .doOnNext { println(it) }
                 .then(Mono.just(1).map { it / 0 })
                 .onErrorResume {
-                    Mono.empty<Int>()
+                    Mono.empty()
                 }
                 .switchIfEmpty(Mono.just(2))
                 .subscribe(::println)
@@ -103,7 +103,7 @@ internal class MonoTest {
         Mono.just(1)
                 .doOnNext { num -> Mono.just(num).map { it / 0 }.subscribe { println(it) } }
                 .onErrorResume {
-                    Mono.empty<Int>()
+                    Mono.empty()
                 }
                 .switchIfEmpty(Mono.just(2))
                 .subscribe(::println)
