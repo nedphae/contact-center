@@ -13,7 +13,6 @@ import reactor.core.publisher.Flux
 import java.io.File
 import java.util.*
 
-
 val bucketExistsArgs: BucketExistsArgs = BucketExistsArgs.builder().bucket("chat-img").build()
 val makeBucketArgs: MakeBucketArgs = MakeBucketArgs.builder().bucket("chat-img").build()
 
@@ -29,7 +28,7 @@ class FileUploadDownloadHandler(
         val minioClient: MinioClient
 ) {
     suspend fun upload(sr: ServerRequest): ServerResponse {
-        return sr.multipartData().map { it["files"] }
+        return sr.multipartData().map { it["file"] }
                 .flatMapMany { Flux.fromIterable(it) }
                 .cast(FilePart::class.java)
                 .map { fp ->
