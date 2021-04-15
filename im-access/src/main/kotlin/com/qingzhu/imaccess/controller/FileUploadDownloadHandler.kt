@@ -10,16 +10,18 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Flux
+import java.io.File
 import java.util.*
+
 
 val bucketExistsArgs: BucketExistsArgs = BucketExistsArgs.builder().bucket("chat-img").build()
 val makeBucketArgs: MakeBucketArgs = MakeBucketArgs.builder().bucket("chat-img").build()
 
-fun createRandomFileNameByOriginalFilename(originalFilename: String): Pair<String, String> {
+fun createRandomFileNameByOriginalFilename(originalFilename: String): Triple<String, String, String> {
     val fileName = UUID.randomUUID().toString()
     val fileType = originalFilename.substringAfter(".")
     val saveFileName = "${fileName.replace("-", "")}.$fileType"
-    return Pair(saveFileName, fileType)
+    return Triple(saveFileName, fileName, fileType)
 }
 
 @RestController
@@ -27,28 +29,31 @@ class FileUploadDownloadHandler(
         val minioClient: MinioClient
 ) {
     suspend fun upload(sr: ServerRequest): ServerResponse {
-        val response = ServerResponse.ok().build()
         return sr.multipartData().map { it["files"] }
                 .flatMapMany { Flux.fromIterable(it) }
                 .cast(FilePart::class.java)
-                .flatMap { fp ->
-                    fp
-                            .content()
-                            .map {
-                                val inputStream = it.asInputStream()
-                                // 上传到图片空间
-                                if (minioClient.bucketExists(bucketExistsArgs).not()) {
-                                    minioClient.makeBucket(makeBucketArgs)
-                                }
-                                val (fileName, _) = createRandomFileNameByOriginalFilename(fp.filename())
-                                val putObjectArgs = PutObjectArgs.builder().bucket("chat-img")
-                                        .`object`(fileName)
-                                        .stream(inputStream, inputStream.available().toLong(), -1)
-                                        .build()
-                                minioClient.putObject(putObjectArgs)
-                            }
+                .map { fp ->
+                    val (saveFileName, fileName, fileType) = createRandomFileNameByOriginalFilename(fp.filename())
+                    val file = File.createTempFile(fileName, fileType)
+                    fp.transferTo(file).subscribe()
+                    // 上传到图片空间
+                    if (minioClient.bucketExists(bucketExistsArgs).not()) {
+                        minioClient.makeBucket(makeBucketArgs)
+                    }
+                    val uploadObjectArgs = UploadObjectArgs.builder()
+                            .bucket("chat-img")
+                            .`object`(saveFileName)
+                            .filename(file.absolutePath)
+                            .contentType(fp.headers()["Content-Type"]?.first())
+                            .build()
+                    minioClient.uploadObject(uploadObjectArgs).also {
+                        file.delete()
+                    }
                 }
-                .flatMap { response }
+                .collectList()
+                .flatMap {
+                    ServerResponse.ok().bodyValue(it.map { response -> response.`object`() })
+                }
                 .awaitSingle()
 
     }
@@ -60,7 +65,13 @@ class FileUploadDownloadHandler(
         return ServerResponse.ok().build { t, _ ->
             val zeroCopyResponse = t.response as ZeroCopyHttpOutputMessage
             zeroCopyResponse.writeWith(DataBufferUtils
-                    .readInputStream({ minioClient.getObject(getObjectArgs) },
+                    .readInputStream({
+                        val inputStream = minioClient.getObject(getObjectArgs)
+                        inputStream.headers().names().map {
+                            zeroCopyResponse.headers.add(it, inputStream.headers()[it])
+                        }
+                        inputStream
+                    },
                             DefaultDataBufferFactory(), 4096))
         }
                 .awaitSingle()

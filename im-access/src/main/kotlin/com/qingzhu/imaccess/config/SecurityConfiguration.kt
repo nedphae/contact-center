@@ -25,8 +25,10 @@ class SecurityConfiguration {
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain? {
         http
+                .csrf().disable()
                 .authorizeExchange()
                 .pathMatchers("/actuator/**").permitAll()
+                .pathMatchers("/chat/img").permitAll()
                 .pathMatchers("/chat/img/**").permitAll()
                 .pathMatchers("/websocket-address/**").hasAuthority("SCOPE_im")
                 .anyExchange().authenticated()

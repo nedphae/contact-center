@@ -66,7 +66,7 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt:8.4")
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
 
-    // runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.postgresql:postgresql")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     kapt("org.springframework.boot:spring-boot-configuration-processor")

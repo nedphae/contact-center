@@ -22,15 +22,15 @@ spring:
         enabled: true
 
   r2dbc:
-    url: r2dbc:postgresql://192.168.50.108:5432/postgres?currentSchema=bot
+    url: r2dbc:postgresql://192.168.50.102:5432/postgres?currentSchema=bot
     username: postgres
-    password: t1wL0T6536
+    password: JpESiz1nHf
     pool:
       enabled: true
 
   elasticsearch:
     rest:
-      uris: ["http://192.168.50.108:9200"]
+      uris: ["http://192.168.50.104:9200"]
 
   cloud:
     inetutils:
@@ -39,8 +39,8 @@ spring:
       preferred-networks:
         - 192.168.*
     consul:
-      host: 192.168.50.102
-      port: 8500
+      host: 192.168.50.108
+      port: 80
       discovery:
         prefer-ip-address: true
         instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
