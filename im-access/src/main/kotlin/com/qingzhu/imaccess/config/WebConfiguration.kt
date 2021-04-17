@@ -17,6 +17,8 @@ import org.springframework.web.reactive.socket.server.support.HandshakeWebSocket
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter
 import org.springframework.web.reactive.socket.server.upgrade.ReactorNettyRequestUpgradeStrategy
 
+const val imgBucket = "im-img"
+const val fileBucket = "im-file"
 
 @Configuration
 @EnableWebFlux
@@ -45,8 +47,18 @@ class WebConfiguration : WebFluxConfigurer {
             accept(APPLICATION_JSON).nest {
                 GET("/websocket-address", webSocketAddressController::getWebSocketAddress)
             }
-            POST("/chat/img", fileUploadDownloadHandler::upload)
-            GET("/chat/img/{img}", fileUploadDownloadHandler::download)
+            POST("/chat/img") {
+                fileUploadDownloadHandler.upload(it, imgBucket)
+            }
+            GET("/chat/img/{fileName}") {
+                fileUploadDownloadHandler.download(it, imgBucket)
+            }
+            POST("/chat/file") {
+                fileUploadDownloadHandler.upload(it, imgBucket)
+            }
+            GET("/chat/file/{fileName}") {
+                fileUploadDownloadHandler.download(it, imgBucket)
+            }
         }
     }
 }

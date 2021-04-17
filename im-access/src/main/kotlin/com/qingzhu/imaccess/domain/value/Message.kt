@@ -21,7 +21,7 @@ data class Message(
 		 */
 		val uuid: String,
 		/** 会话id */
-		val conversationId: Long,
+		val conversationId: Long?,
 		/** 消息来源 (服务器设置) */
 		var from: Long? = null,
 		/** 消息送至 */
