@@ -29,7 +29,7 @@ class DispatchingCenter(@Qualifier("innerWebClient") webClientBuilder: WebClient
         return webClient
                 .put()
                 .uri {
-                    it.path("/assignment/auto")
+                    it.path("/dispatcher/assignment/auto")
                             .queryParam("organizationId", organizationId)
                             .queryParam("userId", userId)
                             .build()
@@ -42,7 +42,7 @@ class DispatchingCenter(@Qualifier("innerWebClient") webClientBuilder: WebClient
         return webClient
                 .put()
                 .uri {
-                    it.path("/assignment/staff")
+                    it.path("/dispatcher/assignment/staff")
                             .queryParam("organizationId", organizationId)
                             .queryParam("userId", userId)
                             .build()
@@ -68,7 +68,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
     fun registerCustomer(customerDto: Mono<CustomerStatusDto>): Mono<Unit> {
         return webClient
                 .post()
-                .uri("/register/customer")
+                .uri("/status/register/customer")
                 .body(customerDto)
                 .retrieve()
                 .bodyToMono()
@@ -77,7 +77,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
     fun unregisterCustomer(customerDto: Mono<CustomerBaseStatusDto>): Mono<Unit> {
         return webClient
                 .put()
-                .uri("/unregister/customer")
+                .uri("/status/unregister/customer")
                 .body(customerDto)
                 .retrieve()
                 .bodyToMono()
@@ -86,7 +86,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
     fun registerStaff(staffStatusDto: Mono<StaffStatusDto>): Mono<Unit> {
         return webClient
                 .post()
-                .uri("/register/staff")
+                .uri("/status/register/staff")
                 .body(staffStatusDto)
                 .retrieve()
                 .bodyToMono()
@@ -95,7 +95,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
     fun unregisterStaff(staffChangeStatusDto: Mono<StaffChangeStatusDto>): Mono<Unit> {
         return webClient
                 .put()
-                .uri("/unregister/staff")
+                .uri("/status/unregister/staff")
                 .body(staffChangeStatusDto)
                 .retrieve()
                 .bodyToMono()

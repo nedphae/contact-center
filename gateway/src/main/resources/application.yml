@@ -5,6 +5,13 @@ server:
 spring:
   application:
     name: gateway-server
+
+  r2dbc:
+    url: r2dbc:postgresql://192.168.50.102:5432/postgres?currentSchema=gateway
+    username: postgres
+    password: JpESiz1nHf
+    pool:
+      enabled: true
   # 配置 oauth2 client，现在使用的是动态配置 client，因此无法使用 oauth2
   # security:
   #   oauth2:
@@ -29,13 +36,13 @@ spring:
       ignored-interfaces:
       - eth*
       preferred-networks:
-      - 10.0.*
+      - 192.168.*
     loadbalancer:
       ribbon:
         enabled: false
     consul:
-      host: 10.0.0.105
-      port: 8500
+      host: 192.168.50.108
+      port: 80
       discovery:
         prefer-ip-address: true
         instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
@@ -43,28 +50,67 @@ spring:
 
     gateway:
       routes:
-        - id: auth_weight_high
+        # 鉴权服务
+        - id: auth_route
           uri: lb://oauth2-auth-server
           predicates:
             # - Path=/{companyId}/**
             - Path=/oauth/**
 
+        # websocket服务
         - id: websocket_http_route
           # hlb for hash load balance
           uri: hlb://websocket-server
           predicates:
             - Path=/socket.io/**
 
-        - id: websocket_route
-          uri: hlb:ws://websocket-server
-          predicates:
-              - Path=/socket.io/**
-
-        - id: im_weight_high
+        # 即时通讯服务
+        - id: im_route
           uri: lb://im-server
           predicates:
-            # - Path=/{companyId}/**
             - Path=/im/**
+
+        # 机器人服务
+        - id: bot_route
+          uri: lb://bot
+          predicates:
+            - Path=/bot/**
+
+        # 用户服务
+        - id: customer_route
+          uri: lb://dispatching-center
+          predicates:
+            - Path=/customer/**
+
+        # 调度中心服务
+        - id: dispatcher_route
+          uri: lb://dispatching-center
+          predicates:
+            - Path=/dispatcher/**
+
+        # oss 对象存储服务
+        - id: oss_route
+          uri: lb://im-server
+          predicates:
+            - Path=/oss/**
+
+        # 消息服务
+        - id: message_route
+          uri: lb://message-server
+          predicates:
+            - Path=/message/**
+
+        # 状态服务
+        - id: status_route
+          uri: lb://message-server
+          predicates:
+            - Path=/status/**
+
+        # 客服信息服务
+        - id: staff_route
+          uri: lb://staff-admin
+          predicates:
+            - Path=/staff/**
 logging:
   level:
     root: info

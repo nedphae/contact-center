@@ -19,9 +19,9 @@ class WebConfiguration : WebFluxConfigurer {
             accept(MediaType.APPLICATION_JSON).nest {
                 "/users".nest {
                     GET("/test", authProvider::getStaff)
-                }
-                "/users".nest {
                     GET("/test/test", authProvider::getStaffTest)
+                }
+                "/bot".nest {
                 }
             }
         }

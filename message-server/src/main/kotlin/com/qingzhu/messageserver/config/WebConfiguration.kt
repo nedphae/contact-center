@@ -39,19 +39,19 @@ class WebConfiguration : WebFluxConfigurer {
                     // 发送消息
                     POST("/send", messageHandler::send)
                 }
-                "/register".nest {
-                    // 注册客户在线信息
-                    POST("/customer", registerHandler::registerCustomer)
-                    // 注册客服在线信息
-                    POST("/staff", registerHandler::registerStaff)
-                }
-                "/unregister".nest {
-                    // 注销客户在线信息
-                    PUT("/customer", registerHandler::unregisterCustomer)
-                    // 注销客服在线信息
-                    PUT("/staff", registerHandler::unregisterStaff)
-                }
                 "/status".nest {
+                    "/register".nest {
+                        // 注册客户在线信息
+                        POST("/customer", registerHandler::registerCustomer)
+                        // 注册客服在线信息
+                        POST("/staff", registerHandler::registerStaff)
+                    }
+                    "/unregister".nest {
+                        // 注销客户在线信息
+                        PUT("/customer", registerHandler::unregisterCustomer)
+                        // 注销客服在线信息
+                        PUT("/staff", registerHandler::unregisterStaff)
+                    }
                     "/staff".nest {
                         // 获取空闲人工客服
                         GET("/idle", staffStatusHandler::findIdleStaffWithStaffDispatcherDto)

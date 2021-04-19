@@ -45,19 +45,27 @@ class WebConfiguration : WebFluxConfigurer {
                        fileUploadDownloadHandler: FileUploadDownloadHandler): RouterFunction<*> {
         return coRouter {
             accept(APPLICATION_JSON).nest {
+                // 仅仅测试用的，废弃了
                 GET("/websocket-address", webSocketAddressController::getWebSocketAddress)
             }
-            POST("/chat/img") {
-                fileUploadDownloadHandler.upload(it, imgBucket)
+            "im".nest {
+                // 即时通讯服务
             }
-            GET("/chat/img/{fileName}") {
-                fileUploadDownloadHandler.download(it, imgBucket)
-            }
-            POST("/chat/file") {
-                fileUploadDownloadHandler.upload(it, imgBucket)
-            }
-            GET("/chat/file/{fileName}") {
-                fileUploadDownloadHandler.download(it, imgBucket)
+            "oss".nest {
+                "chat".nest {
+                    POST("/img") {
+                        fileUploadDownloadHandler.upload(it, imgBucket)
+                    }
+                    GET("/img/{fileName}") {
+                        fileUploadDownloadHandler.download(it, imgBucket)
+                    }
+                    POST("/file") {
+                        fileUploadDownloadHandler.upload(it, fileBucket)
+                    }
+                    GET("/file/{fileName}") {
+                        fileUploadDownloadHandler.download(it, fileBucket)
+                    }
+                }
             }
         }
     }

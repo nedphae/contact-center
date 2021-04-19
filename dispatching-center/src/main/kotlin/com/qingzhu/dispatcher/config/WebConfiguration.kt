@@ -24,7 +24,7 @@ class WebConfiguration : WebFluxConfigurer {
                     PUT("", customerHandler::saveAndGetCustomer)
                 }
                 // 分配客服
-                "/assignment".nest {
+                "/dispatcher/assignment".nest {
                     PUT("/staff", assignmentHandler::assignmentStaff)
                     // 检查是否已经分配过客服
                     // 如果是就重新分配到该客服，如果客服不在线就重新分配客服

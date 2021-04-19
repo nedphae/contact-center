@@ -46,6 +46,7 @@ class FileUploadDownloadHandler(
                 .cast(FilePart::class.java)
                 .flatMap { fp ->
                     val (saveFileName, _, _) = createRandomFileNameByOriginalFilename(fp.filename())
+                    // 合并 DataBuffer 的 stream
                     fp.content().reduce(object : InputStream() {
                         override fun read() = -1
                     }) { s: InputStream, d -> SequenceInputStream(s, d.asInputStream()) }
