@@ -41,10 +41,8 @@ class StaffHandler(private val staffService: StaffService) {
     suspend fun findStaffInfo(sr: ServerRequest): ServerResponse {
         return sr.principal()
                 .getPrincipalTriple()
-                .flatMap {
-                    it.second.flatMap { sid ->
-                        staffService.findStaffInfo(sid)
-                    }
+                .flatMap {(_, sid, _) ->
+                    sid.flatMap { staffService.findStaffInfo(it) }
                 }
                 .transform {
                     ok().body(it)
