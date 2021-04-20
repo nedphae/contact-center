@@ -1,11 +1,24 @@
 package com.qingzhu.common.security
 
+import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
+import org.springframework.security.oauth2.jwt.*
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter
 import reactor.core.publisher.Mono
+import java.math.BigInteger
+import java.security.KeyFactory
+import java.security.Principal
+import java.security.PublicKey
+import java.security.interfaces.RSAPublicKey
+import java.security.spec.RSAPublicKeySpec
+import java.util.*
 
 /**
  * Utility class for Spring WebFlux Security.
@@ -43,5 +56,60 @@ object SecurityUtils {
             is String -> authentication.principal as String
             else -> null
         }
+    }
+}
+
+fun ServerHttpSecurity.oauth2ResourceServerConfig() {
+    this.oauth2ResourceServer()
+            .jwt {
+                it.jwtDecoder(reactiveJwtDecoder())
+                val converter = RoleBaseJwtGrantedAuthoritiesConverter()
+                val c = JwtAuthenticationConverter()
+                c.setJwtGrantedAuthoritiesConverter(converter)
+                it.jwtAuthenticationConverter(ReactiveJwtAuthenticationConverterAdapter(c))
+            }
+}
+
+/**
+ * 使用 oauth2Client 获取 jwt 时没有 principalName， 所以这里要手动设置
+ *
+ * See [principalname-cannot-be-empty-error](https://stackoverflow.com/questions/63352692/spring-security-5-with-oauth2-causing-principalname-cannot-be-empty-error)
+ */
+fun reactiveJwtDecoder(): ReactiveJwtDecoder {
+    val delegatingOAuth2TokenValidator = DelegatingOAuth2TokenValidator(JwtTimestampValidator())
+    val delegate = MappedJwtClaimSetConverter.withDefaults(Collections.emptyMap())
+    return NimbusReactiveJwtDecoder(getPublicKey() as RSAPublicKey)
+            .also { decoder ->
+                decoder.setJwtValidator(delegatingOAuth2TokenValidator)
+                decoder.setClaimSetConverter {
+                    val convertedClaims = delegate.convert(it)
+                    val username = convertedClaims?.get("user_name") ?: "sys"
+                    convertedClaims!!["sub"] = username
+                    convertedClaims
+                }
+            }
+}
+
+fun getPublicKey(): PublicKey {
+    val modulus = "18044398961479537755088511127417480155072543594514852056908450877656126120801808993616738273349107491806340290040410660515399239279742407357192875363433659810851147557504389760192273458065587503508596714389889971758652047927503525007076910925306186421971180013159326306810174367375596043267660331677530921991343349336096643043840224352451615452251387611820750171352353189973315443889352557807329336576421211370350554195530374360110583327093711721857129170040527236951522127488980970085401773781530555922385755722534685479501240842392531455355164896023070459024737908929308707435474197069199421373363801477026083786683"
+    val exponent = "65537"
+    val publicSpec = RSAPublicKeySpec(BigInteger(modulus), BigInteger(exponent))
+    val factory: KeyFactory = KeyFactory.getInstance("RSA")
+    return factory.generatePublic(publicSpec)
+}
+
+/**
+ * 获取用户 [Principal] 并解析为 [Triple]，包括 机构id，客服id，客服名称
+ */
+fun Mono<out Principal>.getPrincipalTriple(): Mono<Triple<Mono<Long>, Mono<Long>, Mono<String>>> {
+    return this.map {
+        val principal = (it as JwtAuthenticationToken).principal as Jwt
+        // org id
+        val orgId = principal.getClaim<Long>("oid")
+        // staff id
+        val sid = principal.getClaim<Long>("sid")
+        // staff name
+        val username = it.name
+        Triple(Mono.justOrEmpty(orgId), Mono.justOrEmpty(sid), Mono.justOrEmpty(username))
     }
 }

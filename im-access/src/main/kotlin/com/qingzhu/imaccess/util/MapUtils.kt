@@ -4,7 +4,6 @@ import com.corundumstudio.socketio.SocketIOClient
 import com.qingzhu.imaccess.domain.constant.CreatorType
 import reactor.core.publisher.Flux
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 
 data class Key(

@@ -1,5 +1,6 @@
 package com.qingzhu.staffadmin.staff.controller
 
+import com.qingzhu.common.security.getPrincipalTriple
 import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistShuntDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
@@ -38,11 +39,17 @@ class StaffController(
 @RestController
 class StaffHandler(private val staffService: StaffService) {
     suspend fun findStaffInfo(sr: ServerRequest): ServerResponse {
-        val result = sr.queryParam("staffId").map(String::toLong).map { si ->
-            staffService.findStaffInfo(si)
-        }.orElse(Mono.empty())
-        return ok().contentType(MediaType.APPLICATION_JSON)
-                .body(result).awaitSingle()
+        return sr.principal()
+                .getPrincipalTriple()
+                .flatMap {
+                    it.second.flatMap { sid ->
+                        staffService.findStaffInfo(sid)
+                    }
+                }
+                .transform {
+                    ok().body(it)
+                }
+                .awaitSingle()
     }
 
     suspend fun findStaffConfigByOrganizationIdAndStaffId(sr: ServerRequest): ServerResponse {

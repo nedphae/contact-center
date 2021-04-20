@@ -23,7 +23,10 @@ class StaffService(
         }.switchIfEmpty(Mono.error(UsernameNotFoundException("用户[$username]不存在")))
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    /**
+     * 当前 spring 版本不支持直接获取 ROLE，需要自定义 AuthenticationConverter
+     */
+    @PreAuthorize("hasRole('ADMIN')")
     fun findStaffInfo(staffId: Long): Mono<StaffDto> {
         return staffRepository.findById(staffId)
                 .map { StaffDto.fromStaff(it) }

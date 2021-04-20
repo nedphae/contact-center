@@ -34,7 +34,7 @@ class SecurityConfiguration {
     /**
      * 使用 oauth2Client 获取 jwt 时没有 principalName， 所以这里要手动设置
      *
-     * @see <https://stackoverflow.com/questions/63352692/spring-security-5-with-oauth2-causing-principalname-cannot-be-empty-error>
+     * See [principalname-cannot-be-empty-error](https://stackoverflow.com/questions/63352692/spring-security-5-with-oauth2-causing-principalname-cannot-be-empty-error)
      */
     @Bean
     fun reactiveJwtDecoder(): ReactiveJwtDecoder {
