@@ -3,7 +3,7 @@ logging:
     root: info
 
 server:
-  port: 8112
+  port: 8705
 
 management:
   health:

@@ -48,9 +48,7 @@ class WebConfiguration : WebFluxConfigurer {
                 // 仅仅测试用的，废弃了
                 GET("/websocket-address", webSocketAddressController::getWebSocketAddress)
             }
-            "im".nest {
-                // 即时通讯服务
-            }
+            // "im".nest { // 即时通讯服务 }
             "oss".nest {
                 "chat".nest {
                     POST("/img") {

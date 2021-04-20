@@ -1,12 +1,12 @@
 server:
-  port: 9090
+  port: 8701
 
 spring:
   application:
     name: im-server
   netty-websocket:
     name: websocket-server
-    port: 8191
+    port: 8702
     service-id: ${spring.netty-websocket.name}:${vcap.application.instance_id:${spring.application.instance_id:${spring.netty-websocket.port}}}
 
   redis:

@@ -1,6 +1,6 @@
 
 server:
-  port: 8080
+  port: 8700
 
 spring:
   application:
@@ -49,6 +49,7 @@ spring:
         # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
 
     gateway:
+
       routes:
         # 鉴权服务
         - id: auth_route
@@ -56,6 +57,13 @@ spring:
           predicates:
             # - Path=/{companyId}/**
             - Path=/oauth/**
+
+        # public key
+        - id: .well-known_route
+          uri: lb://oauth2-auth-server
+          predicates:
+            # - Path=/{companyId}/**
+            - Path=/.well-known/**
 
         # websocket服务
         - id: websocket_http_route

@@ -16,7 +16,6 @@ import java.security.interfaces.RSAPublicKey
 import java.security.spec.RSAPublicKeySpec
 import java.util.*
 
-
 @EnableWebFluxSecurity
 class SecurityConfiguration {
 
@@ -26,8 +25,9 @@ class SecurityConfiguration {
                 .csrf().disable()
                 .authorizeExchange()
                 .pathMatchers("/actuator/**").permitAll()
+                // 先放开全部路径，由服务鉴权
                 .pathMatchers("/**").permitAll()
-                .anyExchange().authenticated()
+                .anyExchange().permitAll()
         return http.build()
     }
 

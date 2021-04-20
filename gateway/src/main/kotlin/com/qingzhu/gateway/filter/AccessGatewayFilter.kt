@@ -7,12 +7,13 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 import org.springframework.stereotype.Component
+import org.springframework.util.StringUtils
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-
-@Component
+@Deprecated("获取参数方式影响性能，不再使用")
+// @Component
 class AccessGatewayFilter(
         val reactiveJwtDecoder: ReactiveJwtDecoder) : GlobalFilter {
     /**
@@ -24,24 +25,26 @@ class AccessGatewayFilter(
      * @return
      */
     override fun filter(exchange: ServerWebExchange, chain: GatewayFilterChain): Mono<Void> {
-        val ignoreUrls = listOf("/oauth/token", "/socket.io/")
-        if (ignoreUrls.contains(exchange.request.path.value())) {
-            return chain.filter(exchange)
-        }
         // 解析 jwt, 获取机构 id 保存到 http request parameter
         // 非阻塞写法
-        val auth = exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return unauthorized(exchange)
-        val decode = reactiveJwtDecoder.decode(auth)
+        val auth = exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return chain.filter(exchange)
+        val decode = reactiveJwtDecoder.decode(auth.substringAfter("Bearer "))
         return decode.map { it.claims }
                 .doOnNext {
                     exchange.request.queryParams["organizationId"] = it["oid"]?.toString()
                     exchange.request.queryParams["staffId"] = it["sid"]?.toString()
+                    val query = StringBuilder()
+                    val originalQuery: String = exchange.request.uri.rawQuery
+
+                    if (StringUtils.hasText(originalQuery)) {
+                        query.append(originalQuery)
+                        if (originalQuery[originalQuery.length - 1] != '&') {
+                            query.append('&')
+                        }
+                    }
                     it["oid"]?.toString()
                 }
                 .flatMap {
-                    if (it.isNullOrEmpty()) {
-                        unauthorized(exchange)
-                    }
                     chain.filter(exchange)
                 }
     }

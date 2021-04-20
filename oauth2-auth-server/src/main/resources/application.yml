@@ -3,7 +3,7 @@ logging:
     root: info
 
 server:
-  port: 8000
+  port: 8704
 
 spring:
   application:

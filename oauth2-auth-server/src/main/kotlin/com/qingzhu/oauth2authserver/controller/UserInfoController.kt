@@ -10,7 +10,7 @@ import java.security.Principal
 class UserInfoController {
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/users/me")
+    @GetMapping("/oauth/users/me")
     fun user(principal: Principal): Principal {
         return principal
     }
