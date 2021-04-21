@@ -152,4 +152,17 @@ class TestArrow {
 
         Thread.sleep(5000 * 3)
     }
+
+    @Test
+    fun testUnsafe() {
+        IO<Int> { throw RuntimeException("Boom!") }
+                .runAsync { result ->
+                    result.fold({ IO { println("Error") } }, { IO { println(it.toString()) } })
+                }
+                .unsafeRunAsync {
+                    if (it.isRight()){
+                        println(it)
+                    }
+                }
+    }
 }

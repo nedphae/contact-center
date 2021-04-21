@@ -3,6 +3,7 @@ package com.qingzhu.imaccess.socketio.authorization
 import com.corundumstudio.socketio.AuthorizationListener
 import com.corundumstudio.socketio.HandshakeData
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.oauth2.jwt.JwtException
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 import org.springframework.stereotype.Component
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 class JWTAuthorizationListener(
-        val reactiveJwtDecoder: ReactiveJwtDecoder
+        @Qualifier("reactiveJwtDecoderBean") val reactiveJwtDecoder: ReactiveJwtDecoder
 ) : AuthorizationListener {
 
     private val logger = LoggerFactory.getLogger(JWTAuthorizationListener::class.java)

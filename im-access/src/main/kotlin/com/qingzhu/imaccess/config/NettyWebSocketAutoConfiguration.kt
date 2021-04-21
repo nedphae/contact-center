@@ -17,7 +17,10 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
+import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties
+import org.springframework.cloud.consul.discovery.HeartbeatProperties
+import org.springframework.cloud.consul.serviceregistry.ConsulAutoRegistration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import javax.annotation.PreDestroy
@@ -28,7 +31,9 @@ import com.corundumstudio.socketio.Configuration as NettyConfig
 class NettyWebSocketAutoConfiguration(
         val properties: ConsulDiscoveryProperties,
         val webSocketConfigProperties: WebSocketConfigProperties,
-        val consulClient: ConsulClient
+        val heartbeatProperties: HeartbeatProperties,
+        val consulClient: ConsulClient,
+        val serverProperties : ServerProperties,
 ) {
     private val logger = LogFactory.getLog(NettyWebSocketAutoConfiguration::class.java)
 
@@ -87,20 +92,16 @@ class NettyWebSocketAutoConfiguration(
         newService.name = webSocketConfigProperties.name
         newService.address = properties.ipAddress
         newService.port = webSocketConfigProperties.port
-        val check = NewService.Check()
-        check.http = properties.healthCheckUrl
-        // check.interval = properties.healthCheckInterval
-        check.ttl = "10s" // properties.healthCheckInterval
-        check.deregisterCriticalServiceAfter = "1000s"
-        check.status = "passing"
-        newService.check = check
+        newService.check = ConsulAutoRegistration.createCheck(properties.port ?: serverProperties.port, heartbeatProperties, properties)
         IO {
-            logger.info("Register SocketIO")
             consulClient.agentServiceRegister(newService)
+            logger.info("Register SocketIO")
         }
                 .onError { IO { logger.error(it) } }
                 .fork(Dispatchers.IO)
                 .flatMap { IO.fx { it.join().bind() } }
                 .runAsync { IO.never }
+                // NOTE: 可修改为异步
+                .unsafeRunSync()
     }
 }
