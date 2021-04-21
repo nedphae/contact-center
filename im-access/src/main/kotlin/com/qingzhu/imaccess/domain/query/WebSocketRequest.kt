@@ -18,7 +18,7 @@ import java.util.*
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArg
-data class WebSocketRequest<T>(
+open class WebSocketRequest<T>(
         /** 执行的命令 */
         // val path: String?,
         /** 消息头 */
@@ -26,6 +26,7 @@ data class WebSocketRequest<T>(
         /** 消息体 */
         val body: T
 ) : java.io.Serializable {
+
     companion object {
         @JvmStatic
         private val serialVersionUID = 741L

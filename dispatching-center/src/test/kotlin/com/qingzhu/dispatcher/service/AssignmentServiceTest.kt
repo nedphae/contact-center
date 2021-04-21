@@ -10,7 +10,6 @@ import com.qingzhu.dispatcher.domain.constant.FromType
 import com.qingzhu.dispatcher.domain.dto.ConversationStatusDto
 import com.qingzhu.dispatcher.domain.dto.CustomerDispatcherDto
 import com.qingzhu.dispatcher.domain.dto.StaffDispatcherDto
-import com.qingzhu.dispatcher.domain.dto.StaffDto
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.reactor.asFlux
 import okhttp3.mockwebserver.Dispatcher

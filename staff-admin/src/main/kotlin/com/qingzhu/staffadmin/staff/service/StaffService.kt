@@ -2,7 +2,6 @@ package com.qingzhu.staffadmin.staff.service
 
 import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistShuntDto
-import com.qingzhu.staffadmin.staff.domain.dto.StaffDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffConfigRepository
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
@@ -27,9 +26,8 @@ class StaffService(
      * 当前 spring 版本不支持直接获取 ROLE，需要自定义 AuthenticationConverter
      */
     @PreAuthorize("hasRole('ADMIN')")
-    fun findStaffInfo(staffId: Long): Mono<StaffDto> {
+    fun findStaffInfo(staffId: Long): Mono<Staff> {
         return staffRepository.findById(staffId)
-                .map { StaffDto.fromStaff(it) }
     }
 
     fun findStaffConfigByOrganizationIdAndStaffId(organizationId: Int, staffId: Long? = null): Mono<ReceptionistShuntDto> {

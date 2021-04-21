@@ -10,7 +10,7 @@ data class Header(
          * 用于验证服务器消息回复
          */
         var mid: String,
-        var sid: String
+        var sid: String?
 ) : java.io.Serializable {
     companion object {
         @JvmStatic

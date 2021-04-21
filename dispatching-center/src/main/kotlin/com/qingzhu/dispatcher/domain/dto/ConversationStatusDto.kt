@@ -168,10 +168,10 @@ data class ConversationStatusDto(
 								 customerDispatcherDto: CustomerDispatcherDto): ConversationStatusDto {
 			return ConversationStatusDto(
 					organizationId = staffDto.organizationId,
-					staffId = staffDto.staffId,
+					staffId = staffDto.id!!,
 					nickName = staffDto.nickName,
 					userId = customerDispatcherDto.userId,
-					fromGroupId = staffDto.groupId,
+					fromGroupId = staffDto.staffGroupId,
 					fromShuntId = customerDispatcherDto.shuntId,
 					fromIp = customerDispatcherDto.ip,
 					fromPage = customerDispatcherDto.referrer,

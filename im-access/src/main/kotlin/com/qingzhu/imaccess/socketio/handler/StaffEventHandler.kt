@@ -7,8 +7,7 @@ import com.corundumstudio.socketio.annotation.OnDisconnect
 import com.corundumstudio.socketio.annotation.OnEvent
 import com.qingzhu.imaccess.domain.constant.CreatorType
 import com.qingzhu.imaccess.domain.constant.SocketIONamespace
-import com.qingzhu.imaccess.domain.query.StaffConfig
-import com.qingzhu.imaccess.domain.query.WebSocketRequest
+import com.qingzhu.imaccess.domain.query.WebSocketRequestStaffConfig
 import com.qingzhu.imaccess.domain.query.subscribeWithoutData
 import com.qingzhu.imaccess.service.RegisterService
 import com.qingzhu.imaccess.socketio.AbstractHandler
@@ -35,7 +34,7 @@ class StaffEventHandler(private val registerService: RegisterService) : Abstract
      * 注册客服信息
      */
     @OnEvent("register")
-    fun onRegister(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<StaffConfig>) {
+    fun onRegister(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequestStaffConfig) {
         request.toMonoMonad(socketIOClient)
             .doOnNext {
                 it.staffId = socketIOClient.handshakeData.getSingleUrlParam("sid").toLong()
