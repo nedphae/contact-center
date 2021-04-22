@@ -3,6 +3,7 @@ package com.qingzhu.imaccess.config
 import arrow.fx.IO
 import arrow.fx.extensions.fx
 import arrow.fx.extensions.io.bracket.onError
+import com.corundumstudio.socketio.AckMode
 import com.corundumstudio.socketio.AuthorizationListener
 import com.corundumstudio.socketio.SocketIOServer
 import com.corundumstudio.socketio.annotation.SpringAnnotationScanner
@@ -33,7 +34,7 @@ class NettyWebSocketAutoConfiguration(
         val webSocketConfigProperties: WebSocketConfigProperties,
         val heartbeatProperties: HeartbeatProperties,
         val consulClient: ConsulClient,
-        val serverProperties : ServerProperties,
+        val serverProperties: ServerProperties,
 ) {
     private val logger = LogFactory.getLog(NettyWebSocketAutoConfiguration::class.java)
 
@@ -50,6 +51,7 @@ class NettyWebSocketAutoConfiguration(
         config.socketConfig.soLinger = 0
         config.socketConfig.isTcpNoDelay = true
         config.socketConfig.isTcpKeepAlive = true
+        config.ackMode = AckMode.MANUAL
         // 添加 kotlin 支持
         config.jsonSupport = JacksonJsonSupport(KotlinModule())
 
@@ -92,7 +94,8 @@ class NettyWebSocketAutoConfiguration(
         newService.name = webSocketConfigProperties.name
         newService.address = properties.ipAddress
         newService.port = webSocketConfigProperties.port
-        newService.check = ConsulAutoRegistration.createCheck(properties.port ?: serverProperties.port, heartbeatProperties, properties)
+        newService.check = ConsulAutoRegistration.createCheck(properties.port
+                ?: serverProperties.port, heartbeatProperties, properties)
         IO {
             consulClient.agentServiceRegister(newService)
             logger.info("Register SocketIO")

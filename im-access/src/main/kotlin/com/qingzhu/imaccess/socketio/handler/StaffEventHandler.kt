@@ -11,6 +11,7 @@ import com.qingzhu.imaccess.domain.query.WebSocketRequestStaffConfig
 import com.qingzhu.imaccess.domain.query.subscribeWithoutData
 import com.qingzhu.imaccess.service.RegisterService
 import com.qingzhu.imaccess.socketio.AbstractHandler
+import com.qingzhu.imaccess.socketio.messageAck
 import com.qingzhu.imaccess.socketio.registerName
 import com.qingzhu.imaccess.util.Key
 import com.qingzhu.imaccess.util.MapUtils

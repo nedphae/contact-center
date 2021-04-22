@@ -7,7 +7,8 @@ Cache-Control: no-cache
 Authorization: Basic dXNlcl9jbGllbnQ6dGVzdF9zZWNyZXQ=
 
 > {%
-    client.global.set("auth_token", response.body.access_token);
+    client.global.set("access_token", response.body.access_token);
+    client.global.set("refresh_token", response.body.refresh_token);
 %}
 
 ###
@@ -16,7 +17,14 @@ GET http://localhost:8704/oauth/users/me
 Accept: */*
 Cache-Control: no-cache
 # base64 of user_client:test_secret
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{access_token}}
 
 ###
+# 根据 refresh token 获取 access_token
+POST http://localhost:8704/oauth/token?grant_type=refresh_token&refresh_token={{refresh_token}}&org_id=9491
+Accept: */*
+Cache-Control: no-cache
+# base64 of user_client:test_secret
+Authorization: Basic dXNlcl9jbGllbnQ6dGVzdF9zZWNyZXQ=
 
+###
