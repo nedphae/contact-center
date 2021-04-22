@@ -26,7 +26,7 @@ internal class FluxTest {
             // contextWrite 必须在使用该 context 的后面
             .contextWrite { it.put("test", "testContext") }
             .subscribe {
-                println(it)
+                println("subscribe: $it")
             }
     }
 

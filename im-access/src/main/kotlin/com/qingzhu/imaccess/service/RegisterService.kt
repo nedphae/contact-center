@@ -22,12 +22,16 @@ class RegisterService(
      */
     fun registerStaff(staffConfig: StaffConfig): Mono<StaffStatusDto> {
         return staffAdminService
-            .getReceptionistGroup(staffConfig.organizationId!!, staffConfig.staffId!!)
-            .transformDeferredContextual { t, u ->
-                t.map { StaffStatusDto.fromStaffConfigAndStaff(staffConfig, it, u["clientId"]) }
-            }
-                // 之前的 transform 会优化掉 registerStaff 动作
-                .transform { dto -> messageService.registerStaff(dto).flatMap { dto } }
+                .getReceptionistGroup(staffConfig.organizationId!!, staffConfig.staffId!!)
+                .transformDeferredContextual { t, u ->
+                    t.map {
+                        val dto = StaffStatusDto.fromStaffConfigAndStaff(staffConfig, it, u["clientId"])
+                        // 之前的 两个 transform 会优化掉中间的 registerStaff 动作
+                        messageService.registerStaff(dto.toMono()).subscribe()
+                        dto
+                    }
+                }
+
     }
 
     /**
@@ -35,13 +39,17 @@ class RegisterService(
      */
     fun registerCustomer(customerConfig: CustomerConfig): Mono<CustomerStatusDto> {
         val customerDto = CustomerDto.fromCustomerConfig(customerConfig)
-        // 客户信息现在保存到了 调度服务器 TODO: 后期再拆分到单独的服务器
+        // 客户信息现在保存到了 调度服务器
+        // TODO: 后期再拆分到单独的服务器
         return dispatchingCenter.updateCustomer(customerDto.toMono())
-            .transformDeferredContextual { t, u ->
-                t.map { CustomerStatusDto.fromCustomerConfig(customerConfig, it, u["clientId"]) }
-            }
-                // 注册信息
-                .transform { dto -> messageService.registerCustomer(dto).flatMap { dto } }
+                .transformDeferredContextual { t, u ->
+                    t.map {
+                        val dto = CustomerStatusDto.fromCustomerConfig(customerConfig, it, u["clientId"])
+                        // 注册信息
+                        messageService.registerCustomer(dto.toMono()).subscribe()
+                        dto
+                    }
+                }
     }
 
     /**

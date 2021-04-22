@@ -39,7 +39,7 @@ class MessageHandler(
             // 过滤消息
             .transform(messageFilterService::filter)
             .messageSubscribe(ackRequest, request) {
-                messageService.send(MessageDto(socketIOClient.sessionId.toString(), it).toMono())
+                messageService.send(MessageDto(socketIOClient.sessionId.toString(), it).toMono()).subscribe()
                 MessageResponse.fromMessage(it)
             }
         // TODO 客户特定时间没有说话就踢出咨询 修改放到接入服务器进行
