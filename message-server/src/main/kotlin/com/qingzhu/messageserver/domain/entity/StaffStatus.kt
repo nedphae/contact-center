@@ -17,8 +17,6 @@ data class StaffStatus(
         var shunt: List<Long>,
         /** 不同接待组的优先级 */
         var priorityOfShunt: Map<Long, Int>,
-        /** 客服所处服务器名称 */
-        val clientAccessServerMap: MutableMap<String, String> = HashMap(),
         /** 最大接待数量 */
         var maxServiceCount: Int,
         /** 客服类型，0 表示机器人，1 表示人工会话。 */
@@ -48,4 +46,7 @@ data class StaffStatus(
     val userIdList: MutableList<Long> = ArrayList(maxServiceCount)
 
     fun setOffline() = apply { this.onlineStatus = OnlineStatus.OFFLINE }
+
+    /** 客服所处服务器名称 */
+    val clientAccessServerMap: MutableMap<String, String> = HashMap()
 }

@@ -26,7 +26,8 @@ class RegisterService(
             .transformDeferredContextual { t, u ->
                 t.map { StaffStatusDto.fromStaffConfigAndStaff(staffConfig, it, u["clientId"]) }
             }
-                .transform { dto -> messageService.registerStaff(dto).transform { dto } }
+                // 之前的 transform 会优化掉 registerStaff 动作
+                .transform { dto -> messageService.registerStaff(dto).flatMap { dto } }
     }
 
     /**
@@ -40,7 +41,7 @@ class RegisterService(
                 t.map { CustomerStatusDto.fromCustomerConfig(customerConfig, it, u["clientId"]) }
             }
                 // 注册信息
-                .transform { dto -> messageService.registerCustomer(dto).transform { dto } }
+                .transform { dto -> messageService.registerCustomer(dto).flatMap { dto } }
     }
 
     /**

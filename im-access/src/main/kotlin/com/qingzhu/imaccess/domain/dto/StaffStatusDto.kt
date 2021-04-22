@@ -48,7 +48,7 @@ data class StaffStatusDto(
             return StaffStatusDto(
                 organizationId = staffConfig.organizationId!!,
                 staffId = staffConfig.staffId!!,
-                role = staffConfig.role,
+                role = staffConfig.role!!,
                 shunt = receptionistShuntDto.shunt,
                 priorityOfShunt = receptionistShuntDto.priorityOfShunt,
                 onlineStatus = staffConfig.onlineStatus,

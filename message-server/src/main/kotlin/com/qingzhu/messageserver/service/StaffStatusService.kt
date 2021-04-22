@@ -33,7 +33,7 @@ class StaffStatusService(
     fun saveStatus(staffStatus: StaffStatus) {
         val statusMap = getStatusMap(staffStatus.organizationId)
         if (statusMap.isEmpty) {
-            statusMap.addIndex(IndexType.HASH, "receptionistGroup[any]")
+            statusMap.addIndex(IndexType.HASH, "shunt[any]")
             statusMap.addIndex(IndexType.SORTED, "onlineStatus")
             statusMap.addIndex(IndexType.BITMAP, "autoBusy")
         }
@@ -47,7 +47,7 @@ class StaffStatusService(
         val statusMap = getStatusMap(organizationId)
         val predicateList = mutableListOf(
                 // 在当前接待组
-                EqualPredicate("receptionistGroup[any]", shuntId),
+                EqualPredicate("shunt[any]", shuntId),
                 // 在线
                 EqualPredicate("onlineStatus", OnlineStatus.ONLINE),
                 // 接待未满

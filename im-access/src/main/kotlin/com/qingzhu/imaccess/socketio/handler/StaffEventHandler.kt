@@ -11,7 +11,6 @@ import com.qingzhu.imaccess.domain.query.WebSocketRequestStaffConfig
 import com.qingzhu.imaccess.domain.query.subscribeWithoutData
 import com.qingzhu.imaccess.service.RegisterService
 import com.qingzhu.imaccess.socketio.AbstractHandler
-import com.qingzhu.imaccess.socketio.messageAck
 import com.qingzhu.imaccess.socketio.registerName
 import com.qingzhu.imaccess.util.Key
 import com.qingzhu.imaccess.util.MapUtils
@@ -40,6 +39,7 @@ class StaffEventHandler(private val registerService: RegisterService) : Abstract
             .doOnNext {
                 it.staffId = socketIOClient.handshakeData.getSingleUrlParam("sid").toLong()
                 it.organizationId = socketIOClient.handshakeData.getSingleUrlParam("oid").toInt()
+                it.role = socketIOClient.handshakeData.getSingleUrlParam("role")
                 socketIOClient[registerName] = it.staffId
                 socketIOClient["organizationId"] = it.organizationId
             }

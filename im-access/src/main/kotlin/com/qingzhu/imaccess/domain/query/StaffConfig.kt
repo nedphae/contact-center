@@ -6,8 +6,6 @@ import com.qingzhu.imaccess.domain.constant.OnlineStatus
  * 客服配置
  */
 data class StaffConfig(
-		/** 角色种类 */
-		var role: String,
 		/** 在线状态 */
 		var onlineStatus: OnlineStatus = OnlineStatus.ONLINE
 ) {
@@ -16,4 +14,7 @@ data class StaffConfig(
 
 	/** 客服id */
 	var staffId: Long? = null
+
+	/** 角色种类 */
+	var role: String? = null
 }
