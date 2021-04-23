@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.jwt.*
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter
+import org.springframework.web.reactive.function.server.ServerRequest
+import org.springframework.web.reactive.function.server.awaitPrincipal
 import reactor.core.publisher.Mono
 import java.math.BigInteger
 import java.security.KeyFactory
@@ -101,15 +103,30 @@ fun getPublicKey(): PublicKey {
 /**
  * 获取用户 [Principal] 并解析为 [Triple]，包括 机构id，客服id，客服名称
  */
-fun Mono<out Principal>.getPrincipalTriple(): Mono<Triple<Mono<Long>, Mono<Long>, Mono<String>>> {
+fun Mono<out Principal>.getPrincipalTriple(): Mono<Triple<Mono<Int>, Mono<Long>, Mono<String>>> {
     return this.map {
         val principal = (it as JwtAuthenticationToken).principal as Jwt
         // org id
-        val orgId = principal.getClaim<Long>("oid")
+        val orgId = principal.getClaim<Int>("oid")
         // staff id
         val sid = principal.getClaim<Long>("sid")
         // staff name
         val username = it.name
         Triple(Mono.justOrEmpty(orgId), Mono.justOrEmpty(sid), Mono.justOrEmpty(username))
     }
+}
+
+/**
+ * 协程 获取用户 [Principal] 并解析为 [Triple]，包括 机构id，客服id，客服名称
+ */
+suspend fun ServerRequest.awaitGetPrincipalTriple(): Triple<Int?, Long?, String?> {
+    val principal = this.awaitPrincipal()
+    val jwtPrincipal = (principal as JwtAuthenticationToken).principal as Jwt
+    // org id
+    val orgId = jwtPrincipal.getClaim<Int>("oid")
+    // staff id
+    val sid = jwtPrincipal.getClaim<Long>("sid")
+    // staff name
+    val username = principal.name
+    return Triple(orgId, sid, username)
 }

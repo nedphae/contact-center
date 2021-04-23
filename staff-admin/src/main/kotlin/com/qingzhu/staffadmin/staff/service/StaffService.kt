@@ -30,14 +30,9 @@ class StaffService(
         return staffRepository.findById(staffId)
     }
 
-    fun findStaffConfigByOrganizationIdAndStaffId(organizationId: Int, staffId: Long? = null): Mono<ReceptionistShuntDto> {
-        var staff: Mono<Staff> = Mono.empty()
-        val staffConfigFlux = if (staffId == null) {
-            staffConfigRepository.findAllByOrganizationId(organizationId)
-        } else {
-            staff = staffRepository.findById(staffId)
-            staffConfigRepository.findAllByOrganizationIdAndStaffId(organizationId, staffId)
-        }
+    fun findStaffConfigByOrganizationIdAndStaffId(organizationId: Int, staffId: Long): Mono<ReceptionistShuntDto> {
+        val staff: Mono<Staff> = staffRepository.findById(staffId)
+        val staffConfigFlux = staffConfigRepository.findAllByOrganizationIdAndStaffId(organizationId, staffId)
 
         return staffConfigFlux
                 .collectMap({ it.shuntId }) { it.priority }

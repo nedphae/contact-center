@@ -15,6 +15,16 @@ data class CustomerBaseStatusDto(
     val accessServerClient: String
 )
 
+data class CustomerBaseClientDto(
+        /** 公司id */
+        val organizationId: Int,
+        val userId: Long,
+        /** Which server i`m in
+         * 如果需要配置登陆端互提，可将 A 更改为终端类型枚举
+         */
+        val clientAccessServer: Pair<String, String>
+)
+
 data class CustomerStatusDto(
     /** 公司id */
     val organizationId: Int,
@@ -34,8 +44,6 @@ data class CustomerStatusDto(
     val shuntId: Long,
     /** 机器人优先开关（访客分配） */
     val robotShuntSwitch: Int?,
-    /** 客服所处服务器名 */
-    val clientAccessServer: Pair<String, String>,
     /** vip等级 1-10 */
     val vipLevel: Int?,
     /** 客户来源类型 */
@@ -49,19 +57,12 @@ data class CustomerStatusDto(
     //是否在线
     var onlineStatus: OnlineStatus = OnlineStatus.ONLINE
 
-    fun toCustomerStatus(): CustomerStatus = CustomerStatusMapper.mapper.fromDtoWithMap(this)
+    fun toCustomerStatus(): CustomerStatus = CustomerStatusMapper.mapper.mapFromDto(this)
 }
 
 @Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 abstract class CustomerStatusMapper {
-    protected abstract fun mapFromDto(staff: CustomerStatusDto): CustomerStatus
-
-    fun fromDtoWithMap(customerStatusDto: CustomerStatusDto): CustomerStatus {
-        val status = mapFromDto(customerStatusDto)
-        // plusAssign 必须有一个不可变对象，MutableMap 或者 var
-        status.clientAccessServerMap += customerStatusDto.clientAccessServer
-        return status
-    }
+    abstract fun mapFromDto(staff: CustomerStatusDto): CustomerStatus
 
     companion object {
         val mapper: CustomerStatusMapper = Mappers.getMapper(CustomerStatusMapper::class.java)

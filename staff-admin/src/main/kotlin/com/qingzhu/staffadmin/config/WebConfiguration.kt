@@ -1,5 +1,6 @@
 package com.qingzhu.staffadmin.config
 
+import com.qingzhu.staffadmin.staff.controller.ShuntUIConfigHandler
 import com.qingzhu.staffadmin.staff.controller.StaffHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,12 +15,16 @@ import org.springframework.web.reactive.function.server.coRouter
 @EnableWebFlux
 class WebConfiguration : WebFluxConfigurer {
     @Bean
-    fun routerFunction(staffHandler: StaffHandler): RouterFunction<ServerResponse> {
+    fun routerFunction(staffHandler: StaffHandler,
+                       shuntUIConfigHandler: ShuntUIConfigHandler): RouterFunction<ServerResponse> {
         return coRouter {
             accept(MediaType.APPLICATION_JSON).nest {
                 "/staff".nest {
                     GET("/info", staffHandler::findStaffInfo)
                     GET("/receptionist", staffHandler::findStaffConfigByOrganizationIdAndStaffId)
+                }
+                "/config".nest {
+                    GET("/chat-ui/config", shuntUIConfigHandler::getUIConfigByShunt)
                 }
             }
         }

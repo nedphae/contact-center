@@ -32,9 +32,10 @@ internal class FluxTest {
 
     @Test
     fun testThen() {
-        val start: Int? = null
+        var start = 1
         Mono.create<Int> {
-            // it.success(start)
+            it.success(start)
+            it.success(start + 1)
         }
             .doOnNext {
                 println(it)
@@ -65,5 +66,27 @@ internal class FluxTest {
                 Assertions.assertIterableEquals(listOf(1, 2, 3, 4), it)
             }
             .verifyComplete()
+    }
+
+    /**
+     * 如示例，transform 返回自身时 中间的 flatMap 会优化掉
+     */
+    @Test
+    fun testTwoTransform() {
+        Mono.just(1)
+                .doOnNext {
+                    println(it)
+                }
+                .transform {
+                    text ->
+                    text.flatMap {
+                        println(2)
+                        Mono.just(2)
+                    }.transform { text }
+                }
+                .doOnNext {
+                    println(it)
+                }
+                .subscribe()
     }
 }

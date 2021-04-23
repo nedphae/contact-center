@@ -78,6 +78,9 @@ class MessageService(
             }
     }
 
+    /**
+     * 客户连接 websocket发送 Assignment 事件给客服
+     */
     fun sendAssignmentEvent() {
 
     }

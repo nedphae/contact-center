@@ -42,13 +42,11 @@ class RegisterService(
         // 客户信息现在保存到了 调度服务器
         // TODO: 后期再拆分到单独的服务器
         return dispatchingCenter.updateCustomer(customerDto.toMono())
-                .transformDeferredContextual { t, u ->
-                    t.map {
-                        val dto = CustomerStatusDto.fromCustomerConfig(customerConfig, it, u["clientId"])
-                        // 注册信息
-                        messageService.registerCustomer(dto.toMono()).subscribe()
-                        dto
-                    }
+                .map {
+                    val dto = CustomerStatusDto.fromCustomerConfig(customerConfig, it)
+                    // 注册信息
+                    messageService.registerCustomer(dto.toMono()).subscribe()
+                    dto
                 }
     }
 

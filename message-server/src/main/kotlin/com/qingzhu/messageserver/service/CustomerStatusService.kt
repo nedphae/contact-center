@@ -4,6 +4,7 @@ import com.hazelcast.config.IndexType
 import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
 import com.hazelcast.query.impl.predicates.EqualPredicate
+import com.qingzhu.messageserver.domain.dto.CustomerBaseClientDto
 import com.qingzhu.messageserver.domain.dto.CustomerBaseStatusDto
 import com.qingzhu.messageserver.domain.entity.CustomerStatus
 import org.springframework.beans.factory.annotation.Qualifier
@@ -63,5 +64,14 @@ class CustomerStatusService(
         return Mono
                 .justOrEmpty(statusMap.values(equalPredicate as Predicate<Long, CustomerStatus>)
                         .stream().findFirst())
+    }
+
+    fun updateByClientId(customerBaseClientDto: CustomerBaseClientDto): Mono<CustomerStatus> {
+        return findByUserId(customerBaseClientDto.organizationId, customerBaseClientDto.userId)
+                .map {
+                    it.clientAccessServerMap += customerBaseClientDto.clientAccessServer
+                    saveStatus(it)
+                    it
+                }
     }
 }

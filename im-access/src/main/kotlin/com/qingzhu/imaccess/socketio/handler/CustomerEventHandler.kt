@@ -7,10 +7,11 @@ import com.corundumstudio.socketio.annotation.OnDisconnect
 import com.corundumstudio.socketio.annotation.OnEvent
 import com.qingzhu.imaccess.domain.constant.CreatorType
 import com.qingzhu.imaccess.domain.constant.SocketIONamespace
-import com.qingzhu.imaccess.domain.dto.CustomerBaseStatusDto
-import com.qingzhu.imaccess.domain.query.CustomerConfig
+import com.qingzhu.imaccess.domain.dto.CustomerBaseClientDto
+import com.qingzhu.imaccess.domain.query.AssignmentInfo
 import com.qingzhu.imaccess.domain.query.WebSocketRequest
 import com.qingzhu.imaccess.domain.query.subscribeWithData
+import com.qingzhu.imaccess.domain.view.ConversationView
 import com.qingzhu.imaccess.service.DispatchingCenter
 import com.qingzhu.imaccess.service.MessageService
 import com.qingzhu.imaccess.service.RegisterService
@@ -21,15 +22,17 @@ import com.qingzhu.imaccess.util.Key
 import com.qingzhu.imaccess.util.MapUtils
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 /**
  * 客户注册
+ * TODO: 机器人消息通过 http 接口发送，socket 接口只接入人工消息
  */
 @Service
 class CustomerEventHandler(
-    private val registerService: RegisterService,
-    private val dispatchingCenter: DispatchingCenter,
-    private val messageService: MessageService
+        private val registerService: RegisterService,
+        private val dispatchingCenter: DispatchingCenter,
+        private val messageService: MessageService,
 ) : AbstractHandler(SocketIONamespace.CUSTOMER) {
 
     @OnConnect
@@ -40,41 +43,39 @@ class CustomerEventHandler(
      * 注册客户信息
      */
     @OnEvent(SocketEvent.register)
-    fun onRegister(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<CustomerConfig>) {
-        val customerConfig = request.toMonoMonad(socketIOClient)
-        customerConfig
-            .doOnNext {
-                // 设置 IP
-                it.ip = socketIOClient.handshakeData.httpHeaders["X-Forwarded-For"]
-            }
-            //添加 10 分钟内自动转接人工
-            .flatMap {
-                // 检查 是否在缓存中 缓存10分钟
-                messageService.findCustomerByUid(it.organizationId, it.uid)
-            }
-            // 如果缓存中还有状态，就不用再次注册了
-            .switchIfEmpty(
-                // 缓存中不存在客户信息就重新注册
-                customerConfig
-                    .flatMap {
-                        // 向消息服务存储用户消息
-                        registerService.registerCustomer(it)
+    fun onRegister(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<AssignmentInfo>) {
+        val assignmentInfo = request.toMonoMonad(socketIOClient)
+        assignmentInfo
+                .doOnNext {
+                    socketIOClient[registerName] = it.userId
+                    socketIOClient["organizationId"] = it.organizationId
+                }
+                .flatMap { info ->
+                    // 设置 客户端 map
+                    MapUtils.put(Key(info.organizationId, CreatorType.CUSTOMER, info.userId), socketIOClient)
+                    // 检查是否分配了客服
+                    Mono.justOrEmpty(info.staffId)
+                            .map {
+                                ConversationView(
+                                        id = info.conversationId,
+                                        organizationId = info.organizationId,
+                                        staffId = info.staffId,
+                                        userId = info.userId,
+                                        // 如果分配了，客户端已经有信息了
+                                        null, null, null, null
+                                )
+                            }
+                }
+                // 没有分配过就新分配一个客服
+                .switchIfEmpty(assignmentInfo.flatMap { dispatchingCenter.assignmentStaff(it.organizationId, it.userId) })
+                .transformDeferredContextual { t, u ->
+                    t.map {
+                        messageService.updateCustomerClient(CustomerBaseClientDto(it.organizationId, it.userId, u.get<String>("clientId")).toMono())
+                        it
                     }
-                    .map {
-                        MapUtils.put(Key(it.organizationId, CreatorType.CUSTOMER, it.userId), socketIOClient)
-                        CustomerBaseStatusDto(it.organizationId, it.userId)
-                    }
-            )
-            .flatMap {
-                // 存在就直接调用调度系统分配客服
-                dispatchingCenter.assignmentAuto(it!!.organizationId, it.userId)
-            }
-            .doOnNext {
-                socketIOClient[registerName] = it.userId
-                socketIOClient["organizationId"] = it.organizationId
-            }
-            .contextWrite { it.put("clientId", socketIOClient.sessionId.toString()) }
-            .subscribeWithData(ackRequest, request)
+                }
+                .contextWrite { it.put("clientId", socketIOClient.sessionId.toString()) }
+                .subscribeWithData(ackRequest, request)
     }
 
     @OnDisconnect
@@ -84,15 +85,4 @@ class CustomerEventHandler(
         MapUtils.remove(Key(organizationId, CreatorType.CUSTOMER, userId), socketIOClient)
     }
 
-    /**
-     * 转接到人工座席
-     * Long: userId
-     */
-    @OnEvent(SocketEvent.turnToStaff)
-    fun onTurnToStaff(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<Long>) {
-        /** 获取客户的接待组ID */
-        val (organizationId, userId) = getOrganizationIdAndRegisterName(socketIOClient)
-        Mono.justOrEmpty(dispatchingCenter.assignmentStaff(organizationId, userId))
-            .subscribeWithData(ackRequest, request)
-    }
 }

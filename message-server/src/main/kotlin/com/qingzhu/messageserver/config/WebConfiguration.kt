@@ -65,6 +65,8 @@ class WebConfiguration : WebFluxConfigurer {
                         GET("/shunt-id", customerStatusHandler::findStaffIdOrShuntId)
                         // 根据 uid 查找客户
                         GET("/find-by-uid", customerStatusHandler::findByUid)
+                        // 更新 客户端 ID
+                        PUT("/update-client", customerStatusHandler::updateByClientId)
                     }
                     "/conversation".nest {
                         // 创建新会话 分配机器人客服

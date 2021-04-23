@@ -1,46 +1,48 @@
 package com.qingzhu.bot.knowledgebase.entity
 
+import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.Document
+import org.springframework.data.elasticsearch.annotations.Field
+import org.springframework.data.elasticsearch.annotations.FieldType
+import java.time.LocalDateTime
 import java.util.*
 
 /**
  * 知识库主题 vo
  */
-@Document(indexName = "knowledgebase-topic")
+@Document(indexName = "knowledgebase-topic", shards = 1, replicas = 0)
 data class Topic(
-		val id: String = UUID.randomUUID().toString().replace("-", ""),
-		/** 标题 */
-		var title: String,
-		/** 内容 */
-		var content: String,
-		/** 微信渠道回复 */
-		var weixin: String,
-		/** 邮件渠道回复 */
-		var email: String,
-		/** 短信回复 */
-		var sms: String,
+		/** 机构 ID **/
+		val organizationId: Int,
+		@Id
+		val id: Long,
+		/** 问题，使用ik分词器查询和索引 */
+		@Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+		var question: String,
+		/** 问题的md5 */
+		var md5: String,
+		/** 问题的对外答案，如果是相似问题，可以设置为空 */
+		var answer: String?,
+		/** 问题的对内答案 */
+		var innerAnswer: String?,
+		/** 问题答案类型，0只有对外答案，1只有对内答案，2同时有对内和对外答案，3 相似问题，无答案 */
+		var faqType: Int?,
+		/** 问题的来源,0:用户手动添加,1:寒暄库,2:文件导入 */
+		var fromType: Int,
 		/** 语音播报回复 */
-		var tts: String,
-		/** 问题价格 */
-		var price: Float,
-		/** 关键词 */
-		var keyword: String,
-		/** 摘要 */
-		var summary: String,
-		/** 是否匿名提问 */
-		var anonymous: Boolean,
-		/** 有效期开始 */
-		var begintime: Date,
+		var updateTime: LocalDateTime,
+		/** 问题类型,1:标准问题,10:相似问题 */
+		var type: Int,
+		/** 相似问题(type=10)对应的标准问题id */
+		var refId: Long?,
+		/** 关联的问题id列表 */
+		var connectIds: List<Long>?,
+		/** 是否有效标记位 */
+		var enabled: Boolean,
+		/** 问题的失效时间 */
+		var effectiveTime: Date,
 		/** 有效期结束 */
-		var endtime: Date,
-		/** 是否置顶 */
-		var top: Boolean,
-		/** 是否精华 */
-		var essence: Boolean,
-		/** 是否已采纳最佳答案 */
-		var accept: Boolean,
-		/** 结贴 */
-		var finish: Boolean,
-		/** 相似问题 */
-		var silimar: List<String>
+		var failureTime: Date,
+		/** 知识点所属分类 */
+		var categoryId: Long,
 )

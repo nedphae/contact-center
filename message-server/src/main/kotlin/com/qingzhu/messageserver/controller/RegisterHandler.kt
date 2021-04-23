@@ -22,7 +22,7 @@ class RegisterHandler(
     suspend fun registerCustomer(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<CustomerStatusDto>()
             .map { customerStatusService.saveStatus(it.toCustomerStatus()) }
-            .flatMap { accepted().build() }.awaitSingle()
+            .flatMap { accepted().bodyValue(it) }.awaitSingle()
     }
 
     suspend fun registerStaff(sr: ServerRequest): ServerResponse {

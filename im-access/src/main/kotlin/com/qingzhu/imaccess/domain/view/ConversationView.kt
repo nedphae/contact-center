@@ -11,7 +11,7 @@ data class ConversationView(
 		val id: Long?,
 		/** 公司id */
 		val organizationId: Int,
-		/** 客服id */
+		/** 客服id 如果不需要转人工就为空 */
 		val staffId: Long?,
 		val userId: Long,
 		val nickName: String?,

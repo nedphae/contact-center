@@ -5,7 +5,6 @@ package com.qingzhu.imaccess.socketio.constant
  */
 object SocketEvent {
     const val register = "status/register"
-    const val turnToStaff = "status/turnToStaff"
 
     object Message {
         const val send = "msg/send"

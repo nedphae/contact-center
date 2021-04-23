@@ -74,6 +74,18 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
                 .bodyToMono()
     }
 
+    /**
+     * 注册客户客户端 Id
+     */
+    fun updateCustomerClient(customerDto: Mono<CustomerBaseClientDto>): Mono<Unit> {
+        return webClient
+                .put()
+                .uri("/status/customer/update-client")
+                .body(customerDto)
+                .retrieve()
+                .bodyToMono()
+    }
+
     fun unregisterCustomer(customerDto: Mono<CustomerBaseStatusDto>): Mono<Unit> {
         return webClient
                 .put()

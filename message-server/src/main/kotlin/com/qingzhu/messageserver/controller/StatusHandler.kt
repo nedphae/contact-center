@@ -1,5 +1,6 @@
 package com.qingzhu.messageserver.controller
 
+import com.qingzhu.messageserver.domain.dto.CustomerBaseClientDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffDispatcherDto
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
@@ -66,6 +67,19 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
                         .transform { ok().body(it) }
             }.orElse(response)
         }.orElse(response).awaitSingle()
+    }
+
+    /**
+     * 协程实现的命令式
+     */
+    suspend fun updateByClientId(sr: ServerRequest): ServerResponse {
+        val customerBaseClientDto = sr.awaitBody<CustomerBaseClientDto>()
+        val updatedStatus = customerStatusService.updateByClientId(customerBaseClientDto).awaitSingle()
+        return if (updatedStatus != null) {
+             ok().bodyValueAndAwait(updatedStatus)
+        } else {
+            status(HttpStatus.NOT_FOUND).buildAndAwait()
+        }
     }
 
 }

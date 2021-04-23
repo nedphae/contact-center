@@ -5,6 +5,7 @@ import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
 import com.hazelcast.query.impl.predicates.AndPredicate
 import com.hazelcast.query.impl.predicates.EqualPredicate
+import com.hazelcast.query.impl.predicates.NotEqualPredicate
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffDispatcherDto
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.map
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.util.concurrent.TimeUnit
@@ -115,5 +117,23 @@ class StaffStatusService(
                     // 重新保存状态
                     saveStatus(it)
                 }
+    }
+
+    /**
+     * 获取所有在线客服列表
+     * 管理员权限
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    fun findAllOnlineStaff(organizationId: Int): Collection<StaffStatus> {
+        val statusMap = getStatusMap(organizationId)
+        val predicateList = mutableListOf(
+                // 接待组不为空
+                NotEqualPredicate("shunt[any]", null),
+                // 在线
+                NotEqualPredicate("onlineStatus", OnlineStatus.OFFLINE),
+        )
+        val andPredicate = AndPredicate(*predicateList.toTypedArray())
+        @Suppress("UNCHECKED_CAST")
+        return statusMap.values(andPredicate as Predicate<Long, StaffStatus>)
     }
 }
