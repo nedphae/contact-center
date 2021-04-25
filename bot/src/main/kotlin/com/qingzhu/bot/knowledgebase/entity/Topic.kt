@@ -1,5 +1,6 @@
 package com.qingzhu.bot.knowledgebase.entity
 
+import com.qingzhu.common.domain.AbstractAuditingEntity
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Field
@@ -14,8 +15,10 @@ import java.util.*
 data class Topic(
 		/** 机构 ID **/
 		val organizationId: Int,
+		/** 所属知识库ID **/
+		val knowledgeBaseId: Long,
 		@Id
-		val id: Long,
+		var id: Long? = null,
 		/** 问题，使用ik分词器查询和索引 */
 		@Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
 		var question: String,
@@ -45,4 +48,4 @@ data class Topic(
 		var failureTime: Date,
 		/** 知识点所属分类 */
 		var categoryId: Long,
-)
+) : AbstractAuditingEntity()

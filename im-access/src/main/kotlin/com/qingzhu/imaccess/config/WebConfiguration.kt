@@ -1,5 +1,6 @@
 package com.qingzhu.imaccess.config
 
+import com.qingzhu.imaccess.controller.BotAccessHandler
 import com.qingzhu.imaccess.controller.FileUploadDownloadHandler
 import com.qingzhu.imaccess.controller.WebSocketAddressController
 import com.qingzhu.imaccess.socketio.EchoHandler
@@ -42,15 +43,16 @@ class WebConfiguration : WebFluxConfigurer {
 
     @Bean
     fun routerFunction(webSocketAddressController: WebSocketAddressController,
-                       fileUploadDownloadHandler: FileUploadDownloadHandler): RouterFunction<*> {
+                       fileUploadDownloadHandler: FileUploadDownloadHandler,
+                       botAccessHandler: BotAccessHandler,): RouterFunction<*> {
         return coRouter {
             accept(APPLICATION_JSON).nest {
                 // 仅仅测试用的，废弃了
                 GET("/websocket-address", webSocketAddressController::getWebSocketAddress)
             }
             // "im".nest { // 即时通讯服务 }
-            "oss".nest {
-                "chat".nest {
+            "/oss".nest {
+                "/chat".nest {
                     POST("/img") {
                         fileUploadDownloadHandler.upload(it, imgBucket)
                     }
@@ -63,6 +65,11 @@ class WebConfiguration : WebFluxConfigurer {
                     GET("/file/{fileName}") {
                         fileUploadDownloadHandler.download(it, fileBucket)
                     }
+                }
+            }
+            "/access".nest {
+                "/customer".nest {
+                    POST("/register", botAccessHandler::register)
                 }
             }
         }

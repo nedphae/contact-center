@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.data.repository.kotlin.CoroutineSortingRepository
 
 interface TopicRepository : CoroutineSortingRepository<Topic, Long> {
-    fun findByQuestion(question: String) : Flow<Topic>
+    fun findByKnowledgeBaseIdAndQuestion(knowledgeBaseId: Long, question: String) : Flow<Topic>
 }
