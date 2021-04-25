@@ -3,18 +3,16 @@ package com.qingzhu.dispatcher.component
 import com.qingzhu.common.component.BaseWebClient
 import com.qingzhu.dispatcher.domain.dto.*
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.body
-import org.springframework.web.reactive.function.client.bodyToFlux
-import org.springframework.web.reactive.function.client.bodyToMono
+import org.springframework.web.reactive.function.client.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Component
 class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) :
-        BaseWebClient(webClientBuilder, "http://staff-admin") {
+        BaseWebClient(webClientBuilder, "http://message-server") {
 
     fun findIdleStaff(organizationId: Int, shuntId: Long): Flux<StaffDispatcherDto> {
         return webClient
@@ -29,13 +27,22 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
                 .bodyToFlux()
     }
 
-    fun assignmentCustomer(staffChangeStatusDto: Mono<StaffChangeStatusDto>): Mono<Unit> {
+    fun assignmentCustomer(staffChangeStatusDto: Mono<StaffChangeStatusDto>): Mono<ResponseEntity<Unit>> {
         return webClient
                 .put()
                 .uri("/status/staff/assignment")
                 .body(staffChangeStatusDto)
                 .retrieve()
-                .bodyToMono()
+                .toEntity()
+    }
+
+    fun sendAssignmentSignal(conversationStatusDto: Mono<ConversationStatusDto>): Mono<ResponseEntity<Unit>> {
+        return webClient
+                .put()
+                .uri("/message/send/assignment")
+                .body(conversationStatusDto)
+                .retrieve()
+                .toEntity()
     }
 
     fun findStaffIdOrShuntIdOfCustomer(organizationId: Int, userId: Long): Mono<CustomerDispatcherDto> {

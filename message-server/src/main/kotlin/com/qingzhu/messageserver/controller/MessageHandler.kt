@@ -1,6 +1,7 @@
 package com.qingzhu.messageserver.controller
 
 import com.qingzhu.messageserver.domain.dto.MessageDto
+import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.service.MessageService
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
@@ -22,5 +23,10 @@ class MessageHandler(
     suspend fun send(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<MessageDto>().transform(messageService::send)
             .flatMap { ok().build() }.awaitSingle()
+    }
+
+    suspend fun sendAssignmentEvent(sr: ServerRequest): ServerResponse {
+        return sr.bodyToMono<ConversationStatus>().transform(messageService::sendAssignmentEvent)
+                .flatMap { ok().build() }.awaitSingle()
     }
 }

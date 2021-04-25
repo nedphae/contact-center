@@ -6,6 +6,7 @@ import com.qingzhu.dispatcher.domain.dto.*
 import com.qingzhu.dispatcher.domain.entity.UserQueue
 import org.springframework.data.redis.core.ReactiveListOperations
 import org.springframework.data.redis.core.ReactiveRedisTemplate
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -46,21 +47,27 @@ class AssignmentComponent(
 
     /**
      * 更新会话信息
+     * 然后 发送分配消息到消息服务器
+     * 消息服务器会发送消息给客服
      */
     fun saveConversation(conversationStatusDto: Mono<ConversationStatusDto>): Mono<ConversationStatusDto> {
-        return conversationStatusDto
-                .transform { messageService.saveConversation(it) }
+        val conversationStatusWithId = conversationStatusDto
+                .transform {
+                    messageService.saveConversation(it)
+                }.cache()
+        return conversationStatusWithId
+                .filter { cov -> cov.interaction == 1 }
+                .transform {
+                    messageService.sendAssignmentSignal(it).then(it)
+                }
+                .switchIfEmpty(conversationStatusWithId)
     }
 
     /**
-     * 通过 [staffChangeStatusDto] 调用客服状态服务器分配座席信息，成功就发送分配消息到消息服务器
-     * 消息服务器会发送消息给客服
+     * 通过 [staffChangeStatusDto] 调用客服状态服务器分配座席信息，成功就返回然后新建会话信息
      */
-    fun assignmentCustomerAndSendEvent(staffChangeStatusDto: Mono<StaffChangeStatusDto>): Mono<Unit> {
+    fun assignmentCustomerAndSendEvent(staffChangeStatusDto: Mono<StaffChangeStatusDto>): Mono<ResponseEntity<Unit>> {
         return messageService.assignmentCustomer(staffChangeStatusDto)
-                .doOnNext {
-                    // TODO 发送分配信号
-                }
     }
 
     /**

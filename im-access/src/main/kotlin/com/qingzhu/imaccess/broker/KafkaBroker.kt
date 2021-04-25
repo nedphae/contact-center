@@ -47,35 +47,47 @@ class KafkaBroker(
         return Supplier { processor.asFlux() }
     }
 
+    private fun processConsumer(eventType: (String) -> EventType<*>): Consumer<KStream<Any?, String>> {
+        return Consumer { input ->
+            input
+                    .mapValues { value ->
+                        Mono.just(eventType(value))
+                                .doOnNext {
+                                    val next = disruptorForContext.ringBuffer.next()
+                                    val nextEvent = disruptorForContext.ringBuffer.get(next)
+
+                                    nextEvent.type = it
+
+                                    disruptorForContext.ringBuffer.publish(next)
+                                }
+                                .onErrorContinue { ex, _ ->
+                                    logger.error("内部异常：{}", ex)
+                                }
+                    }
+                    .foreach { _, value ->
+                        value.subscribe {
+                            if (logger.isDebugEnabled) {
+                                logger.debug("消息：{}", it)
+                            }
+                        }
+                    }
+        }
+    }
+
     /**
      * kafka KStream 流式处理
      * 批量高并发处理，函数式
      */
     @Bean
     fun messageStreamProcess(): Consumer<KStream<Any?, String>> {
-        return Consumer { input ->
-            input
-                .mapValues { value ->
-                    Mono.just(EventType.Msg(value))
-                        .doOnNext {
-                            val next = disruptorForContext.ringBuffer.next()
-                            val nextEvent = disruptorForContext.ringBuffer.get(next)
+        return processConsumer { EventType.Msg(it) }
+    }
 
-                            nextEvent.type = it
-
-                            disruptorForContext.ringBuffer.publish(next)
-                        }
-                        .onErrorContinue { ex, _ ->
-                            logger.error("内部异常：{}", ex)
-                        }
-                }
-                .foreach { _, value ->
-                    value.subscribe {
-                        if (logger.isDebugEnabled) {
-                            logger.debug("消息：{}", it)
-                        }
-                    }
-                }
-        }
+    /**
+     * 推送会话信息
+     */
+    @Bean
+    fun conversationStreamProcess(): Consumer<KStream<Any?, String>> {
+        return processConsumer { EventType.Conv(it) }
     }
 }

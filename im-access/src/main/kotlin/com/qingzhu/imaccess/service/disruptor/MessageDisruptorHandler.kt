@@ -1,6 +1,8 @@
 package com.qingzhu.imaccess.service.disruptor
 
 import com.lmax.disruptor.WorkHandler
+import com.qingzhu.imaccess.domain.constant.CreatorType
+import com.qingzhu.imaccess.domain.dto.ConversationStatusDto
 import com.qingzhu.imaccess.domain.query.WebSocketRequest
 import com.qingzhu.imaccess.domain.value.Message
 import com.qingzhu.imaccess.socketio.constant.SocketEvent
@@ -25,6 +27,22 @@ class MessageDisruptorHandler : WorkHandler<Message> {
                     clientFlux.subscribe { client ->
                         client?.sendWithCallback<Void>(SocketEvent.Message.sync,
                             WebSocketRequest.createRequest(client.sessionId.toString(), it))
+                    }
+                }
+    }
+}
+
+@Component
+class ConvDisruptorHandler : WorkHandler<ConversationStatusDto> {
+    override fun onEvent(event: ConversationStatusDto) {
+        event.toMono()
+                .subscribe {
+                    val clientFlux = MapUtils.get(Key(it.organizationId, CreatorType.STAFF, it.staffId))
+                    // 需要记录日志 或增加成功回调 可添加 callback 函数
+                    // TODO: 增加回调通知消息送达
+                    clientFlux.subscribe { client ->
+                        client?.sendWithCallback<Void>(SocketEvent.Message.sync,
+                                WebSocketRequest.createRequest(client.sessionId.toString(), it))
                     }
                 }
     }

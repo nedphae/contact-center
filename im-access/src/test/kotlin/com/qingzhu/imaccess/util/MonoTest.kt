@@ -13,7 +13,7 @@ internal class MonoTest {
     @Test
     fun testConcatWith() {
         val from = Mono.just(true)
-        Mono.just(true)
+        Mono.just(false)
                 .filter { !it }
                 .switchIfEmpty(from)
                 .map {

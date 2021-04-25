@@ -3,6 +3,7 @@ package com.qingzhu.messageserver.service
 import com.qingzhu.common.util.toJson
 import com.qingzhu.messageserver.domain.constant.CreatorType
 import com.qingzhu.messageserver.domain.dto.MessageDto
+import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.domain.value.CustomerToStaff
 import com.qingzhu.messageserver.domain.value.Message
 import org.springframework.cloud.stream.function.StreamBridge
@@ -73,15 +74,29 @@ class MessageService(
                     // 封装客服客户 id 对，然后过滤发送消息的客户端ID
                     CreatorType.CUSTOMER -> CustomerToStaff(it.message.to, it.message.from).toMono().syncMessage(it)
                     CreatorType.STAFF -> CustomerToStaff(it.message.from, it.message.to).toMono().syncMessage(it)
-                    else -> it.message.toMono()
+                    else -> Mono.empty()
                 }
             }
     }
 
     /**
-     * 客户连接 websocket发送 Assignment 事件给客服
+     * websocket发送 Assignment 事件给客服
      */
-    fun sendAssignmentEvent() {
-
+    fun sendAssignmentEvent(conversationStatusDto: Mono<ConversationStatus>): Mono<Unit> {
+        val conversationStatusDtoCache = conversationStatusDto.cache()
+        return conversationStatusDtoCache
+                .filter { it.interaction == 1 }
+                .flatMapMany {
+                    staffStatusService.findStaff(it.organizationId, it.staffId)
+                            .flatMapIterable { cs -> cs.clientAccessServerMap.entries }
+                }
+                .map { entry -> entry.value }
+                .distinct()
+                .doOnNext {
+                    // 发送消息到kafka
+                    streamBridge.send("${it}.message", conversationStatusDtoCache.block())
+                }
+                .collectList()
+                .flatMap { Mono.empty() }
     }
 }

@@ -26,7 +26,7 @@ import reactor.kotlin.core.publisher.toMono
 
 /**
  * 客户注册
- * TODO: 机器人消息通过 http 接口发送，socket 接口只接入人工消息
+ * 机器人消息通过 http 接口发送，socket 接口只接入人工消息
  */
 @Service
 class CustomerEventHandler(
@@ -70,6 +70,7 @@ class CustomerEventHandler(
                 .switchIfEmpty(assignmentInfo.flatMap { dispatchingCenter.assignmentStaff(it.organizationId, it.userId) })
                 .transformDeferredContextual { t, u ->
                     t.map {
+                        // 更新客户信息，保存客户连接到的服务器
                         messageService.updateCustomerClient(CustomerBaseClientDto(it.organizationId, it.userId, u.get<String>("clientId")).toMono())
                         it
                     }

@@ -1,6 +1,10 @@
 package com.qingzhu.imaccess.util
 
 import arrow.core.extensions.list.foldable.isNotEmpty
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactive.awaitLast
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Flux
@@ -88,5 +92,15 @@ internal class FluxTest {
                     println(it)
                 }
                 .subscribe()
+    }
+
+    @Test
+    fun testAwait() {
+        runBlocking {
+            val i = Flux
+                    .just(1, 1, 2, 3, 4, 4)
+                    .asFlow().toList()
+            println(i)
+        }
     }
 }

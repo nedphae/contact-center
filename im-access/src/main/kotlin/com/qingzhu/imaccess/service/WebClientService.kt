@@ -3,10 +3,12 @@ package com.qingzhu.imaccess.service
 import com.qingzhu.imaccess.domain.dto.*
 import com.qingzhu.imaccess.domain.view.ConversationView
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.body
 import org.springframework.web.reactive.function.client.bodyToMono
+import org.springframework.web.reactive.function.client.toEntity
 import reactor.core.publisher.Mono
 
 /**
@@ -56,61 +58,64 @@ class DispatchingCenter(@Qualifier("innerWebClient") webClientBuilder: WebClient
 class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) {
     private val webClient = webClientBuilder.baseUrl("http://message-server").build()
 
-    fun send(message: Mono<MessageDto>): Mono<Unit> {
+    /**
+     * 返回 Mono<Unit> 就是返回空，会导致后续的 reactor 操作符不执行
+     */
+    fun send(message: Mono<MessageDto>): Mono<ResponseEntity<Unit>> {
         return webClient
             .post()
             .uri("/message/send")
             .body(message)
             .retrieve()
-            .bodyToMono()
+            .toEntity()
     }
 
-    fun registerCustomer(customerDto: Mono<CustomerStatusDto>): Mono<Unit> {
+    fun registerCustomer(customerDto: Mono<CustomerStatusDto>): Mono<ResponseEntity<Unit>> {
         return webClient
                 .post()
                 .uri("/status/register/customer")
                 .body(customerDto)
                 .retrieve()
-                .bodyToMono()
+                .toEntity()
     }
 
     /**
      * 注册客户客户端 Id
      */
-    fun updateCustomerClient(customerDto: Mono<CustomerBaseClientDto>): Mono<Unit> {
+    fun updateCustomerClient(customerDto: Mono<CustomerBaseClientDto>): Mono<ResponseEntity<Unit>> {
         return webClient
                 .put()
                 .uri("/status/customer/update-client")
                 .body(customerDto)
                 .retrieve()
-                .bodyToMono()
+                .toEntity()
     }
 
-    fun unregisterCustomer(customerDto: Mono<CustomerBaseStatusDto>): Mono<Unit> {
+    fun unregisterCustomer(customerDto: Mono<CustomerBaseStatusDto>): Mono<ResponseEntity<Unit>> {
         return webClient
                 .put()
                 .uri("/status/unregister/customer")
                 .body(customerDto)
                 .retrieve()
-                .bodyToMono()
+                .toEntity()
     }
 
-    fun registerStaff(staffStatusDto: Mono<StaffStatusDto>): Mono<Unit> {
+    fun registerStaff(staffStatusDto: Mono<StaffStatusDto>): Mono<ResponseEntity<Unit>> {
         return webClient
                 .post()
                 .uri("/status/register/staff")
                 .body(staffStatusDto)
                 .retrieve()
-                .bodyToMono()
+                .toEntity()
     }
 
-    fun unregisterStaff(staffChangeStatusDto: Mono<StaffChangeStatusDto>): Mono<Unit> {
+    fun unregisterStaff(staffChangeStatusDto: Mono<StaffChangeStatusDto>): Mono<ResponseEntity<Unit>> {
         return webClient
                 .put()
                 .uri("/status/unregister/staff")
                 .body(staffChangeStatusDto)
                 .retrieve()
-                .bodyToMono()
+                .toEntity()
     }
 
     fun findCustomerByUid(organizationId: Int, uid: String): Mono<CustomerBaseStatusDto> {

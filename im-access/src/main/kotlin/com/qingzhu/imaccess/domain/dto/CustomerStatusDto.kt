@@ -23,7 +23,8 @@ data class CustomerBaseClientDto(
     /**
      * [clientId] 为 socket io session id
      */
-    constructor(organizationId: Int, userId: Long, clientId: String) : this(organizationId, userId, clientId to KafkaBroker.accessServer)
+    constructor(organizationId: Int, userId: Long, clientId: String) :
+            this(organizationId, userId, clientId to KafkaBroker.accessServer)
 }
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

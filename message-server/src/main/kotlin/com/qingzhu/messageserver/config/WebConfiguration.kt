@@ -38,6 +38,7 @@ class WebConfiguration : WebFluxConfigurer {
                 "/message".nest {
                     // 发送消息
                     POST("/send", messageHandler::send)
+                    POST("/send/assignment", messageHandler::sendAssignmentEvent)
                 }
                 "/status".nest {
                     "/register".nest {

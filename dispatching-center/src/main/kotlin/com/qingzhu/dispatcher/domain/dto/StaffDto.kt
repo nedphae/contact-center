@@ -2,8 +2,6 @@ package com.qingzhu.dispatcher.domain.dto
 
 import com.qingzhu.common.domain.AbstractAuditingEntity
 import com.qingzhu.dispatcher.domain.authority.StaffAuthority
-import org.springframework.data.annotation.Id
-import org.springframework.data.relational.core.mapping.Table
 
 /**
  * 客服登录用户
@@ -11,9 +9,7 @@ import org.springframework.data.relational.core.mapping.Table
  * 使用 OAuth2 做用户认证
  */
 
-@Table
 data class StaffDto(
-		@Id
 		var id: Long? = null,
 		/** 公司id */
 		val organizationId: Int,

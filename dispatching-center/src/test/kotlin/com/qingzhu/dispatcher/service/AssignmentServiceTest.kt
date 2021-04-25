@@ -6,10 +6,12 @@ import com.qingzhu.dispatcher.component.AssignmentComponent
 import com.qingzhu.dispatcher.component.MessageService
 import com.qingzhu.dispatcher.component.StaffAdminService
 import com.qingzhu.dispatcher.component.impl.WeightedAssignmentService
+import com.qingzhu.dispatcher.domain.authority.StaffAuthority
 import com.qingzhu.dispatcher.domain.constant.FromType
 import com.qingzhu.dispatcher.domain.dto.ConversationStatusDto
 import com.qingzhu.dispatcher.domain.dto.CustomerDispatcherDto
 import com.qingzhu.dispatcher.domain.dto.StaffDispatcherDto
+import com.qingzhu.dispatcher.domain.dto.StaffDto
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.reactor.asFlux
 import okhttp3.mockwebserver.Dispatcher
@@ -70,7 +72,7 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
             StaffDispatcherDto(9491, 3, 1L to 15, 30, 10, 0),
             StaffDispatcherDto(9491, 4, 1L to 15, 30, 10, 0)
     )
-    private final val staffDto = StaffDto(9491, 5, 1, "bot", "乔巴", "狸猫", 0, "", 1)
+    private final val staffDto = StaffDto(5 , 9491, "bot", "bot", StaffAuthority.ROLE_STAFF, 1, "乔巴", "狸猫", 0, 50, 1)
     private final val conversationStatusDto = ConversationStatusDto.fromStaffAndCustomer(staffDto, customerDispatcherDto)
 
     /**
@@ -97,7 +99,7 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
                         startsWith("/status/conversation/end") -> response
                         startsWith("/staff/info") -> {
                             val staffId = this.last().toString().toLong()
-                            val body = StaffDto(9491, staffId, 1, "admin", "蒙奇D路飞", "草帽", 0, "", 1)
+                            val body = StaffDto(staffId, 5, "admin", "bot", StaffAuthority.ROLE_STAFF, 1, "蒙奇D路飞", "草帽", 0, 50, 1)
                             response.setBody(body.toJson())
                         }
                         else -> MockResponse().setResponseCode(404)
