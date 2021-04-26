@@ -10,10 +10,11 @@ import org.springframework.data.relational.core.mapping.Table
 
 @Table
 data class StaffGroup(
-		@Id
-		var id: Long? = null,
 		/** 公司id */
 		val organizationId: Int,
 		/** 部门名称 */
 		var groupName: String,
-) : AbstractAuditingEntity()
+) : AbstractAuditingEntity() {
+	@Id
+	var id: Long? = null
+}

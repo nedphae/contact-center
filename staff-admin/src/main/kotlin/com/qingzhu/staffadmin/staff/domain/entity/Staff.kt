@@ -13,8 +13,6 @@ import org.springframework.data.relational.core.mapping.Table
 
 @Table
 data class Staff(
-		@Id
-		var id: Long? = null,
 		/** 公司id */
 		val organizationId: Int,
 		/** 用户名 */
@@ -45,4 +43,7 @@ data class Staff(
 		var mobilePhone: String? = null,
 		/** 个性签名 */
 		var personalizedSignature: String? = null
-) : AbstractAuditingEntity()
+) : AbstractAuditingEntity() {
+	@Id
+	var id: Long? = null
+}

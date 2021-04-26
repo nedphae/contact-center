@@ -1,5 +1,6 @@
 package com.qingzhu.bot.config
 
+import com.qingzhu.bot.knowledgebase.controller.BotManageHandler
 import com.qingzhu.bot.knowledgebase.controller.QABotHandler
 import com.qingzhu.bot.knowledgebase.controller.TestUserHandler
 import org.springframework.context.annotation.Bean
@@ -17,6 +18,7 @@ class WebConfiguration : WebFluxConfigurer {
     @Bean
     fun routerFunction(authProvider: TestUserHandler,
                        qaBotHandler: QABotHandler,
+                       botManageHandler: BotManageHandler,
     ): RouterFunction<ServerResponse> {
         return coRouter {
             accept(MediaType.APPLICATION_JSON).nest {
@@ -26,7 +28,12 @@ class WebConfiguration : WebFluxConfigurer {
                 }
                 "/bot".nest {
                     GET("/qa", qaBotHandler::getAnswer)
-                    GET("/qa/save", qaBotHandler::saveTopic)
+                    "manage".nest {
+                        POST("/topic", botManageHandler::saveTopic)
+                        POST("/botConfig", botManageHandler::saveBotConfig)
+                        POST("/knowledgeBase", botManageHandler::saveKnowledgeBase)
+                        POST("/topicCategory", botManageHandler::saveTopicCategory)
+                    }
                 }
             }
         }

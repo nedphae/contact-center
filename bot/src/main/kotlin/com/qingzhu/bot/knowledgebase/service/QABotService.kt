@@ -1,6 +1,5 @@
 package com.qingzhu.bot.knowledgebase.service
 
-import com.qingzhu.bot.knowledgebase.entity.Topic
 import com.qingzhu.bot.knowledgebase.repository.BotConfigRepository
 import com.qingzhu.bot.knowledgebase.repository.TopicRepository
 import kotlinx.coroutines.flow.firstOrNull
@@ -33,13 +32,6 @@ class QABotService(
             }
         }
         return null
-    }
-
-    suspend fun saveTopic(topic: Topic?): Topic? {
-        if (topic != null) {
-            return topicRepository.save(topic)
-        }
-        return topic
     }
 
     // TODO 增加 redis cache

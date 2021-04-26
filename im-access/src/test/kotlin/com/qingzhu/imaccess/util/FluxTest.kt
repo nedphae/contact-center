@@ -99,6 +99,7 @@ internal class FluxTest {
         runBlocking {
             val i = Flux
                     .just(1, 1, 2, 3, 4, 4)
+                    // Flux to asFlow
                     .asFlow().toList()
             println(i)
         }

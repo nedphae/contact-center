@@ -11,11 +11,12 @@ import org.springframework.data.relational.core.mapping.Table
 data class BotConfig(
         /** 机构 ID **/
         val organizationId: Int,
-        @Id
-        var id: Long? = null,
         /** 机器人ID */
         var botId: Long,
         /** 机器人 与 知识库的映射 */
         // one to one
         var knowledgeBaseId: Long,
-) : AbstractAuditingEntity()
+) : AbstractAuditingEntity() {
+        @Id
+        var id: Long? = null
+}

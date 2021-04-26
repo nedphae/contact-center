@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import org.springframework.web.reactive.function.server.awaitBodyOrNull
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 
 @RestController
@@ -23,10 +22,5 @@ class QABotHandler(
             }
         }
         return ok().build().awaitSingle()
-    }
-
-    suspend fun saveTopic(sr: ServerRequest): ServerResponse {
-        val topic = qaBotService.saveTopic(sr.awaitBodyOrNull())
-        return topic?.let { ok().bodyValueAndAwait(it) } ?: ok().build().awaitSingle()
     }
 }

@@ -11,7 +11,7 @@ import kotlin.streams.toList
 
 /**
  * 使用 Specification 接口实现做过滤
- * 是否实现 括号表达式？？
+ * 已经实现 括号表达式
  */
 @Service
 class MessageFilterService(
@@ -21,7 +21,7 @@ class MessageFilterService(
             filters.stream().toList().map { it::class.simpleName!!.toLowerCase() to it }.toMap()
 
     /**
-     * 过滤表达式
+     * 过滤表达式，后期可以读取配置
      */
     private val expression = "MessageToFilter"
 

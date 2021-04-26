@@ -17,8 +17,6 @@ data class Topic(
 		val organizationId: Int,
 		/** 所属知识库ID **/
 		val knowledgeBaseId: Long,
-		@Id
-		var id: Long? = null,
 		/** 问题，使用ik分词器查询和索引 */
 		@Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
 		var question: String,
@@ -48,4 +46,7 @@ data class Topic(
 		var failureTime: Date,
 		/** 知识点所属分类 */
 		var categoryId: Long,
-) : AbstractAuditingEntity()
+) : AbstractAuditingEntity() {
+	@Id
+	var id: Long? = null
+}

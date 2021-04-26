@@ -20,7 +20,7 @@ internal class MessageFilterServiceTest : ImApplicationTests() {
                 "1",
                 2,
                 null,
-                1,
+                null,
                 CreatorType.CUSTOMER,
                 CreatorType.STAFF,
                 Content(

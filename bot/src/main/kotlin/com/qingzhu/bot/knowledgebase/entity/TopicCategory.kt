@@ -11,10 +11,11 @@ import org.springframework.data.relational.core.mapping.Table
 data class TopicCategory(
         /** 机构 ID **/
         val organizationId: Int,
-        @Id
-        val id: Long,
         /** 分类名称 */
         var name: String,
         /** 上级分类 */
         val pid: Long,
-) : AbstractAuditingEntity()
+) : AbstractAuditingEntity() {
+        @Id
+        var id: Long? = null
+}

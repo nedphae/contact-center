@@ -8,8 +8,9 @@ import org.springframework.data.relational.core.mapping.Table
 data class KnowledgeBase(
         /** 机构 ID **/
         val organizationId: Int,
-        @Id
-        var id: Long? = null,
         var name: String,
         var description: String,
-) : AbstractAuditingEntity()
+) : AbstractAuditingEntity() {
+        @Id
+        var id: Long? = null
+}

@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.CommonTokenStream
 
 /**
  * eg: filter1 AND filter2 OR (NOT filter3 AND filter4)
- * filter* 是要调用的过滤器名称
+ * filter* 是要调用的过滤器名称(需要转换成小写)
  * 过滤器返回 Boolean
  */
 class ParserUtils<T>(
