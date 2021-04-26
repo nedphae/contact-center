@@ -14,7 +14,7 @@ data class TopicCategory(
         /** 分类名称 */
         var name: String,
         /** 上级分类 */
-        val pid: Long,
+        val pid: Long?,
 ) : AbstractAuditingEntity() {
         @Id
         var id: Long? = null
