@@ -49,4 +49,10 @@ data class StaffStatus(
 
     /** 客服所处服务器名称 */
     val clientAccessServerMap: MutableMap<String, String> = HashMap()
+
+    /**
+     * 上一条接受的消息ID，或者事件序列ID
+     * 用以检查是否漏收了消息
+     */
+    var pts: Long? = null
 }

@@ -17,7 +17,7 @@ class QABotService(
     /**
      * TODO 后期增加无答案转人工？
      */
-    suspend fun findAnswerByQuestion(botId: Long, question: String): String? {
+    suspend fun findAnswerByQuestion(userId: Long, botId: Long, question: String): String? {
         //根据 bot Id 获取映射的 KnowledgeBaseId
         val botConfig = botConfigRepository.findByBotId(botId)
         if (botConfig != null) {

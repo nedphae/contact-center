@@ -44,4 +44,9 @@ data class CustomerStatus(
 
     fun setOnline() = apply { this.onlineStatus = OnlineStatus.ONLINE }
 
+    /**
+     * 上一条接受的消息ID，或者事件序列ID
+     * 用以检查是否漏收了消息
+     */
+    var pts: Long? = null
 }

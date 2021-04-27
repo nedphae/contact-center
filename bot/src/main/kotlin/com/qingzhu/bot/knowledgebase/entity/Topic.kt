@@ -1,11 +1,14 @@
 package com.qingzhu.bot.knowledgebase.entity
 
-import com.qingzhu.common.domain.AbstractAuditingEntity
+import com.fasterxml.jackson.annotation.JsonIgnore
+import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldType
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.*
 
 /**
@@ -28,8 +31,6 @@ data class Topic(
 		var innerAnswer: String?,
 		/** 问题的来源,0:用户手动添加,1:寒暄库,2:文件导入 */
 		var fromType: Int,
-		/** 更新时间 */
-		var updateTime: LocalDateTime,
 		/** 问题类型,1:标准问题,2:相似问题 */
 		var type: Int,
 		/** 相似问题(type=10)对应的标准问题id */
@@ -44,7 +45,7 @@ data class Topic(
 		var failureTime: Date?,
 		/** 知识点所属分类 */
 		var categoryId: Long,
-) : AbstractAuditingEntity() {
+) {
 	@Id
 	var id: String? = null
 
@@ -60,4 +61,14 @@ data class Topic(
 			faqType = 0
 		}
 	}
+
+	@CreatedDate
+	@JsonIgnore
+	@Field(type = FieldType.Date, format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+	val createdDate = Instant.now()
+
+	@LastModifiedDate
+	@JsonIgnore
+	@Field(type = FieldType.Date, format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+	var lastModifiedDate = Instant.now()
 }

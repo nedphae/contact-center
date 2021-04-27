@@ -61,7 +61,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
     /**
      * 返回 Mono<Unit> 就是返回空，会导致后续的 reactor 操作符不执行
      */
-    fun send(message: Mono<MessageDto>): Mono<ResponseEntity<Unit>> {
+    fun send(message: Mono<MessageDto>): Mono<ResponseEntity<Boolean>> {
         return webClient
             .post()
             .uri("/message/send")
