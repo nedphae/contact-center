@@ -1,4 +1,4 @@
-package com.qingzhu.bot.knowledgebase.entity
+package com.qingzhu.bot.knowledgebase.domain.entity
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.data.annotation.CreatedDate

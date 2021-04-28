@@ -6,7 +6,6 @@ import com.corundumstudio.socketio.annotation.OnConnect
 import com.corundumstudio.socketio.annotation.OnDisconnect
 import com.corundumstudio.socketio.annotation.OnEvent
 import com.qingzhu.imaccess.domain.constant.CreatorType
-import com.qingzhu.imaccess.domain.constant.SocketIONamespace
 import com.qingzhu.imaccess.domain.dto.CustomerBaseClientDto
 import com.qingzhu.imaccess.domain.query.AssignmentInfo
 import com.qingzhu.imaccess.domain.query.WebSocketRequest
@@ -17,6 +16,7 @@ import com.qingzhu.imaccess.service.MessageService
 import com.qingzhu.imaccess.service.RegisterService
 import com.qingzhu.imaccess.socketio.AbstractHandler
 import com.qingzhu.imaccess.socketio.constant.SocketEvent
+import com.qingzhu.imaccess.socketio.constant.SocketIONamespace
 import com.qingzhu.imaccess.socketio.registerName
 import com.qingzhu.imaccess.util.Key
 import com.qingzhu.imaccess.util.MapUtils

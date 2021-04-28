@@ -22,6 +22,7 @@ class JWTAuthorizationListener(
         val token = data?.getSingleUrlParam("token")
         return try {
             var verify = false
+            // TODO: 过滤用户 命名空间 不做验证
             reactiveJwtDecoder.decode(token).subscribe { jwt ->
                 // jwt 信息添加到 HandshakeData
                 val roleList = jwt.getClaimAsStringList("authorities")

@@ -28,6 +28,8 @@ data class Staff(
 		var realName: String,
 		/** 昵称 */
 		var nickName: String,
+		/** 头像 **/
+		var avatar: String?,
 		/** 同时接待量（默认设置为8） */
 		var simultaneousService: Int = 8,
 		// 工单

@@ -1,7 +1,7 @@
 package com.qingzhu.imaccess.socketio
 
 import com.corundumstudio.socketio.SocketIOClient
-import com.qingzhu.imaccess.domain.constant.SocketIONamespace
+import com.qingzhu.imaccess.socketio.constant.SocketIONamespace
 
 /**
  * namespace 注册方法

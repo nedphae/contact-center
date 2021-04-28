@@ -1,6 +1,6 @@
 package com.qingzhu.bot.knowledgebase.repository
 
-import com.qingzhu.bot.knowledgebase.entity.Topic
+import com.qingzhu.bot.knowledgebase.domain.entity.Topic
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.repository.kotlin.CoroutineSortingRepository
 
