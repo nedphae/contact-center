@@ -1,9 +1,9 @@
 package com.qingzhu.bot.knowledgebase.service
 
-import com.qingzhu.bot.knowledgebase.entity.BotConfig
-import com.qingzhu.bot.knowledgebase.entity.KnowledgeBase
-import com.qingzhu.bot.knowledgebase.entity.Topic
-import com.qingzhu.bot.knowledgebase.entity.TopicCategory
+import com.qingzhu.bot.knowledgebase.domain.entity.BotConfig
+import com.qingzhu.bot.knowledgebase.domain.entity.KnowledgeBase
+import com.qingzhu.bot.knowledgebase.domain.entity.Topic
+import com.qingzhu.bot.knowledgebase.domain.entity.TopicCategory
 import com.qingzhu.bot.knowledgebase.repository.BotConfigRepository
 import com.qingzhu.bot.knowledgebase.repository.KnowledgeBaseRepository
 import com.qingzhu.bot.knowledgebase.repository.TopicCategoryRepository

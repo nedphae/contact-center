@@ -1,10 +1,10 @@
 package com.qingzhu.bot.knowledgebase.service
 
 import com.qingzhu.bot.BotApplicationTests
-import com.qingzhu.bot.knowledgebase.entity.BotConfig
-import com.qingzhu.bot.knowledgebase.entity.KnowledgeBase
-import com.qingzhu.bot.knowledgebase.entity.Topic
-import com.qingzhu.bot.knowledgebase.entity.TopicCategory
+import com.qingzhu.bot.knowledgebase.domain.entity.BotConfig
+import com.qingzhu.bot.knowledgebase.domain.entity.KnowledgeBase
+import com.qingzhu.bot.knowledgebase.domain.entity.Topic
+import com.qingzhu.bot.knowledgebase.domain.entity.TopicCategory
 import com.qingzhu.common.security.password.toMd5Hex
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
@@ -33,10 +33,10 @@ internal class BotManageServiceTest : BotApplicationTests() {
             println("知识类别: $topicCategory")
             val md5 = "你好".toMd5Hex()
             println("md5: $md5")
-            var topic = Topic(9491, 1 ?: -1, "你好",
+            var topic = Topic(9491, 1, "你好",
                     md5, "你好，这里是 QA 机器人", null, 0,
                     1, null, null, true,
-                    null, null, 1 ?: -1)
+                    null, null, 1)
             topic = botManageService.saveTopic(topic)
             println("知识: $topic")
             val ans = qaBotService.findAnswerByQuestion(1, 1, "你好")

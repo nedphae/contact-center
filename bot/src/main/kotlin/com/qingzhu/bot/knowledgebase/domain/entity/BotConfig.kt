@@ -1,4 +1,4 @@
-package com.qingzhu.bot.knowledgebase.entity
+package com.qingzhu.bot.knowledgebase.domain.entity
 
 import com.qingzhu.common.domain.AbstractAuditingEntity
 import org.springframework.data.annotation.Id
@@ -16,6 +16,8 @@ data class BotConfig(
         /** 机器人 与 知识库的映射 */
         // one to one
         var knowledgeBaseId: Long,
+        /** 没有找到答案时的回复 */
+        var noAnswerReply: String = "抱歉，没有找到您想要的答案",
 ) : AbstractAuditingEntity() {
         @Id
         var id: Long? = null
