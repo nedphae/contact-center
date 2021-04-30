@@ -21,7 +21,7 @@ class WebConfiguration : WebFluxConfigurer {
             accept(MediaType.APPLICATION_JSON).nest {
                 "/customer".nest {
                     // 保存客户信息
-                    PUT("", customerHandler::saveAndGetCustomer)
+                    POST("", customerHandler::saveAndGetCustomer)
                 }
                 // 分配客服
                 "/dispatcher/assignment".nest {

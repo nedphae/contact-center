@@ -72,7 +72,7 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
             StaffDispatcherDto(9491, 3, 1L to 15, 30, 10, 0),
             StaffDispatcherDto(9491, 4, 1L to 15, 30, 10, 0)
     )
-    private final val staffDto = StaffDto(5 , 9491, "bot", "bot", StaffAuthority.ROLE_STAFF, 1, "乔巴", "狸猫", 0, 50, 1)
+    private final val staffDto = StaffDto(5 , 9491, "bot", "bot", StaffAuthority.ROLE_STAFF, 1, "乔巴", "狸猫", null, 0, 50, 1)
     private final val conversationStatusDto = ConversationStatusDto.fromStaffAndCustomer(staffDto, customerDispatcherDto)
 
     /**
@@ -99,9 +99,10 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
                         startsWith("/status/conversation/end") -> response
                         startsWith("/staff/info") -> {
                             val staffId = this.last().toString().toLong()
-                            val body = StaffDto(staffId, 5, "admin", "bot", StaffAuthority.ROLE_STAFF, 1, "蒙奇D路飞", "草帽", 0, 50, 1)
+                            val body = StaffDto(staffId, 5, "admin", "bot", StaffAuthority.ROLE_STAFF, 1, "蒙奇D路飞", "草帽", null, 0, 50, 1)
                             response.setBody(body.toJson())
                         }
+                        startsWith("/message/send/assignment") -> response
                         else -> MockResponse().setResponseCode(404)
                     }
                 }

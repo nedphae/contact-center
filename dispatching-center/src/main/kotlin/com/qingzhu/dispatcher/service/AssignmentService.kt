@@ -134,7 +134,7 @@ class AssignmentService(private val assignmentComponent: AssignmentComponent) {
                 .onErrorResume {
                     this
                             .flatMap {
-                                if (it.interaction == 0) {
+                                if (it.interaction == 1) {
                                     // 客服会话
                                     assignmentComponent
                                             .getStaff(it.organizationId, it.userId)

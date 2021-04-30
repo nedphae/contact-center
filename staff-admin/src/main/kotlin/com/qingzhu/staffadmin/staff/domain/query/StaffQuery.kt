@@ -21,7 +21,9 @@ data class StaffQuery(
         @field: NotNull(message = "用户分组不能为空")
         val groupId: Long,
         val realName: String,
-        val nickName: String
+        val nickName: String,
+        // 头像URL
+        val avatar: String,
 ) {
     fun toCustomerServiceRepresentative(): Staff {
         return Staff(
@@ -31,7 +33,8 @@ data class StaffQuery(
                 role = role,
                 staffGroupId = groupId,
                 realName = realName,
-                nickName = nickName
+                nickName = nickName,
+                avatar = avatar,
         )
     }
 }

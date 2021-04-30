@@ -1,5 +1,6 @@
 package com.qingzhu.dispatcher.customer.domain.entity
 
+import com.qingzhu.common.domain.AbstractAuditingEntity
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 
@@ -25,7 +26,7 @@ data class Customer(
 		var mobile: String?,
 		/** vip等级 1-10 */
 		var vipLevel: Int?
-) {
+) : AbstractAuditingEntity() {
     @Id
     var id: Long? = null
 }

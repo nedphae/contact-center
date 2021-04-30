@@ -18,6 +18,7 @@ class SecurityConfiguration {
         http
                 .authorizeExchange()
                 .pathMatchers("/actuator/**").permitAll()
+                .pathMatchers("/**").hasAuthority("SCOPE_msg")
                 .anyExchange().authenticated()
                 .and()
                 .oauth2ResourceServerConfig()

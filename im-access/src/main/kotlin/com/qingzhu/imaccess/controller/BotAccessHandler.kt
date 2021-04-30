@@ -18,6 +18,7 @@ class BotAccessHandler(
      */
     suspend fun register(sr: ServerRequest): ServerResponse {
         val customerConfig = sr.awaitBody<CustomerConfig>()
+        customerConfig.ip = sr.remoteAddress().get().address.hostAddress
         val view = botAccessService.register(customerConfig)
         return ok().bodyValueAndAwait(view)
     }

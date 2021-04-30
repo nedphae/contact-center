@@ -72,6 +72,12 @@ spring:
           predicates:
             - Path=/socket.io/**
 
+        # 客户接入服务
+        - id: access_route
+          uri: lb://im-server
+          predicates:
+            - Path=/access/**
+
         # 即时通讯服务
         - id: im_route
           uri: lb://im-server
@@ -119,6 +125,13 @@ spring:
           uri: lb://staff-admin
           predicates:
             - Path=/staff/**
+
+        # 客服信息服务
+        - id: chat_ui_route
+          uri: http://localhost:13000
+          predicates:
+            - Path=/chat/**
+
 logging:
   level:
     root: info

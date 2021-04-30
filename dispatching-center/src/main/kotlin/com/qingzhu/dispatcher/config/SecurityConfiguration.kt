@@ -21,7 +21,6 @@ class SecurityConfiguration {
         http.csrf().disable()
                 .authorizeExchange()
                 .pathMatchers("/actuator/**").permitAll()
-                .pathMatchers("/customer/*").permitAll()
                 .pathMatchers("/**").hasAuthority("SCOPE_dispatcher")
                 .anyExchange().authenticated()
                 .and()

@@ -31,17 +31,22 @@ class CustomerStatusService(
         // 这样写为了后面一些临时状态保存到 HazelcastInstance 不会丢失
         val oldCustomerStatus = statusMap.putIfAbsent(customerStatus.userId, customerStatus)
         oldCustomerStatus?.setOnline()?.also {
-            it.clientAccessServerMap.putAll(customerStatus.clientAccessServerMap)
+            it.clientAccessServerMap = customerStatus.clientAccessServerMap
             statusMap[it.userId] = it
         }
-        statusMap.setTtl(customerStatus.userId, 1, TimeUnit.HOURS)
+        if (customerStatus.clientAccessServerMap.isEmpty()) {
+            // 机器人会话，不用缓存太久
+            statusMap.setTtl(customerStatus.userId, 15, TimeUnit.MINUTES)
+        } else {
+            statusMap.setTtl(customerStatus.userId, 1, TimeUnit.HOURS)
+        }
     }
 
     fun setStatusOffline(customerBaseStatusDto: CustomerBaseStatusDto) {
         val statusMap = getStatusMap(customerBaseStatusDto.organizationId)
         val customerStatus = statusMap[customerBaseStatusDto.userId]
         if (customerStatus != null) {
-            customerStatus.setOffline(customerBaseStatusDto.accessServerClient)
+            customerStatus.setOffline(customerBaseStatusDto.clientAccessServer)
             statusMap.put(customerBaseStatusDto.userId, customerStatus, 15, TimeUnit.MINUTES)
         }
     }
@@ -69,7 +74,7 @@ class CustomerStatusService(
     fun updateByClientId(customerBaseClientDto: CustomerBaseClientDto): Mono<CustomerStatus> {
         return findByUserId(customerBaseClientDto.organizationId, customerBaseClientDto.userId)
                 .map {
-                    it.clientAccessServerMap += customerBaseClientDto.clientAccessServer
+                    it.clientAccessServerMap.plusAssign(customerBaseClientDto.clientAccessServer)
                     saveStatus(it)
                     it
                 }

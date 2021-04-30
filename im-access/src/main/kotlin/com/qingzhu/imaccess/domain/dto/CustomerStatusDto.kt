@@ -8,7 +8,8 @@ import com.qingzhu.imaccess.domain.query.CustomerConfig
 data class CustomerBaseStatusDto(
         /** 公司id */
         val organizationId: Int,
-        val userId: Long
+        val userId: Long,
+        val clientAccessServer: String? = null,
 )
 
 data class CustomerBaseClientDto(

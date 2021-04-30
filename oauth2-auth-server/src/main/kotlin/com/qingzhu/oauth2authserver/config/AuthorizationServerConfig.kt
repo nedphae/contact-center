@@ -66,7 +66,7 @@ class AuthorizationServerConfig : AuthorizationServerConfigurerAdapter() {
                 .authorizedGrantTypes("authorization_code", "implicit", "password", "refresh_token")
                 .authorities("ROLE_ADMIN")
                 // scope 可以分组， eg im:read， 但是验证时需要整个字符匹配
-                .scopes("oauth2", "bot", "staff", "im")
+                .scopes("oauth2", "bot", "staff", "im", "dispatcher", "msg")
                 .authorities()
                 // .resourceIds("oauth2", "bot", "cs-admin", "im")
                 .accessTokenValiditySeconds(accessTokenValiditySeconds)
@@ -77,7 +77,7 @@ class AuthorizationServerConfig : AuthorizationServerConfigurerAdapter() {
                 .secret("\$2a\$10\$lPaP9cSdF6QugTCJV4ntAuY1IML7V228WoPxdfDn.BHJqzbvLXoqu")
                 .authorizedGrantTypes("client_credentials") // 客户端模式需要单独设置
                 .authorities("ROLE_ADMIN")
-                .scopes("oauth2", "bot", "staff", "im")
+                .scopes("oauth2", "bot", "staff", "im", "dispatcher", "msg")
                 .authorities()
                 // .resourceIds("oauth2", "bot", "cs-admin")
                 .accessTokenValiditySeconds(accessTokenValiditySeconds)

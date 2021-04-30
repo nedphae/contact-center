@@ -107,7 +107,7 @@ fun Mono<out Principal>.getPrincipalTriple(): Mono<Triple<Mono<Int>, Mono<Long>,
     return this.map {
         val principal = (it as JwtAuthenticationToken).principal as Jwt
         // org id
-        val orgId = principal.getClaim<Int>("oid")
+        val orgId = principal.getClaim<Long>("oid").toInt()
         // staff id
         val sid = principal.getClaim<Long>("sid")
         // staff name

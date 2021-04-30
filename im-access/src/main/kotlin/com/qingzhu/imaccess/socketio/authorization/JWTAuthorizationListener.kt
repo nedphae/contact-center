@@ -22,16 +22,20 @@ class JWTAuthorizationListener(
         val token = data?.getSingleUrlParam("token")
         return try {
             var verify = false
-            // TODO: 过滤用户 命名空间 不做验证
-            reactiveJwtDecoder.decode(token).subscribe { jwt ->
-                // jwt 信息添加到 HandshakeData
-                val roleList = jwt.getClaimAsStringList("authorities")
-                val organizationId = jwt.getClaimAsString("oid")
-                val staffId = jwt.getClaimAsString("sid")
-                data?.urlParams?.set("role", roleList)
-                data?.urlParams?.set("oid", listOf(organizationId))
-                data?.urlParams?.set("sid", listOf(staffId))
+            // 过滤用户 命名空间 不做验证
+            if (token == "customer") {
                 verify = true
+            } else {
+                reactiveJwtDecoder.decode(token).subscribe { jwt ->
+                    // jwt 信息添加到 HandshakeData
+                    val roleList = jwt.getClaimAsStringList("authorities")
+                    val organizationId = jwt.getClaimAsString("oid")
+                    val staffId = jwt.getClaimAsString("sid")
+                    data?.urlParams?.set("role", roleList)
+                    data?.urlParams?.set("oid", listOf(organizationId))
+                    data?.urlParams?.set("sid", listOf(staffId))
+                    verify = true
+                }
             }
             verify
         } catch (jwe: JwtException) {
