@@ -18,7 +18,8 @@ internal class InnerUserTest {
             role = StaffAuthority.ROLE_ADMIN,
             staffGroupId = 1,
             realName = "新之助",
-            nickName = "蜡笔小新"
+            nickName = "蜡笔小新",
+            avatar = null,
         )
         var innerUser = StaffInnerMapper.mapper.mapToInner(staff)
         println(innerUser)

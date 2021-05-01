@@ -35,7 +35,7 @@ data class StaffStatusDto(
     /** 不同接待组的优先级 */
     var priorityOfShunt: Map<Long, Int>,
     /** 客服所处服务器名 */
-    val clientAccessServer: Pair<String, String>,
+    val clientAccessServer: Pair<String, String>? = null,
     /** 在线状态 */
     var onlineStatus: OnlineStatus = OnlineStatus.ONLINE,
     /** 最大接待数量 */
@@ -50,7 +50,9 @@ abstract class StaffStatusMapper {
 
     fun fromDtoWithMap(staff: StaffStatusDto): StaffStatus {
         val status = mapFromDto(staff)
-        status.clientAccessServerMap += staff.clientAccessServer
+        if (staff.clientAccessServer != null) {
+            status.clientAccessServerMap += staff.clientAccessServer
+        }
         return status
     }
 

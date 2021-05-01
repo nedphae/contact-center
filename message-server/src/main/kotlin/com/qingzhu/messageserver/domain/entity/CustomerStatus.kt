@@ -30,7 +30,13 @@ data class CustomerStatus(
         val fromType: FromType,
         /** 客户IP */
         val ip: String
-) {
+) : java.io.Serializable {
+
+    companion object {
+        @JvmStatic
+        private val serialVersionUID = 1L
+    }
+
     /** 客户所处服务器名称 */
     var clientAccessServerMap: MutableMap<String, String> = HashMap()
 

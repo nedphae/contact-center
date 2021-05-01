@@ -38,7 +38,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
 
     fun sendAssignmentSignal(conversationStatusDto: Mono<ConversationStatusDto>): Mono<ResponseEntity<Unit>> {
         return webClient
-                .put()
+                .post()
                 .uri("/message/send/assignment")
                 .body(conversationStatusDto)
                 .retrieve()

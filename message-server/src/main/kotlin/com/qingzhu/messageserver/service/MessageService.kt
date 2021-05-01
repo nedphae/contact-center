@@ -124,7 +124,7 @@ class MessageService(
      * websocket发送 Assignment 事件给客服
      */
     fun sendAssignmentEvent(conversationStatusDto: Mono<ConversationStatus>): Mono<Unit> {
-        val conversationStatusDtoCache = conversationStatusDto.cache()
+        val conversationStatusDtoCache = conversationStatusDto.cache().checkpoint("检查status")
         return conversationStatusDtoCache
                 .filter { it.interaction == 1 }
                 .flatMapMany {
@@ -135,7 +135,7 @@ class MessageService(
                 .distinct()
                 .doOnNext {
                     // 发送消息到kafka
-                    streamBridge.send("${it}.message", conversationStatusDtoCache.block())
+                    streamBridge.send("${it}.conv", conversationStatusDtoCache.block())
                 }
                 .collectList()
                 .flatMap { Mono.empty() }

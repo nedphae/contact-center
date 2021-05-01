@@ -60,7 +60,13 @@ data class ConversationStatus(
 		val isStaffInvited: Boolean = false,
 		/** 会话发起方  1：访客，2：客服 */
 		val beginner: CreatorType
-) {
+) : java.io.Serializable {
+
+	companion object {
+		@JvmStatic
+		private val serialVersionUID = 1L
+	}
+
 	/** 关联会话id */
 	var relatedId: Long? = null
 

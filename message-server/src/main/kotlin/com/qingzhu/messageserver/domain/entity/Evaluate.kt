@@ -18,4 +18,10 @@ class Evaluate(
 		var evaluationRemark: String,
 		/** 用户标记的解决状态，0=未选择 1=已解决 2=未解决 */
 		var userResolvedStatus: Int
-)
+) : java.io.Serializable {
+
+	companion object {
+		@JvmStatic
+		private val serialVersionUID = 1L
+	}
+}

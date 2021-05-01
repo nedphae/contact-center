@@ -24,9 +24,9 @@ class AssignmentHandler(
 
     suspend fun assignmentAuto(sr: ServerRequest): ServerResponse {
         val response = ok().build()
-        return sr.queryParam("organizationId").map(String::toInt).map { oi ->
-            sr.queryParam("uid").map(String::toLong).map { uid ->
-                ok().body(assignmentService.assignmentAuto(oi, uid))
+        return sr.queryParam("organizationId").map(String::toInt).map { oid ->
+            sr.queryParam("userId").map(String::toLong).map { userId ->
+                ok().body(assignmentService.assignmentAuto(oid, userId))
             }.orElse(response)
         }.orElse(response).awaitSingle()
     }

@@ -18,7 +18,7 @@ CREATE TABLE staffadmin.shunt (
 );
 CREATE INDEX shunt_name_idx ON staffadmin.shunt USING btree (name);
 CREATE INDEX shunt_organization_id_idx ON staffadmin.shunt USING btree (organization_id);
-
+create index shunt_code_index on staffadmin.shunt using btree (code);
 
 -- Drop table
 
@@ -63,11 +63,14 @@ CREATE TABLE staffadmin.staff (
                                   gender                 int2         NULL,
                                   mobile_phone           varchar(50)  NULL,
                                   personalized_signature varchar(500) NULL,
+                                  enabled boolean default true,
                                   CONSTRAINT staff_group_pkey PRIMARY KEY (id)
 );
 CREATE INDEX staff_organization_id_idx ON staffadmin.staff USING btree (organization_id);
 CREATE INDEX staff_organization_id_name_idx ON staffadmin.staff USING btree (organization_id, username);
 CREATE INDEX staff_staff_group_id_idx ON staffadmin.staff USING btree (staff_group_id);
+create index staff_enabled on staffadmin.staff USING btree (enabled);
+create index staff_staff_type on staffadmin.staff using btree (staff_type);
 
 -- Drop table
 

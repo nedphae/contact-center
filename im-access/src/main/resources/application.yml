@@ -48,7 +48,7 @@ spring:
 
     stream:
       function:
-        definition: message;messageStreamProcess
+        definition: message;messageStreamProcess;conversationStreamProcess
       poller:
         fixed-delay: 500
         max-messages-per-poll: 1
@@ -69,6 +69,8 @@ spring:
           destination: ${spring.cloud.client.hostname:im}.message
         messageStreamProcess-in-0:
           destination: ${spring.cloud.client.hostname:im}.message
+        conversationStreamProcess-in-0:
+          destination: ${spring.cloud.client.hostname:im}.conv
 
   security:
     oauth2:

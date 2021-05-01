@@ -5,6 +5,6 @@ import org.springframework.data.repository.reactive.ReactiveSortingRepository
 import reactor.core.publisher.Flux
 
 interface ReactiveStaffConfigRepository : ReactiveSortingRepository<StaffConfig, Long> {
-    fun findAllByOrganizationId(organizationId: Int): Flux<StaffConfig>
+    fun findAllByOrganizationIdAndStaffIdIn(organizationId: Int, staffIds: List<Long>): Flux<StaffConfig>
     fun findAllByOrganizationIdAndStaffId(organizationId: Int, staffId: Long): Flux<StaffConfig>
 }

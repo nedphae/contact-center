@@ -7,6 +7,7 @@ import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.query.StaffQuery
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
 import com.qingzhu.staffadmin.staff.service.StaffService
+import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
@@ -15,6 +16,7 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.body
+import org.springframework.web.reactive.function.server.bodyAndAwait
 import reactor.core.publisher.Mono
 import javax.validation.Valid
 
@@ -57,5 +59,9 @@ class StaffHandler(private val staffService: StaffService) {
                         .body<ReceptionistShuntDto>(staffService.findStaffConfigByOrganizationIdAndStaffId(oi, si))
             }.orElseGet { ok().build() }
         }.orElseGet { ok().build() }.awaitSingle()
+    }
+
+    suspend fun findAllEnabledBotStaff(sr: ServerRequest): ServerResponse {
+        return ok().bodyAndAwait(staffService.findAllEnabledBotStaff().asFlow())
     }
 }

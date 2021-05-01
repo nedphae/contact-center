@@ -2,22 +2,29 @@ package com.qingzhu.staffadmin.staff.service
 
 import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistShuntDto
+import com.qingzhu.staffadmin.staff.domain.dto.StaffWithShuntDto
+import com.qingzhu.staffadmin.staff.domain.dto.StaffWithShuntDtoMapper
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffConfigRepository
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toFlux
+import reactor.kotlin.core.publisher.toMono
+import kotlin.streams.toList
 
 @Service
 class StaffService(
-        private val staffRepository: ReactiveStaffRepository,
-        private val staffConfigRepository: ReactiveStaffConfigRepository
+    private val staffRepository: ReactiveStaffRepository,
+    private val staffConfigRepository: ReactiveStaffConfigRepository
 ) {
 
     fun findFirstByOrganizationIdAndUsername(organizationId: Int, username: String?): Mono<InnerUser> {
-        return Mono.justOrEmpty(username).flatMap { staffRepository.findFirstByOrganizationIdAndUsername(organizationId, it) }.map {
+        return Mono.justOrEmpty(username)
+            .flatMap { staffRepository.findFirstByOrganizationIdAndUsername(organizationId, it) }.map {
             InnerUser(it.organizationId, it.id!!, it.username, it.password, it.role.name)
         }.switchIfEmpty(Mono.error(UsernameNotFoundException("用户[$username]不存在")))
     }
@@ -35,16 +42,50 @@ class StaffService(
         val staffConfigFlux = staffConfigRepository.findAllByOrganizationIdAndStaffId(organizationId, staffId)
 
         return staffConfigFlux
-                .collectMap({ it.shuntId }) { it.priority }
-                .transform {
-                    Mono.zip(staff, it)
-                }.map {
-                    ReceptionistShuntDto(
-                            organizationId,
-                            staffId,
-                            it.t2.keys.toList(),
-                            it.t2,
-                            it.t1.simultaneousService)
+            .collectMap({ it.shuntId }) { it.priority }
+            .transform {
+                Mono.zip(staff, it)
+            }.map {
+                ReceptionistShuntDto(
+                    organizationId,
+                    staffId,
+                    it.t2.keys.toList(),
+                    it.t2,
+                    it.t1.simultaneousService
+                )
+            }
+    }
+
+    fun findAllEnabledBotStaff(): Flux<StaffWithShuntDto> {
+        val bots = staffRepository.findAllByStaffTypeAndEnabled(0, true).cache()
+        val shuntMap = bots.collectMultimap { it.organizationId }
+            .flatMapIterable { map ->
+                map.keys.map { oid ->
+                    val ids = map[oid]?.stream()?.map { it.id!! }?.toList()
+                    staffConfigRepository.findAllByOrganizationIdAndStaffIdIn(oid, ids ?: emptyList())
                 }
+            }
+            // 压扁
+            .flatMapSequential { it }
+            .collectMultimap { it.staffId }
+            .cache()
+        return bots.collectMap { it.id!! }
+            .flatMapIterable { botMap ->
+                botMap.map { entry ->
+                    shuntMap.flatMap { map ->
+                        // 根据 staff Id 过滤
+                        val flux = map[entry.key]?.toFlux() ?: Flux.empty()
+                        flux.collectMap({ it.shuntId }) { it.priority }
+                            .transform {
+                                Mono.zip(entry.value.toMono(), it)
+                            }
+                            .map {
+                                StaffWithShuntDtoMapper.mapper.mapToInnerWithPassword(it.t1, it.t2.keys.toList(), it.t2)
+                            }
+                    }
+                }
+            }
+            // 压扁
+            .flatMap { it }
     }
 }

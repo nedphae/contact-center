@@ -36,11 +36,11 @@ class StaffAdminApplicationTests {
     @Test
     fun testUpdate() {
         val update = staffGroupRepositoryR.findById(1)
-                .doOnNext { it.groupName = "客服组" }
-                .flatMap(this.staffGroupRepositoryR::save)
+            .doOnNext { it.groupName = "客服组" }
+            .flatMap(this.staffGroupRepositoryR::save)
         StepVerifier.create(update)
-                .consumeNextWith { assertEquals("客服组", it.groupName) }
-                .verifyComplete()
+            .consumeNextWith { assertEquals("客服组", it.groupName) }
+            .verifyComplete()
     }
 
     /**
@@ -48,34 +48,35 @@ class StaffAdminApplicationTests {
      */
     @Test
     fun testInsertStaff() {
-        val staffGroup = StaffGroup(null, 9491, groupName = "客服组")
+        val staffGroup = StaffGroup(9491, groupName = "客服组")
         val groupSave = staffGroupRepositoryR.findDistinctTopByGroupName(staffGroup.groupName)
-                .switchIfEmpty(staffGroupRepositoryR.save(staffGroup))
+            .switchIfEmpty(staffGroupRepositoryR.save(staffGroup))
 
         StepVerifier.create(groupSave)
-                .consumeNextWith {
-                    it.groupName === "客服组"
-                }
-                .verifyComplete()
+            .consumeNextWith {
+                it.groupName === "客服组"
+            }
+            .verifyComplete()
 
         val staff = Staff(
-                organizationId = 9491,
-                username = "admin",
-                // 123456
-                password = getBCryptPasswordEncoder().encode("123456"),
-                role = StaffAuthority.ROLE_ADMIN,
-                staffGroupId = staffGroup.id ?: 0,
-                realName = "新之助",
-                nickName = "蜡笔小新"
+            organizationId = 9491,
+            username = "admin",
+            // 123456
+            password = getBCryptPasswordEncoder().encode("123456"),
+            role = StaffAuthority.ROLE_ADMIN,
+            staffGroupId = staffGroup.id ?: 0,
+            realName = "新之助",
+            nickName = "蜡笔小新",
+            avatar = null
         )
         val staffSave = staffRepositoryR.findFirstByOrganizationIdAndUsername(staff.organizationId, staff.username)
-                .switchIfEmpty(staffRepositoryR.save(staff))
+            .switchIfEmpty(staffRepositoryR.save(staff))
 
         StepVerifier.create(staffSave)
-                .consumeNextWith {
-                    it.username === "admin"
-                }
-                .verifyComplete()
+            .consumeNextWith {
+                it.username === "admin"
+            }
+            .verifyComplete()
     }
 
 }

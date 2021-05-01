@@ -44,7 +44,9 @@ data class Staff(
 		/** 手机 */
 		var mobilePhone: String? = null,
 		/** 个性签名 */
-		var personalizedSignature: String? = null
+		var personalizedSignature: String? = null,
+		/** 是否启用 */
+		var enabled: Boolean = true,
 ) : AbstractAuditingEntity() {
 	@Id
 	var id: Long? = null

@@ -22,6 +22,7 @@ class WebConfiguration : WebFluxConfigurer {
                 "/staff".nest {
                     GET("/info", staffHandler::findStaffInfo)
                     GET("/receptionist", staffHandler::findStaffConfigByOrganizationIdAndStaffId)
+                    GET("/bots", staffHandler::findAllEnabledBotStaff)
                 }
                 "/config".nest {
                     GET("/chat-ui/config", shuntUIConfigHandler::getUIConfigByShunt)

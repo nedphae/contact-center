@@ -19,9 +19,15 @@ data class StaffStatus(
         var priorityOfShunt: Map<Long, Int>,
         /** 最大接待数量 */
         var maxServiceCount: Int,
-        /** 客服类型，0 表示机器人，1 表示人工会话。 */
+        /** 客服类型，0 表示机器人，1 表示人工。 */
         val staffType: Int = 1
 ) : java.io.Serializable {
+
+    companion object {
+        @JvmStatic
+        private val serialVersionUID = 1L
+    }
+
     /** 登录时间 */
     val loginTime: Date = Date()
 
