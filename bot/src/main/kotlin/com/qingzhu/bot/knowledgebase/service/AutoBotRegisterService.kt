@@ -39,6 +39,7 @@ class AutoBotRegisterService(
                             shunt = it.shunt,
                             priorityOfShunt = it.priorityOfShunt,
                             maxServiceCount = it.simultaneousService,
+                            staffType = it.staffType
                         )
                         messageService.registerStaff(staffStatusDto.toMono())
                     }

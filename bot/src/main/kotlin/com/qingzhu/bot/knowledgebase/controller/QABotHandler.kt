@@ -16,7 +16,7 @@ class QABotHandler(
         val userId = sr.queryParam("u").map { it.toLong() }.orElse(null)
         val botId = sr.queryParam("b").map { it.toLong() }.orElse(null)
         val question = sr.queryParam("q").orElse(null)
-        if (question != null) {
+        if (userId != null && botId != null && question != null) {
             val answer = qaBotService.findAnswerByQuestion(userId, botId, question)
             if (answer != null) {
                 return ok().bodyValueAndAwait(answer)

@@ -1,6 +1,5 @@
 package com.qingzhu.dispatcher.domain.dto
 
-import com.qingzhu.common.domain.AbstractAuditingEntity
 import com.qingzhu.dispatcher.domain.authority.StaffAuthority
 
 /**
@@ -16,7 +15,7 @@ data class StaffDto(
 		/** 用户名 */
 		val username: String,
 		/** 密码 */
-		var password: String,
+		var password: String?,
 		/** 角色 */
 		var role: StaffAuthority,
 		// 所属分组
@@ -43,4 +42,4 @@ data class StaffDto(
 		var mobilePhone: String? = null,
 		/** 个性签名 */
 		var personalizedSignature: String? = null
-) : AbstractAuditingEntity()
+)

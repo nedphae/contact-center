@@ -68,7 +68,7 @@ data class ConversationStatusDto(
 		/** 0=机器人会话, 1=客服正常会话 */
 		val interaction: Int,
 		/** 0：正常会话.1(2)：离线留言，3：排队超时 */
-		val cType: ConversationType = ConversationType.NORMAL,
+		val convType: ConversationType = ConversationType.NORMAL,
 		/** 客服id */
 		val staffId: Long,
 		/** 客服名字 或为 "机器人" */

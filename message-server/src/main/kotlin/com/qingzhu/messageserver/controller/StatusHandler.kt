@@ -1,5 +1,6 @@
 package com.qingzhu.messageserver.controller
 
+import com.qingzhu.common.util.JsonUtils
 import com.qingzhu.messageserver.domain.dto.CustomerBaseClientDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffDispatcherDto
@@ -98,6 +99,11 @@ class ConversationStatusHandler(private val conversationStatusService: Conversat
     }
 
     suspend fun new(sr: ServerRequest): ServerResponse {
+        // 测试 json 序列化问题
+        // val json = sr.awaitBody<String>()
+        // println(json)
+        // val body = JsonUtils.fromJson(json)
+        // println(body)
         return sr.bodyToMono<ConversationStatus>()
                 .flatMap { conversationStatusService.generate(it) }
                 .transform {

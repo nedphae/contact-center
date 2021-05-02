@@ -57,8 +57,9 @@ class AssignmentComponent(
                 }.cache()
         return conversationStatusWithId
                 .filter { cov -> cov.interaction == 1 }
-                .transform {
-                    messageService.sendAssignmentSignal(it).then(it)
+                .flatMap {
+                    val mono = it.toMono()
+                    messageService.sendAssignmentSignal(mono).then(mono)
                 }
                 .switchIfEmpty(conversationStatusWithId)
     }
@@ -66,7 +67,7 @@ class AssignmentComponent(
     /**
      * 通过 [staffChangeStatusDto] 调用客服状态服务器分配座席信息，成功就返回然后新建会话信息
      */
-    fun assignmentCustomerAndSendEvent(staffChangeStatusDto: Mono<StaffChangeStatusDto>): Mono<ResponseEntity<Unit>> {
+    fun assignmentCustomer(staffChangeStatusDto: Mono<StaffChangeStatusDto>): Mono<ResponseEntity<Unit>> {
         return messageService.assignmentCustomer(staffChangeStatusDto)
     }
 
@@ -75,9 +76,6 @@ class AssignmentComponent(
      */
     fun getBot(organizationId: Int, userId: Long): Mono<ConversationStatusDto> {
         return assignment(organizationId, userId) { messageService.findIdleBotStaff(organizationId, it) }
-            .doOnNext {
-                // TODO 设置机器人会话信息 都忘了 todo 啥了，fuck
-            }
     }
 
     /**
@@ -119,9 +117,9 @@ class AssignmentComponent(
                 .flatMap {
                     val dto = StaffChangeStatusDto(organizationId, it!!, userId).toMono()
                     // 发送分配请求给客服 如果失败就重新分配
-                    assignmentCustomerAndSendEvent(dto).then(dto)
+                    assignmentCustomer(dto).then(dto)
                 }
-                .retry(3)
+                // .retry(3)
                 .flatMap {
                     staffAdminService.getStaffInfo(it.organizationId, it.staffId)
                 }

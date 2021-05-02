@@ -35,9 +35,9 @@ class StaffStatusService(
     fun saveStatus(staffStatus: StaffStatus) {
         val statusMap = getStatusMap(staffStatus.organizationId)
         if (statusMap.isEmpty) {
-            statusMap.addIndex(IndexType.HASH, "shunt[any]")
-            statusMap.addIndex(IndexType.SORTED, "onlineStatus")
-            statusMap.addIndex(IndexType.BITMAP, "autoBusy")
+            statusMap.addIndex(IndexType.BITMAP, "shunt[any]")
+            statusMap.addIndex(IndexType.HASH, "onlineStatus")
+            statusMap.addIndex(IndexType.HASH, "autoBusy")
         }
         statusMap.put(staffStatus.staffId, staffStatus, 2, TimeUnit.HOURS)
     }
@@ -45,15 +45,16 @@ class StaffStatusService(
     /**
      * 获取 在线 ，状态就绪，空闲的客服
      */
+    @Suppress("UNCHECKED_CAST")
     fun findIdleStaff(organizationId: Int, shuntId: Long, bot: Boolean = false): Collection<StaffStatus> {
         val statusMap = getStatusMap(organizationId)
-        val predicateList = mutableListOf(
+        val predicateList: MutableList<Predicate<*, *>> = mutableListOf(
                 // 在当前接待组
                 EqualPredicate("shunt[any]", shuntId),
                 // 在线
                 EqualPredicate("onlineStatus", OnlineStatus.ONLINE),
                 // 接待未满
-                EqualPredicate("autoBusy", false)
+                EqualPredicate("autoBusy", false),
         )
         if (bot) {
             predicateList.add(EqualPredicate("staffType", 0))
@@ -61,7 +62,7 @@ class StaffStatusService(
             predicateList.add(EqualPredicate("staffType", 1))
         }
         val andPredicate = AndPredicate(*predicateList.toTypedArray())
-        @Suppress("UNCHECKED_CAST")
+
         return statusMap.values(andPredicate as Predicate<Long, StaffStatus>)
     }
 

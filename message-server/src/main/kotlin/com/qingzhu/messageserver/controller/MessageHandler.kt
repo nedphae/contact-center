@@ -27,6 +27,6 @@ class MessageHandler(
 
     suspend fun sendAssignmentEvent(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<ConversationStatus>().transform(messageService::sendAssignmentEvent)
-                .flatMap { ok().build() }.awaitSingle()
+                .then(ok().build()).awaitSingle()
     }
 }

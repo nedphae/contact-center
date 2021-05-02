@@ -2,6 +2,9 @@
 #  禁用 multicast， 使用 k8s 进行服务集群连接
 hazelcast:
   cluster-name: message-server
+  # cp-subsystem:
+  #   cp-member-count: 3
+
   network:
     join:
       multicast:

@@ -118,7 +118,7 @@ class AssignmentService(private val assignmentComponent: AssignmentComponent) {
                 .transform {
                     assignmentComponent
                             // 尝试分配到历史客服
-                            .assignmentCustomerAndSendEvent(it)
+                            .assignmentCustomer(it)
                             // 更新会话信息
                             .then(mono)
                 }

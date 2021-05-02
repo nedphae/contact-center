@@ -34,7 +34,9 @@ data class StaffStatusDto(
     /** Which server i`m in
      * 如果需要配置登陆端互提，可将 A 更改为终端类型枚举
      */
-    val clientAccessServer: Pair<String, String>
+    val clientAccessServer: Pair<String, String>,
+    /** 客服类型，0 表示机器人，1 表示人工。 */
+    val staffType: Int = 1,
 ) {
     companion object {
         /**
@@ -53,7 +55,7 @@ data class StaffStatusDto(
                 priorityOfShunt = receptionistShuntDto.priorityOfShunt,
                 onlineStatus = staffConfig.onlineStatus,
                 maxServiceCount = receptionistShuntDto.maxServiceCount,
-                clientAccessServer = clientId to KafkaBroker.accessServer
+                clientAccessServer = clientId to KafkaBroker.accessServer,
             )
         }
     }

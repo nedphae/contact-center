@@ -23,8 +23,8 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/staff")
 class StaffController(
-        private val staffRepository: ReactiveStaffRepository,
-        private val staffService: StaffService
+    private val staffRepository: ReactiveStaffRepository,
+    private val staffService: StaffService
 ) {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
@@ -41,22 +41,28 @@ class StaffController(
 @RestController
 class StaffHandler(private val staffService: StaffService) {
     suspend fun findStaffInfo(sr: ServerRequest): ServerResponse {
-        return sr.principal()
+        val oid = sr.queryParam("organizationId").orElse(null)
+        val sid = sr.queryParam("staffId").orElse(null)
+        val staffInfo = if (oid != null && sid != null) {
+            staffService.findStaffInfo(sid.toLong())
+        } else {
+            sr.principal()
                 .getPrincipalTriple()
                 .flatMap { (_, sid, _) ->
                     sid.flatMap { staffService.findStaffInfo(it) }
                 }
-                .transform {
-                    ok().body(it)
-                }
-                .awaitSingle()
+        }
+
+        return staffInfo
+            .transform { ok().body(it) }
+            .awaitSingle()
     }
 
     suspend fun findStaffConfigByOrganizationIdAndStaffId(sr: ServerRequest): ServerResponse {
         return sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("staffId").map(String::toLong).map { si ->
                 ok().contentType(MediaType.APPLICATION_JSON)
-                        .body<ReceptionistShuntDto>(staffService.findStaffConfigByOrganizationIdAndStaffId(oi, si))
+                    .body<ReceptionistShuntDto>(staffService.findStaffConfigByOrganizationIdAndStaffId(oi, si))
             }.orElseGet { ok().build() }
         }.orElseGet { ok().build() }.awaitSingle()
     }

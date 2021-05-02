@@ -44,9 +44,9 @@ class StaffStatusServiceTest : MessageServerApplicationTests() {
     @Test
     fun testStaffStatus() {
         staffStatusService.saveStatus(StaffStatus(1, 2L, StaffAuthority.ROLE_STAFF, listOf(3L, 4L),
-                mapOf(3L to 15), "1234", 10))
+                mapOf(3L to 15), 10, 1))
         staffStatusService.saveStatus(StaffStatusDto(1, 12L, StaffAuthority.ROLE_STAFF, listOf(13L, 4L),
-                mapOf(4L to 15)).toStaffStatus())
+                mapOf(4L to 15), maxServiceCount = 10, staffType = 1).toStaffStatus())
 
         val staffStatusList = staffStatusService.findIdleStaff(1, 4L)
         println(staffStatusList)

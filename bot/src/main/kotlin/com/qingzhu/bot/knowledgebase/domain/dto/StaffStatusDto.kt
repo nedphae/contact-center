@@ -29,5 +29,7 @@ data class StaffStatusDto(
     var onlineStatus: OnlineStatus = OnlineStatus.ONLINE,
     /** 最大接待数量 */
     var maxServiceCount: Int = 10,
+    /** 客服类型，0 表示机器人，1 表示人工。 */
+    val staffType: Int,
 ) {
 }
