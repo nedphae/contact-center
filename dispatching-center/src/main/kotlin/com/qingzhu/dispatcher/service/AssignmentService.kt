@@ -31,10 +31,9 @@ class AssignmentService(private val assignmentComponent: AssignmentComponent) {
                 .assignmentNewOnError()
                 // 不存在历史会话 或者 重新分配客服失败 就转到机器人客服
                 .switchIfEmpty(
-                        assignmentComponent.getBot(organizationId, userId)
-                                .doOnNext {
-                                    // TODO 设置机器人会话信息
-                                }
+                    assignmentComponent.getBot(organizationId, userId)
+                            // 没有机器人在线就分配到人工
+                        .switchIfEmpty(assignmentComponent.getStaff(organizationId, userId))
                 )
                 // 保存会话状态
                 .transform { assignmentComponent.saveConversation(it) }

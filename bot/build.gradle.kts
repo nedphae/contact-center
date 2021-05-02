@@ -12,6 +12,8 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(project(":common"))
 
+    implementation("com.hazelcast:hazelcast:4.0.2")
+
     implementation("org.springframework.data:spring-data-elasticsearch")
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
 }

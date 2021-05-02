@@ -75,6 +75,9 @@ class AssignmentComponent(
      */
     fun getBot(organizationId: Int, userId: Long): Mono<ConversationStatusDto> {
         return assignment(organizationId, userId) { messageService.findIdleBotStaff(organizationId, it) }
+            .doOnNext {
+                // TODO 设置机器人会话信息 都忘了 todo 啥了，fuck
+            }
     }
 
     /**

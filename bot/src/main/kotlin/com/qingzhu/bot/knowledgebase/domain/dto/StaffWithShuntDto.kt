@@ -13,7 +13,7 @@ data class StaffWithShuntDto(
 	/** 用户名 */
 	val username: String,
 	/** 密码 */
-	var password: String,
+	var password: String?,
 	/** 角色 */
 	var role: String,
 	// 所属分组
@@ -43,9 +43,8 @@ data class StaffWithShuntDto(
 	/** 是否启用 */
 	var enabled: Boolean = true,
 	/** 所处接待组 */
-	var shunt: List<Long>,
+	var shunt: List<Long> = emptyList(),
 	/** 不同接待组的优先级 */
-	var priorityOfShunt: Map<Long, Int>,
+	var priorityOfShunt: Map<Long, Int> = emptyMap(),
 ) {
-
 }

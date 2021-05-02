@@ -1,7 +1,7 @@
 # hazelcast 配置
 #  禁用 multicast， 使用 k8s 进行服务集群连接
 hazelcast:
-  cluster-name: im
+  cluster-name: message-server
   network:
     join:
       multicast:

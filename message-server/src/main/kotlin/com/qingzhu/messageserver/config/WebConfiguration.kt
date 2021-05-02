@@ -29,7 +29,6 @@ class WebConfiguration : WebFluxConfigurer {
 
     @Bean
     fun routerFunction(messageHandler: MessageHandler,
-                       cpSubsystemHandler: CPSubsystemHandler,
                        staffStatusHandler: StaffStatusHandler,
                        customerStatusHandler: CustomerStatusHandler,
                        conversationStatusHandler: ConversationStatusHandler,
@@ -40,10 +39,6 @@ class WebConfiguration : WebFluxConfigurer {
                     // 发送消息
                     POST("/send", messageHandler::send)
                     POST("/send/assignment", messageHandler::sendAssignmentEvent)
-                }
-                "/lock".nest {
-                    POST("/bot/try", cpSubsystemHandler::getBotLock)
-                    PUT("/bot/release", cpSubsystemHandler::releaseBotLock)
                 }
                 "/status".nest {
                     "/register".nest {

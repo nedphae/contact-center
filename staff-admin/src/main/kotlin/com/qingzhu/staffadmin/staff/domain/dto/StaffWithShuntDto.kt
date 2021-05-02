@@ -13,7 +13,7 @@ data class StaffWithShuntDto(
     /** 用户名 */
     val username: String,
     /** 密码 */
-    var password: String,
+    var password: String?,
     /** 角色 */
     var role: StaffAuthority,
     // 所属分组
@@ -42,12 +42,11 @@ data class StaffWithShuntDto(
     var personalizedSignature: String? = null,
     /** 是否启用 */
     var enabled: Boolean = true,
-    /** 所处接待组 */
-    var shunt: List<Long>,
-    /** 不同接待组的优先级 */
-    var priorityOfShunt: Map<Long, Int>,
 ) {
-
+    /** 所处接待组 */
+    var shunt: List<Long> = emptyList()
+    /** 不同接待组的优先级 */
+    var priorityOfShunt: Map<Long, Int> = emptyMap()
 }
 
 @Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)

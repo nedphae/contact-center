@@ -17,8 +17,8 @@ data class Staff(
 		val organizationId: Int,
 		/** 用户名 */
 		val username: String,
-		/** 密码 */
-		var password: String,
+		/** 密码 机器人不需要密码 */
+		var password: String?,
 		/** 角色 */
 		var role: StaffAuthority,
 		// 所属分组

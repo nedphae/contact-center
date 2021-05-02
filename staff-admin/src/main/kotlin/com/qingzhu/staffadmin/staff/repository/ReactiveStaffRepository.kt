@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono
 
 @Repository
 interface ReactiveStaffRepository : ReactiveSortingRepository<Staff, Long> {
-    fun findFirstByOrganizationIdAndUsername(organizationId: Int, username: String): Mono<Staff>
+    fun findFirstByOrganizationIdAndUsernameAndStaffTypeAndEnabled(organizationId: Int, username: String, staffType: Int, enabled: Boolean): Mono<Staff>
 
     fun findAllByStaffTypeAndEnabled(staffType: Int, enabled: Boolean): Flux<Staff>
 }

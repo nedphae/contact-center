@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.*
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Component
@@ -22,33 +23,17 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
             .retrieve()
             .toEntity()
     }
-
-    fun getBotLock(): Mono<Boolean> {
-        return webClient
-                .post()
-                .uri("/lock/bot/try")
-                .retrieve()
-                .bodyToMono()
-    }
-
-    fun releaseBotLock(): Mono<Unit> {
-        return webClient
-            .post()
-            .uri("/lock/bot/release")
-            .retrieve()
-            .bodyToMono()
-    }
 }
 
 @Service
 class StaffAdminService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) {
     private val webClient = webClientBuilder.baseUrl("http://staff-admin").build()
 
-    fun findAllEnabledBotStaff(): Mono<StaffWithShuntDto> {
+    fun findAllEnabledBotStaff(): Flux<StaffWithShuntDto> {
         return webClient
             .get()
             .uri("/staff/bots")
             .retrieve()
-            .bodyToMono()
+            .bodyToFlux()
     }
 }

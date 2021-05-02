@@ -24,7 +24,7 @@ class StaffService(
 
     fun findFirstByOrganizationIdAndUsername(organizationId: Int, username: String?): Mono<InnerUser> {
         return Mono.justOrEmpty(username)
-            .flatMap { staffRepository.findFirstByOrganizationIdAndUsername(organizationId, it) }.map {
+            .flatMap { staffRepository.findFirstByOrganizationIdAndUsernameAndStaffTypeAndEnabled(organizationId, it, 1, true) }.map {
             InnerUser(it.organizationId, it.id!!, it.username, it.password, it.role.name)
         }.switchIfEmpty(Mono.error(UsernameNotFoundException("用户[$username]不存在")))
     }
