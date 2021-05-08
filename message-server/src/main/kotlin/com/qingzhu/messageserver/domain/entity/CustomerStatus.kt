@@ -48,9 +48,13 @@ data class CustomerStatus(
 
     fun setOffline(accessServer: String?) =
             apply {
-                this.onlineStatus = OnlineStatus.OFFLINE;
                 if (accessServer != null) {
                     this.clientAccessServerMap.remove(accessServer)
+                    if (this.clientAccessServerMap.isEmpty()) {
+                        this.onlineStatus = OnlineStatus.OFFLINE
+                    }
+                } else {
+                    this.onlineStatus = OnlineStatus.OFFLINE
                 }
             }
 

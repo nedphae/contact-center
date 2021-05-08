@@ -1,5 +1,6 @@
 package com.qingzhu.imaccess.service
 
+import com.qingzhu.imaccess.domain.constant.CreatorType
 import com.qingzhu.imaccess.domain.dto.*
 import com.qingzhu.imaccess.domain.query.CustomerConfig
 import com.qingzhu.imaccess.domain.query.StaffConfig
@@ -26,7 +27,7 @@ class RegisterService(
                 .transformDeferredContextual { t, u ->
                     t.map {
                         val dto = StaffStatusDto.fromStaffConfigAndStaff(staffConfig, it, u["clientId"])
-                        // 之前的 两个 transform 会优化掉中间的 registerStaff 动作
+                        // note: 之前的 两个 transform 会不执行中间的 registerStaff 动作，因为 transform 把 reactor 对象自身传递过去
                         messageService.registerStaff(dto.toMono()).subscribe()
                         dto
                     }
@@ -37,13 +38,13 @@ class RegisterService(
     /**
      * 注册客户在线信息
      */
-    fun registerCustomer(customerConfig: CustomerConfig): Mono<CustomerStatusDto> {
-        val customerDto = CustomerDto.fromCustomerConfig(customerConfig)
+    fun registerCustomer(customerConfig: CustomerConfig, shuntDto: ShuntDto): Mono<CustomerStatusDto> {
+        val customerDto = CustomerDto.fromCustomerConfig(customerConfig, shuntDto)
         // 客户信息现在保存到了 调度服务器
         // TODO: 后期再拆分到单独的服务器
         return dispatchingCenter.updateCustomer(customerDto.toMono())
                 .map {
-                    val dto = CustomerStatusDto.fromCustomerConfig(customerConfig, it)
+                    val dto = CustomerStatusDto.fromCustomerConfig(customerConfig, it, shuntDto)
                     // 注册信息
                     messageService.registerCustomer(dto.toMono()).subscribe()
                     dto
@@ -51,7 +52,7 @@ class RegisterService(
     }
 
     /**
-     * 注册客服在线信息
+     * 注销客服在线信息
      */
     fun unRegisterStaff(organizationId: Int, staffId: Long) {
         messageService
@@ -61,11 +62,11 @@ class RegisterService(
     }
 
     /**
-     * 注册客户在线信息
+     * 注销客户在线信息
      */
-    fun unRegisterCustomer(organizationId: Int, userId: Long) {
+    fun unRegisterCustomer(organizationId: Int, userId: Long, terminator: CreatorType = CreatorType.CUSTOMER) {
         messageService
-                .unregisterCustomer(CustomerBaseStatusDto(organizationId, userId).toMono())
+                .unregisterCustomer(CustomerBaseStatusDto(organizationId, userId, terminator).toMono())
                 .retry(3)
                 .subscribe()
     }

@@ -1,5 +1,6 @@
 package com.qingzhu.messageserver.domain.dto
 
+import com.qingzhu.messageserver.domain.constant.CreatorType
 import com.qingzhu.messageserver.domain.constant.FromType
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import com.qingzhu.messageserver.domain.entity.CustomerStatus
@@ -12,6 +13,7 @@ data class CustomerBaseStatusDto(
     /** 公司id */
     val organizationId: Int,
     val userId: Long,
+    val terminator: CreatorType,
     // 如果是机器人聊天（http） 就不用注册client了
     val clientAccessServer: String?,
 )

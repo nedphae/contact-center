@@ -8,17 +8,20 @@ import java.time.LocalDateTime
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ConversationView(
-		val id: Long?,
+		val id: Long? = null,
 		/** 公司id */
-		val organizationId: Int,
+		val organizationId: Int? = null,
 		/** 客服id 如果不需要转人工就为空 */
-		val staffId: Long?,
-		val userId: Long,
-		val nickName: String?,
+		val staffId: Long? = null,
+		val userId: Long? = null,
+		val nickName: String? = null,
 		/** 0=客服正常会话  1=机器人会话 */
-		val interaction: Int?,
+		val interaction: Int? = null,
 		/** 会话结束时间 */
-		val endTime: LocalDateTime?,
+		val endTime: LocalDateTime? = null,
 		/** 当前排队信息 */
-		val queue: Long?
+		val queue: Long? = null,
+
+		val errorCode: Int? = null,
+		val errorMessage: String? = null,
 )

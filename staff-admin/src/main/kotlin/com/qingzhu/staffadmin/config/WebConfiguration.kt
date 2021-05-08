@@ -1,5 +1,6 @@
 package com.qingzhu.staffadmin.config
 
+import com.qingzhu.staffadmin.staff.controller.ShuntHandler
 import com.qingzhu.staffadmin.staff.controller.ShuntUIConfigHandler
 import com.qingzhu.staffadmin.staff.controller.StaffHandler
 import org.springframework.context.annotation.Bean
@@ -16,6 +17,7 @@ import org.springframework.web.reactive.function.server.coRouter
 class WebConfiguration : WebFluxConfigurer {
     @Bean
     fun routerFunction(staffHandler: StaffHandler,
+                       shuntHandler: ShuntHandler,
                        shuntUIConfigHandler: ShuntUIConfigHandler): RouterFunction<ServerResponse> {
         return coRouter {
             accept(MediaType.APPLICATION_JSON).nest {
@@ -23,6 +25,9 @@ class WebConfiguration : WebFluxConfigurer {
                     GET("/info", staffHandler::findStaffInfo)
                     GET("/receptionist", staffHandler::findStaffConfigByOrganizationIdAndStaffId)
                     GET("/bots", staffHandler::findAllEnabledBotStaff)
+                    "/shunt".nest {
+                        GET("/{code}", shuntHandler::findFirstByCode)
+                    }
                 }
                 "/config".nest {
                     GET("/chat-ui/config", shuntUIConfigHandler::getUIConfigByShunt)

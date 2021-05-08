@@ -25,9 +25,9 @@ data class CustomerDto(
         val vipLevel: Int?
 ) {
     companion object {
-        fun fromCustomerConfig(customerConfig: CustomerConfig): CustomerDto {
+        fun fromCustomerConfig(customerConfig: CustomerConfig, shuntDto: ShuntDto): CustomerDto {
             return CustomerDto(
-                    organizationId = customerConfig.organizationId,
+                    organizationId = shuntDto.organizationId,
                     uid = customerConfig.uid,
                     name = customerConfig.name,
                     email = customerConfig.email,

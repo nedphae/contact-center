@@ -2,7 +2,10 @@ package com.qingzhu.imaccess.service
 
 import com.qingzhu.common.domain.shared.AbstractSpecification
 import com.qingzhu.common.domain.shared.Specification
+import com.qingzhu.imaccess.domain.constant.CreatorType
 import com.qingzhu.imaccess.domain.value.Message
+import com.qingzhu.imaccess.util.Key
+import com.qingzhu.imaccess.util.MapUtils
 import com.qingzhu.imaccess.util.ParserUtils
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.stereotype.Service
@@ -18,12 +21,12 @@ class MessageFilterService(
         filters: ObjectProvider<Specification<Message>>
 ) {
     private val filterMap: Map<String, Specification<Message>> =
-            filters.stream().toList().map { it::class.simpleName!!.toLowerCase() to it }.toMap()
+        filters.stream().toList().associateBy { it::class.simpleName!!.toLowerCase() }
 
     /**
      * 过滤表达式，后期可以读取配置
      */
-    private val expression = "MessageToFilter"
+    private val expression = "MessageToFilter AND CustomerFilter"
 
     private val filterChain = ParserUtils(expression) {
         filterMap[it] ?: object : AbstractSpecification<Message>() {
@@ -43,5 +46,19 @@ class MessageFilterService(
 class MessageToFilter : AbstractSpecification<Message>() {
     override fun isSatisfiedBy(t: Message): Boolean {
         return t.to != null
+    }
+}
+
+/**
+ * 客户特定时间没有说话就踢出咨询，记录客户消息时间
+ */
+@Service
+class CustomerFilter : AbstractSpecification<Message>() {
+    override fun isSatisfiedBy(t: Message): Boolean {
+        if (t.creatorType == CreatorType.CUSTOMER && t.organizationId != null) {
+            // 是用户消息就标记 时间
+            MapUtils.Time.markTimeByKey(Key(t.organizationId!!, CreatorType.CUSTOMER, t.from!!))
+        }
+        return true
     }
 }

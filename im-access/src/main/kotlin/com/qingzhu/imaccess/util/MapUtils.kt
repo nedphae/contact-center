@@ -3,8 +3,10 @@ package com.qingzhu.imaccess.util
 import com.corundumstudio.socketio.SocketIOClient
 import com.qingzhu.imaccess.domain.constant.CreatorType
 import reactor.core.publisher.Flux
+import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.streams.toList
 
 data class Key(
     val organizationId: Int,
@@ -14,7 +16,33 @@ data class Key(
 
 object MapUtils {
     /** 保存 Client 的map到底是现在这种还是 用 clientId 保存？ */
-    val clientMap = ConcurrentHashMap<Int, ConcurrentHashMap<CreatorType, ConcurrentHashMap<Long, MutableSet<SocketIOClient>>>>()
+    val clientMap =
+        ConcurrentHashMap<Int, ConcurrentHashMap<CreatorType, ConcurrentHashMap<Long, MutableSet<SocketIOClient>>>>()
+
+    object Time {
+        private val timeMap = ConcurrentHashMap<Key, Long>()
+
+        fun markTimeByKey(key: Key) {
+            timeMap[key] = System.currentTimeMillis()
+        }
+
+        /**
+         * 获取过期的 key
+         */
+        fun getExpiredKey(duration: Duration): List<Key> {
+            return timeMap.entries
+                .parallelStream()
+                .filter {
+                    it.value <= System.currentTimeMillis() - duration.toMillis()
+                }
+                .map { it.key }
+                .toList()
+        }
+
+        fun removeKey(key: Key) {
+            timeMap.remove(key)
+        }
+    }
 
     /**
      * 类似 java [LocaleObjectCache] 线程安全也只能这样操作了
@@ -57,6 +85,7 @@ object MapUtils {
         list?.also {
             it.remove(value)
             if (it.isEmpty()) {
+                Time.removeKey(key)
                 roleMap.remove(key.id)
             }
         }

@@ -71,7 +71,7 @@ class CustomerEventHandler(
                 .transformDeferredContextual { t, u ->
                     t.map {
                         // 更新客户信息，保存客户连接到的服务器
-                        messageService.updateCustomerClient(CustomerBaseClientDto(it.organizationId, it.userId, u.get<String>("clientId")).toMono())
+                        messageService.updateCustomerClient(CustomerBaseClientDto(it.organizationId!!, it.userId!!, u.get<String>("clientId")).toMono())
                         it
                     }
                 }

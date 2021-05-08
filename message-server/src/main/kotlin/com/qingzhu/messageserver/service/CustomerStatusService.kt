@@ -4,6 +4,7 @@ import com.hazelcast.config.IndexType
 import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
 import com.hazelcast.query.impl.predicates.EqualPredicate
+import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import com.qingzhu.messageserver.domain.dto.CustomerBaseClientDto
 import com.qingzhu.messageserver.domain.dto.CustomerBaseStatusDto
 import com.qingzhu.messageserver.domain.entity.CustomerStatus
@@ -14,11 +15,12 @@ import java.util.concurrent.TimeUnit
 
 @Service
 class CustomerStatusService(
-        @Qualifier("hazelcastInstance")
-        private val hazelcastInstance: HazelcastInstance
+    @Qualifier("hazelcastInstance")
+    private val hazelcastInstance: HazelcastInstance,
+    private val conversationStatusService: ConversationStatusService,
 ) {
     private fun getStatusMap(organizationId: Int) =
-            hazelcastInstance.getMap<Long, CustomerStatus>("$organizationId:customer")
+        hazelcastInstance.getMap<Long, CustomerStatus>("$organizationId:customer")
 
     /**
      * 设置客服状态
@@ -45,8 +47,24 @@ class CustomerStatusService(
     fun setStatusOffline(customerBaseStatusDto: CustomerBaseStatusDto) {
         val statusMap = getStatusMap(customerBaseStatusDto.organizationId)
         val customerStatus = statusMap[customerBaseStatusDto.userId]
-        if (customerStatus != null) {
+        if (customerStatus != null && customerStatus.onlineStatus != OnlineStatus.OFFLINE) {
             customerStatus.setOffline(customerBaseStatusDto.clientAccessServer)
+            if (customerStatus.onlineStatus == OnlineStatus.OFFLINE) {
+                // 设置会话结束
+                val conversationStatus = conversationStatusService.findByUserId(
+                    customerBaseStatusDto.organizationId,
+                    customerBaseStatusDto.userId
+                )
+                // 用户离开设置会话
+                conversationStatus
+                    .doOnSuccess {
+                        it.terminator = customerBaseStatusDto.terminator
+                        // TODO: 设置一些结束会话的信息
+                    }
+                    .subscribe {
+                        conversationStatusService.endConversation(it)
+                    }
+            }
             statusMap.put(customerBaseStatusDto.userId, customerStatus, 15, TimeUnit.MINUTES)
         }
     }
@@ -67,16 +85,18 @@ class CustomerStatusService(
 
         @Suppress("UNCHECKED_CAST")
         return Mono
-                .justOrEmpty(statusMap.values(equalPredicate as Predicate<Long, CustomerStatus>)
-                        .stream().findFirst())
+            .justOrEmpty(
+                statusMap.values(equalPredicate as Predicate<Long, CustomerStatus>)
+                    .stream().findFirst()
+            )
     }
 
     fun updateByClientId(customerBaseClientDto: CustomerBaseClientDto): Mono<CustomerStatus> {
         return findByUserId(customerBaseClientDto.organizationId, customerBaseClientDto.userId)
-                .map {
-                    it.clientAccessServerMap.plusAssign(customerBaseClientDto.clientAccessServer)
-                    saveStatus(it)
-                    it
-                }
+            .map {
+                it.clientAccessServerMap.plusAssign(customerBaseClientDto.clientAccessServer)
+                saveStatus(it)
+                it
+            }
     }
 }

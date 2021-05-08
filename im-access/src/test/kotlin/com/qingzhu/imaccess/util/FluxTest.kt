@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import reactor.test.StepVerifier
+import java.time.Duration
 
 internal class FluxTest {
 
@@ -103,5 +105,15 @@ internal class FluxTest {
                     .asFlow().toList()
             println(i)
         }
+    }
+
+    @Test
+    fun testInterval() {
+        Flux.interval(Duration.ZERO, Duration.ofSeconds(3), Schedulers.single())
+            .doOnNext {
+                println(it)
+            }
+            .subscribe()
+        Thread.sleep(9000)
     }
 }

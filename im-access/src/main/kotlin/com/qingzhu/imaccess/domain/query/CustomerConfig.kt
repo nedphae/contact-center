@@ -10,8 +10,6 @@ import com.qingzhu.imaccess.util.getRandomInt
  */
 @NoArg
 data class CustomerConfig(
-		/** 公司id */
-		val organizationId: Int,
 		/** 自定义访客咨询来源页的标题，不配置sdk会自动抓取, 和referrer一起使用 */
 		val title: String,
 		/** 自定义访客咨询来源页的url，不配置sdk会自动抓取，和title一起使用 */
@@ -22,8 +20,8 @@ data class CustomerConfig(
 		 * 不传表示匿名用户 。若要指定用户信息，不显示默认的（guestxxx用户姓名），就必须传uid
 		 */
 		val uid: String = "guest_${getRandomInt()}",
-		/** 访客选择多入口分流模版id */
-		val shuntId: Long
+		/** 访客选择多入口分流模版 uuid */
+		val shuntId: String
 ) {
 	/** 用户姓名 */
 	val name: String? = null

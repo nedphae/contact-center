@@ -148,4 +148,12 @@ class StaffAdminService(@Qualifier("innerWebClient") webClientBuilder: WebClient
                 .retrieve()
                 .bodyToMono()
     }
+
+    fun getShuntByCode(code: String): Mono<ShuntDto> {
+        return webClient
+            .get()
+            .uri("/staff/shunt/{code}", code)
+            .retrieve()
+            .bodyToMono()
+    }
 }

@@ -6,6 +6,8 @@ import io.netty.channel.ConnectTimeoutException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
+import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.toMono
 import reactor.util.retry.Retry
 import java.time.Duration
@@ -19,34 +21,38 @@ class AutoBotRegisterService(
     private val staffAdminService: StaffAdminService,
     @Qualifier("newHazelcastClient") private val hazelcastInstance: HazelcastInstance,
 ) : CommandLineRunner {
+
+    /**
+     * 自动注册机器人服务
+     */
+    // @Scheduled(fixedDelayString = "PT30M")
     override fun run(vararg args: String?) {
-        val lock = hazelcastInstance.cpSubsystem.getLock("bot")
-        if (lock.tryLock()){
-            try {
-                // 获取机器人信息
+        // 使用 single 线程池
+        Flux.interval(Duration.ZERO, Duration.ofMinutes(30), Schedulers.single())
+            .map { hazelcastInstance.cpSubsystem.getLock("bot") }
+            .filter { it.tryLock() }
+            .flatMap {
                 staffAdminService.findAllEnabledBotStaff()
-                    //超时错误重试
                     .retryWhen(
                         Retry.fixedDelay(50, Duration.ofSeconds(5))
                             .filter { e -> e is ConnectTimeoutException }
                     )
-                    .flatMap {
-                        //注册机器人信息
-                        val staffStatusDto = StaffStatusDto(
-                            organizationId = it.organizationId,
-                            staffId = it.id,
-                            role = it.role,
-                            shunt = it.shunt,
-                            priorityOfShunt = it.priorityOfShunt,
-                            maxServiceCount = it.simultaneousService,
-                            staffType = it.staffType
-                        )
-                        messageService.registerStaff(staffStatusDto.toMono())
-                    }
-                    .subscribe()
-            } finally {
-                lock.unlock()
             }
-        }
+            .flatMap {
+                //注册机器人信息
+                val staffStatusDto = StaffStatusDto(
+                    organizationId = it.organizationId,
+                    staffId = it.id,
+                    role = it.role,
+                    shunt = it.shunt,
+                    priorityOfShunt = it.priorityOfShunt,
+                    maxServiceCount = it.simultaneousService,
+                    staffType = it.staffType
+                )
+                messageService.registerStaff(staffStatusDto.toMono())
+            }
+            .subscribe()
+        // 由 hazelcast 自己检查关闭
+        // lock.unlock()
     }
 }
