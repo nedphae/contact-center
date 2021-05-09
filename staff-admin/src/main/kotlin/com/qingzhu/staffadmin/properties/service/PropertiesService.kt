@@ -21,8 +21,10 @@ fun createMapFromProperties(properties: Flux<Properties>): Mono<String> {
     return properties.collectList()
         .map { list ->
             list.joinToString(separator = System.lineSeparator()) {
-                """${it.key}.value:${it.value}
-                        ${it.key}.id:${it.id}
+                """ ${if (it.value != null) "${it.key}.value:${it.value}" else ""}
+                    ${it.key}.id:${it.id}
+                    ${it.key}.label:${it.label}
+                    ${it.key}.available:${it.available}
                         """.trimMargin()
             }
         }
@@ -61,13 +63,12 @@ class PropertiesService(
     fun getAllProperties(): IO<Mono<String>> {
         return IO.fx {
             val properties = propertiesRepository.findAll()
-            val result = createMapFromProperties(properties)
             CacheMono
                 .lookup({ k ->
                     valueOperations[k]
                         .map { Signal.next(it) }
                 }, "prop:all")
-                .onCacheMissResume(result)
+                .onCacheMissResume(createMapFromProperties(properties))
                 .andWriteWith { t, u ->
                     Mono.fromRunnable { valueOperations[t] = u.get().toString() }
                 }
@@ -77,6 +78,7 @@ class PropertiesService(
     fun saveAll(properties: Iterable<Properties>): IO<Flux<Properties>> {
         return IO.fx {
             val result = propertiesRepository.saveAll(properties).cache()
+            redisTemplate.delete("prop:all")
             redisTemplate.delete(result.map { "prop::${it.key}" })
             result
         }

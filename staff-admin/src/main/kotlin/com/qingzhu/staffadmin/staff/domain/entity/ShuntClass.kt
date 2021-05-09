@@ -10,6 +10,8 @@ import org.springframework.data.relational.core.mapping.Table
 
 @Table
 data class ShuntClass(
+	@Id
+	var id: Long? = null,
 		/** 公司id */
 		val organizationId: Int,
 		/** 分类名称 */
@@ -17,6 +19,5 @@ data class ShuntClass(
 		/** 上级分类 */
 		val catalogue: Long
 ) : AbstractAuditingEntity() {
-	@Id
-	var id: Long? = null
+
 }
