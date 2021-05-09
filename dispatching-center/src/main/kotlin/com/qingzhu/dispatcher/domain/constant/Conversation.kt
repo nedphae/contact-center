@@ -89,13 +89,6 @@ enum class ConversationType(val type: String) {
  * 不同于钉钉的 普通消息/OA消息 区分
  * 这里区分不同的使用者类型 (客服/客户)
  */
-@JsonFormat(shape = JsonFormat.Shape.NUMBER)
-enum class CreatorType {
-    SYS,
-    STAFF,
-    CUSTOMER,
-    GROUP
-}
 
 /**
  * staff flag resolution status

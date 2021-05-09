@@ -1,13 +1,14 @@
 package com.qingzhu.imaccess.service
 
+import com.qingzhu.common.domain.shared.msg.constant.CreatorType
+import com.qingzhu.common.domain.shared.msg.constant.MessageType
+import com.qingzhu.common.domain.shared.msg.value.Content
+import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.imaccess.ImApplicationTests
-import com.qingzhu.imaccess.domain.constant.CreatorType
-import com.qingzhu.imaccess.domain.constant.MessageType
-import com.qingzhu.imaccess.domain.value.Content
-import com.qingzhu.imaccess.domain.value.Message
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import reactor.core.publisher.Mono
+import java.time.LocalDateTime
 
 internal class MessageFilterServiceTest : ImApplicationTests() {
 
@@ -16,22 +17,27 @@ internal class MessageFilterServiceTest : ImApplicationTests() {
 
     @Test
     fun testFilter() {
-        Mono.just(Message(
+        Mono.just(
+            Message(
+                9491,
                 "1",
                 2,
-                null,
-                null,
+                LocalDateTime.now(),
+                1,
+                1,
+                1,
                 CreatorType.CUSTOMER,
                 CreatorType.STAFF,
                 Content(
-                        MessageType.TEXT,
-                        Content.TextContent("test")
+                    MessageType.TEXT,
+                    textContent = Content.TextContent("test")
                 )
-        ))
-                .transform(messageFilterService::filter)
-                .doOnDiscard(Message::class.java) {
-                    println("过滤：$it")
-                }
-                .subscribe()
+            )
+        )
+            .transform(messageFilterService::filter)
+            .doOnDiscard(Message::class.java) {
+                println("过滤：$it")
+            }
+            .subscribe()
     }
 }

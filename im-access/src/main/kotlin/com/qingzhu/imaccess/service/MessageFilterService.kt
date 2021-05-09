@@ -2,8 +2,8 @@ package com.qingzhu.imaccess.service
 
 import com.qingzhu.common.domain.shared.AbstractSpecification
 import com.qingzhu.common.domain.shared.Specification
-import com.qingzhu.imaccess.domain.constant.CreatorType
-import com.qingzhu.imaccess.domain.value.Message
+import com.qingzhu.common.domain.shared.msg.constant.CreatorType
+import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.imaccess.util.Key
 import com.qingzhu.imaccess.util.MapUtils
 import com.qingzhu.imaccess.util.ParserUtils
@@ -18,7 +18,7 @@ import kotlin.streams.toList
  */
 @Service
 class MessageFilterService(
-        filters: ObjectProvider<Specification<Message>>
+    filters: ObjectProvider<Specification<Message>>
 ) {
     private val filterMap: Map<String, Specification<Message>> =
         filters.stream().toList().associateBy { it::class.simpleName!!.toLowerCase() }

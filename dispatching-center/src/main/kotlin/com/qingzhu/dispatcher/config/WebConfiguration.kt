@@ -15,8 +15,10 @@ import org.springframework.web.reactive.function.server.coRouter
 @EnableWebFlux
 class WebConfiguration : WebFluxConfigurer {
     @Bean
-    fun routerFunction(assignmentHandler: AssignmentHandler,
-                       customerHandler: CustomerHandler): RouterFunction<ServerResponse> {
+    fun routerFunction(
+        assignmentHandler: AssignmentHandler,
+        customerHandler: CustomerHandler
+    ): RouterFunction<ServerResponse> {
         return coRouter {
             accept(MediaType.APPLICATION_JSON).nest {
                 "/customer".nest {
@@ -30,6 +32,8 @@ class WebConfiguration : WebFluxConfigurer {
                     // 如果是就重新分配到该客服，如果客服不在线就重新分配客服
                     // 如果没有就返回空
                     PUT("/auto", assignmentHandler::assignmentAuto)
+                    // 分配列队中等待的客户
+                    PUT("/queue", assignmentHandler::assignmentFromQueue)
                 }
             }
         }

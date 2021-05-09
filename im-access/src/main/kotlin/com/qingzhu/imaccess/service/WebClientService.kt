@@ -1,14 +1,13 @@
 package com.qingzhu.imaccess.service
 
+import com.qingzhu.common.domain.shared.msg.dto.MessageDto
 import com.qingzhu.imaccess.domain.dto.*
 import com.qingzhu.imaccess.domain.view.ConversationView
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.body
-import org.springframework.web.reactive.function.client.bodyToMono
-import org.springframework.web.reactive.function.client.toEntity
+import org.springframework.web.reactive.function.client.*
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 /**
@@ -20,37 +19,50 @@ class DispatchingCenter(@Qualifier("innerWebClient") webClientBuilder: WebClient
 
     fun updateCustomer(customerDto: Mono<CustomerDto>): Mono<CustomerDto> {
         return webClient
-                .post()
-                .uri("/customer")
-                .body(customerDto)
-                .retrieve()
-                .bodyToMono()
+            .post()
+            .uri("/customer")
+            .body(customerDto)
+            .retrieve()
+            .bodyToMono()
     }
 
     fun assignmentAuto(organizationId: Int, userId: Long): Mono<ConversationView> {
         return webClient
-                .put()
-                .uri {
-                    it.path("/dispatcher/assignment/auto")
-                            .queryParam("organizationId", organizationId)
-                            .queryParam("userId", userId)
-                            .build()
-                }
-                .retrieve()
-                .bodyToMono()
+            .put()
+            .uri {
+                it.path("/dispatcher/assignment/auto")
+                    .queryParam("organizationId", organizationId)
+                    .queryParam("userId", userId)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
     }
 
     fun assignmentStaff(organizationId: Int, userId: Long): Mono<ConversationView> {
         return webClient
-                .put()
-                .uri {
-                    it.path("/dispatcher/assignment/staff")
-                            .queryParam("organizationId", organizationId)
-                            .queryParam("userId", userId)
-                            .build()
-                }
-                .retrieve()
-                .bodyToMono()
+            .put()
+            .uri {
+                it.path("/dispatcher/assignment/staff")
+                    .queryParam("organizationId", organizationId)
+                    .queryParam("userId", userId)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun assignmentFromQueue(organizationId: Int, userId: Long): Flux<ResponseEntity<Unit>> {
+        return webClient
+            .put()
+            .uri {
+                it.path("/dispatcher/assignment/queue")
+                    .queryParam("organizationId", organizationId)
+                    .queryParam("userId", userId)
+                    .build()
+            }
+            .retrieve()
+            .bodyToFlux()
     }
 }
 
@@ -61,7 +73,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
     /**
      * 返回 Mono<Unit> 就是返回空，会导致后续的 reactor 操作符不执行
      */
-    fun send(message: Mono<MessageDto>): Mono<ResponseEntity<Boolean>> {
+    fun send(message: Mono<MessageDto>): Mono<ResponseEntity<Unit>> {
         return webClient
             .post()
             .uri("/message/send")
@@ -72,11 +84,11 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
 
     fun registerCustomer(customerDto: Mono<CustomerStatusDto>): Mono<ResponseEntity<Unit>> {
         return webClient
-                .post()
-                .uri("/status/register/customer")
-                .body(customerDto)
-                .retrieve()
-                .toEntity()
+            .post()
+            .uri("/status/register/customer")
+            .body(customerDto)
+            .retrieve()
+            .toEntity()
     }
 
     /**
@@ -84,51 +96,51 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
      */
     fun updateCustomerClient(customerDto: Mono<CustomerBaseClientDto>): Mono<ResponseEntity<Unit>> {
         return webClient
-                .put()
-                .uri("/status/customer/update-client")
-                .body(customerDto)
-                .retrieve()
-                .toEntity()
+            .put()
+            .uri("/status/customer/update-client")
+            .body(customerDto)
+            .retrieve()
+            .toEntity()
     }
 
     fun unregisterCustomer(customerDto: Mono<CustomerBaseStatusDto>): Mono<ResponseEntity<Unit>> {
         return webClient
-                .put()
-                .uri("/status/unregister/customer")
-                .body(customerDto)
-                .retrieve()
-                .toEntity()
+            .put()
+            .uri("/status/unregister/customer")
+            .body(customerDto)
+            .retrieve()
+            .toEntity()
     }
 
     fun registerStaff(staffStatusDto: Mono<StaffStatusDto>): Mono<ResponseEntity<Unit>> {
         return webClient
-                .post()
-                .uri("/status/register/staff")
-                .body(staffStatusDto)
-                .retrieve()
-                .toEntity()
+            .post()
+            .uri("/status/register/staff")
+            .body(staffStatusDto)
+            .retrieve()
+            .toEntity()
     }
 
     fun unregisterStaff(staffChangeStatusDto: Mono<StaffChangeStatusDto>): Mono<ResponseEntity<Unit>> {
         return webClient
-                .put()
-                .uri("/status/unregister/staff")
-                .body(staffChangeStatusDto)
-                .retrieve()
-                .toEntity()
+            .put()
+            .uri("/status/unregister/staff")
+            .body(staffChangeStatusDto)
+            .retrieve()
+            .toEntity()
     }
 
     fun findCustomerByUid(organizationId: Int, uid: String): Mono<CustomerBaseStatusDto> {
         return webClient
-                .get()
-                .uri {
-                    it.path("/status/customer/find-by-uid")
-                            .queryParam("organizationId", organizationId)
-                            .queryParam("uid", uid)
-                            .build()
-                }
-                .retrieve()
-                .bodyToMono()
+            .get()
+            .uri {
+                it.path("/status/customer/find-by-uid")
+                    .queryParam("organizationId", organizationId)
+                    .queryParam("uid", uid)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
     }
 }
 
@@ -138,15 +150,15 @@ class StaffAdminService(@Qualifier("innerWebClient") webClientBuilder: WebClient
 
     fun getReceptionistGroup(organizationId: Int, staffId: Long): Mono<ReceptionistShuntDto> {
         return webClient
-                .get()
-                .uri {
-                    it.path("/staff/receptionist")
-                            .queryParam("organizationId", organizationId)
-                            .queryParam("staffId", staffId)
-                            .build()
-                }
-                .retrieve()
-                .bodyToMono()
+            .get()
+            .uri {
+                it.path("/staff/receptionist")
+                    .queryParam("organizationId", organizationId)
+                    .queryParam("staffId", staffId)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
     }
 
     fun getShuntByCode(code: String): Mono<ShuntDto> {

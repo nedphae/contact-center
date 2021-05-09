@@ -118,8 +118,8 @@ class MessageServerApplicationTests {
                 // .setHeader("partitionKey", str.hashCode() % 4)
                 .setHeader(KafkaHeaders.MESSAGE_KEY, "bar".encodeToByteArray())
                 .build()
-            many.tryEmitNext(message)
-            // streamBridge.send("im.test", message)
+            // many.tryEmitNext(message)
+            streamBridge.send("im.test", message)
             i++
             if (i % 10 == 0) {
                 Thread.sleep(1000)

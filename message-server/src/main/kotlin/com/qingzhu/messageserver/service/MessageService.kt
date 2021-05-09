@@ -1,17 +1,19 @@
 package com.qingzhu.messageserver.service
 
+import com.qingzhu.common.domain.shared.msg.constant.CreatorType
+import com.qingzhu.common.domain.shared.msg.dto.MessageDto
+import com.qingzhu.common.domain.shared.msg.dto.UpdateMessage
+import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.common.util.toJson
-import com.qingzhu.messageserver.domain.constant.CreatorType
-import com.qingzhu.messageserver.domain.dto.MessageDto
-import com.qingzhu.messageserver.domain.dto.UpdateMessage
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.domain.value.CustomerToStaff
-import com.qingzhu.messageserver.domain.value.Message
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.cloud.stream.function.StreamBridge
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.ReactiveZSetOperations
+import org.springframework.messaging.support.MessageBuilder
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.toMono
@@ -32,40 +34,46 @@ class MessageService(
     private fun Mono<CustomerToStaff>.syncMessage(messageDto: MessageDto): Mono<Boolean> {
         val message = messageDto.message
 
-        val from = Mono.just("${message.organizationId}:${message.creatorType.name.toLowerCase()}:${message.from}")
+        val from = Mono.justOrEmpty(message.from)
+            .map { "${message.organizationId}:${message.creatorType.name.toLowerCase()}:${it}" }
         val to = Mono.just("${message.organizationId}:${message.type.name.toLowerCase()}:${message.to}")
 
         lateinit var staffUpdateMessage: UpdateMessage
         lateinit var customerUpdateMessage: UpdateMessage
-        val staff = this.flatMap { staffStatusService.findStaff(message.organizationId, it.staffId) }
-                .map {
-                    staffUpdateMessage = UpdateMessage(it.pts ?: message.seqId, message, messageDto.client)
-                    if (message.type == CreatorType.STAFF) {
-                        it.pts = message.seqId
-                        staffStatusService.saveStatus(it)
-                    }
-                    it
+        val staff = this.flatMap { Mono.justOrEmpty(it.staffId) }
+            .flatMap { staffStatusService.findStaff(message.organizationId!!, it) }
+            .map {
+                staffUpdateMessage = UpdateMessage(it.pts ?: message.seqId, message, messageDto.client!!)
+                if (message.type == CreatorType.STAFF) {
+                    it.pts = message.seqId
+                    staffStatusService.saveStatus(it)
                 }
-        val customer = this.flatMap { customerStatusService.findByUserId(message.organizationId, it.customerId) }
-                .map {
-                    customerUpdateMessage = UpdateMessage(it.pts ?: message.seqId, message, messageDto.client)
-                    if (message.type == CreatorType.CUSTOMER) {
-                        it.pts = message.seqId
-                        customerStatusService.saveStatus(it)
-                    }
-                    it
+                it
+            }
+        val customer = this.flatMap { Mono.justOrEmpty(it.customerId) }
+            .flatMap { customerStatusService.findByUserId(message.organizationId!!, it) }
+            .map {
+                customerUpdateMessage = UpdateMessage(it.pts ?: message.seqId, message, messageDto.client!!)
+                if (message.type == CreatorType.CUSTOMER) {
+                    it.pts = message.seqId
+                    customerStatusService.saveStatus(it)
                 }
+                it
+            }
 
         val data = message.toJson()
         /**
          * 先写到 redis 再进行推送，相比较于先推送再写redis，延迟虽然增加了
          * 但是用户每次登陆后检查redis大概率不会丢失数据（可能会有重复）
          */
-        return from
-            .concatWith(to)
-            .flatMap {
-                // 写扩散
-                zSet.add(it, data, message.seqId.toDouble())
+        return to
+            .concatWith(from)
+            .flatMap { key ->
+                message.toMono()
+                    // 过滤 发送给 用户的系统消息，这个类型的消息没必要写同步库了
+                    .filter { it.creatorType != CreatorType.SYS || it.type != CreatorType.CUSTOMER }
+                    // 写扩散
+                    .map { zSet.add(key, data, message.seqId.toDouble()) }
             }
             .then(this)
             .flatMapMany {
@@ -79,9 +87,16 @@ class MessageService(
             .doOnNext {
                 // 发送消息到kafka
                 when (message.type) {
-                    CreatorType.CUSTOMER -> streamBridge.send("${it}.message", customerUpdateMessage.toJson())
-                    CreatorType.STAFF -> streamBridge.send("${it}.message", staffUpdateMessage.toJson())
-                    else -> { }
+                    CreatorType.CUSTOMER -> streamBridge.send(
+                        "${it}.message",
+                        MessageBuilder.withPayload(customerUpdateMessage.toJson()).build()
+                    )
+                    CreatorType.STAFF -> streamBridge.send(
+                        "${it}.message",
+                        MessageBuilder.withPayload(staffUpdateMessage.toJson()).build()
+                    )
+                    else -> {
+                    }
                 }
             }
             .collectList()
@@ -97,10 +112,31 @@ class MessageService(
         return messageDto
             .publishOn(Schedulers.boundedElastic())
             .flatMap {
-                when (it.message.type) {
+                when (it.message.creatorType) {
                     // 封装客服客户 id 对，然后过滤发送消息的客户端ID
-                    CreatorType.CUSTOMER -> CustomerToStaff(it.message.to, it.message.from).toMono().syncMessage(it)
-                    CreatorType.STAFF -> CustomerToStaff(it.message.from, it.message.to).toMono().syncMessage(it)
+                    CreatorType.CUSTOMER -> {
+                        when (it.message.type) {
+                            CreatorType.STAFF -> CustomerToStaff(it.message.from!!, it.message.to).toMono()
+                                .syncMessage(it)
+                            else -> Mono.just(false)
+                        }
+                    }
+                    CreatorType.STAFF -> {
+                        when (it.message.type) {
+                            CreatorType.CUSTOMER -> CustomerToStaff(it.message.to, it.message.from!!).toMono()
+                                .syncMessage(it)
+                            CreatorType.GROUP -> TODO("发送给群组")
+                            CreatorType.SYS -> TODO("发送系统消息")
+                            else -> Mono.just(false)
+                        }
+                    }
+                    CreatorType.SYS -> {
+                        when (it.message.type) {
+                            CreatorType.CUSTOMER -> CustomerToStaff(it.message.to, null).toMono().syncMessage(it)
+                            CreatorType.STAFF -> CustomerToStaff(null, it.message.to).toMono().syncMessage(it)
+                            else -> Mono.just(false)
+                        }
+                    }
                     else -> Mono.just(false)
                 }
             }
@@ -126,18 +162,19 @@ class MessageService(
     fun sendAssignmentEvent(conversationStatusDto: Mono<ConversationStatus>): Mono<Unit> {
         val conversationStatusDtoCache = conversationStatusDto.cache().checkpoint("检查status")
         return conversationStatusDtoCache
-                .filter { it.interaction == 1 }
-                .flatMapMany {
-                    staffStatusService.findStaff(it.organizationId, it.staffId)
-                            .flatMapIterable { cs -> cs.clientAccessServerMap.entries }
-                }
-                .map { entry -> entry.value }
-                .distinct()
-                .doOnNext {
-                    // 发送消息到kafka
-                    streamBridge.send("${it}.conv", conversationStatusDtoCache.block())
-                }
-                .collectList()
-                .flatMap { Mono.empty() }
+            .filter { it.interaction == 1 }
+            .flatMapMany {
+                staffStatusService.findStaff(it.organizationId, it.staffId)
+                    .flatMapIterable { cs -> cs.clientAccessServerMap.entries }
+            }
+            .map { entry -> entry.value }
+            .distinct()
+            .transform { Flux.zip(it, conversationStatusDtoCache) }
+            .doOnNext {
+                // 发送消息到kafka
+                streamBridge.send("${it.t1}.conv", MessageBuilder.withPayload(it.t2.toJson()).build())
+            }
+            .collectList()
+            .flatMap { Mono.empty() }
     }
 }

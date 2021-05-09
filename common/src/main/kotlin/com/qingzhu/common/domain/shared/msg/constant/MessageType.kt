@@ -1,4 +1,4 @@
-package com.qingzhu.messageserver.domain.constant
+package com.qingzhu.common.domain.shared.msg.constant
 
 import com.fasterxml.jackson.annotation.JsonFormat
 
@@ -20,6 +20,12 @@ enum class MessageType {
 
     // 链接消息
     LINK
+}
+
+@JsonFormat(shape = JsonFormat.Shape.NUMBER)
+enum class SysCode {
+    UPDATE_QUEUE,
+    ASSIGN
 }
 
 /**

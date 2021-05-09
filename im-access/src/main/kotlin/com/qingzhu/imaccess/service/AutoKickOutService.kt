@@ -1,6 +1,6 @@
 package com.qingzhu.imaccess.service
 
-import com.qingzhu.imaccess.domain.constant.CreatorType
+import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.imaccess.domain.query.WebSocketRequest
 import com.qingzhu.imaccess.socketio.constant.SocketEvent
 import com.qingzhu.imaccess.socketio.sendWithCallback
@@ -18,17 +18,20 @@ import java.time.Duration
 @Service
 class AutoKickOutService(
     private val registerService: RegisterService,
-): CommandLineRunner {
+) : CommandLineRunner {
     override fun run(vararg args: String?) {
         Flux.interval(Duration.ZERO, Duration.ofSeconds(30), Schedulers.boundedElastic())
             .flatMapIterable {
                 // TODO 通过配置获取
                 MapUtils.Time.getExpiredKey(Duration.ofMinutes(15))
             }
-            .flatMapSequential { MapUtils.get(it).map { socket -> it to socket  } }
+            .flatMapSequential { MapUtils.get(it).map { socket -> it to socket } }
             .map { (key, socket) ->
                 // TODO 消息通过配置获取
-                socket.sendWithCallback<Void>(SocketEvent.IO.closed, WebSocketRequest.createRequest(socket.sessionId.toString(), "连接超时断开")) {
+                socket.sendWithCallback<Void>(
+                    SocketEvent.IO.closed,
+                    WebSocketRequest.createRequest(socket.sessionId.toString(), "连接超时断开")
+                ) {
                     registerService.unRegisterCustomer(key.organizationId, key.id, CreatorType.SYS)
                     MapUtils.remove(Key(key.organizationId, CreatorType.CUSTOMER, key.id), socket)
                     socket.disconnect()

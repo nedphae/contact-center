@@ -2,6 +2,7 @@ package com.qingzhu.messageserver.domain.entity
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.common.constant.NoArg
+import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.messageserver.domain.constant.*
 import java.time.LocalDateTime
 

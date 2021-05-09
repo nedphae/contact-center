@@ -1,7 +1,7 @@
 package com.qingzhu.imaccess.util
 
 import com.corundumstudio.socketio.SocketIOClient
-import com.qingzhu.imaccess.domain.constant.CreatorType
+import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import reactor.core.publisher.Flux
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap

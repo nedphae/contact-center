@@ -1,6 +1,5 @@
 package com.qingzhu.messageserver.controller
 
-import com.qingzhu.common.util.JsonUtils
 import com.qingzhu.messageserver.domain.dto.CustomerBaseClientDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffDispatcherDto
@@ -17,7 +16,7 @@ import org.springframework.web.reactive.function.server.ServerResponse.*
 
 @RestController
 class StaffStatusHandler(
-        private val staffStatusService: StaffStatusService
+    private val staffStatusService: StaffStatusService
 ) {
     suspend fun findIdleStaffWithStaffDispatcherDto(sr: ServerRequest): ServerResponse {
         val result = sr.queryParam("organizationId").map(String::toInt).map { oi ->
@@ -40,11 +39,11 @@ class StaffStatusHandler(
     suspend fun staffAssignment(sr: ServerRequest): ServerResponse {
         val param = sr.bodyToMono<StaffChangeStatusDto>()
         return param.flatMap { staffStatusService.assignment(it) }
-                .flatMap {
-                    accepted().build()
-                }
-                .switchIfEmpty(status(HttpStatus.FORBIDDEN).build())
-                .awaitSingle()
+            .flatMap {
+                accepted().build()
+            }
+            .switchIfEmpty(status(HttpStatus.NOT_ACCEPTABLE).build())
+            .awaitSingle()
     }
 }
 
@@ -65,7 +64,7 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
         return sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("uid").map { uid ->
                 customerStatusService.findByUid(oi, uid)
-                        .transform { ok().body(it) }
+                    .transform { ok().body(it) }
             }.orElse(response)
         }.orElse(response).awaitSingle()
     }
@@ -77,7 +76,7 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
         val customerBaseClientDto = sr.awaitBody<CustomerBaseClientDto>()
         val updatedStatus = customerStatusService.updateByClientId(customerBaseClientDto).awaitSingle()
         return if (updatedStatus != null) {
-             ok().bodyValueAndAwait(updatedStatus)
+            ok().bodyValueAndAwait(updatedStatus)
         } else {
             status(HttpStatus.NOT_FOUND).buildAndAwait()
         }
@@ -93,7 +92,7 @@ class ConversationStatusHandler(private val conversationStatusService: Conversat
         return sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("userId").map(String::toLong).map { uid ->
                 conversationStatusService.findByUserId(oi, uid)
-                        .transform { ok().body(it) }
+                    .transform { ok().body(it) }
             }.orElse(response)
         }.orElse(response).awaitSingle()
     }
@@ -105,15 +104,15 @@ class ConversationStatusHandler(private val conversationStatusService: Conversat
         // val body = JsonUtils.fromJson(json)
         // println(body)
         return sr.bodyToMono<ConversationStatus>()
-                .flatMap { conversationStatusService.generate(it) }
-                .transform {
-                    ok().body(it)
-                }.awaitSingle()
+            .flatMap { conversationStatusService.generate(it) }
+            .transform {
+                ok().body(it)
+            }.awaitSingle()
     }
 
     suspend fun end(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<ConversationStatus>()
-                .flatMap { conversationStatusService.endConversation(it) }
-                .transform { ok().build() }.awaitSingle()
+            .flatMap { conversationStatusService.endConversation(it) }
+            .transform { ok().build() }.awaitSingle()
     }
 }

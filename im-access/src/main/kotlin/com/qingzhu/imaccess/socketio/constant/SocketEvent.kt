@@ -9,8 +9,10 @@ object SocketEvent {
     object IO {
         const val closed = "io/close"
     }
+
     object Message {
         const val send = "msg/send"
         const val sync = "msg/sync"
+        const val assign = "assign"
     }
 }

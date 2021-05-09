@@ -1,6 +1,6 @@
 package com.qingzhu.messageserver.domain.dto
 
-import com.qingzhu.messageserver.domain.constant.CreatorType
+import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.messageserver.domain.constant.FromType
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import com.qingzhu.messageserver.domain.entity.CustomerStatus

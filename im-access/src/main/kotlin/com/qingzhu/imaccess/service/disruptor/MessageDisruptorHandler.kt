@@ -1,7 +1,7 @@
 package com.qingzhu.imaccess.service.disruptor
 
 import com.lmax.disruptor.WorkHandler
-import com.qingzhu.imaccess.domain.constant.CreatorType
+import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.imaccess.domain.dto.ConversationStatusDto
 import com.qingzhu.imaccess.domain.query.WebSocketRequest
 import com.qingzhu.imaccess.domain.view.UpdateMessage
@@ -16,21 +16,24 @@ import reactor.kotlin.core.publisher.toMono
 class MessageDisruptorHandler : WorkHandler<UpdateMessage> {
     override fun onEvent(event: UpdateMessage) {
         event.toMono()
-                .filter { it.message.organizationId != null }
-                .subscribe {
-                    val clientFlux = MapUtils.get(Key(it.message.organizationId!!, it.message.type, it.message.to!!))
-                    val sentFlux = MapUtils.get(Key(it.message.organizationId!!, it.message.creatorType, it.message.from!!))
-                    // 推送的消息不需要设置接收者
-                    it.message.organizationId = null
-                    it.message.to = null
-                    it.sentClientId = null
-                    // 需要记录日志 或增加成功回调 可添加 callback 函数
-                    // TODO: 增加回调通知消息送达
-                    clientFlux.concatWith(sentFlux).filter { client -> client.sessionId.toString() != it.sentClientId }.subscribe { client ->
-                        client?.sendWithCallback<Void>(SocketEvent.Message.sync,
-                                WebSocketRequest.createRequest(client.sessionId.toString(), it))
+            .filter { it.message.organizationId != null }
+            .subscribe {
+                val clientFlux = MapUtils.get(Key(it.message.organizationId!!, it.message.type, it.message.to!!))
+                val sentFlux = MapUtils.get(Key(it.message.organizationId!!, it.message.creatorType, it.message.from!!))
+                // 推送的消息不需要设置接收者
+                it.message.organizationId = null
+                it.message.to = null
+                it.sentClientId = null
+                // 需要记录日志 或增加成功回调 可添加 callback 函数
+                // TODO: 增加回调通知消息送达
+                clientFlux.concatWith(sentFlux).filter { client -> client.sessionId.toString() != it.sentClientId }
+                    .subscribe { client ->
+                        client?.sendWithCallback<Void>(
+                            SocketEvent.Message.sync,
+                            WebSocketRequest.createRequest(client.sessionId.toString(), it)
+                        )
                     }
-                }
+            }
     }
 }
 
@@ -41,13 +44,15 @@ class MessageDisruptorHandler : WorkHandler<UpdateMessage> {
 class ConvDisruptorHandler : WorkHandler<ConversationStatusDto> {
     override fun onEvent(event: ConversationStatusDto) {
         event.toMono()
-                .subscribe {
-                    val clientFlux = MapUtils.get(Key(it.organizationId, CreatorType.STAFF, it.staffId))
-                    // 需要记录日志 或增加成功回调 可添加 callback 函数
-                    clientFlux.subscribe { client ->
-                        client?.sendWithCallback<Void>(SocketEvent.Message.sync,
-                                WebSocketRequest.createRequest(client.sessionId.toString(), it))
-                    }
+            .subscribe {
+                val clientFlux = MapUtils.get(Key(it.organizationId, CreatorType.STAFF, it.staffId))
+                // 需要记录日志 或增加成功回调 可添加 callback 函数
+                clientFlux.subscribe { client ->
+                    client?.sendWithCallback<Void>(
+                        SocketEvent.Message.assign,
+                        WebSocketRequest.createRequest(client.sessionId.toString(), it)
+                    )
                 }
+            }
     }
 }

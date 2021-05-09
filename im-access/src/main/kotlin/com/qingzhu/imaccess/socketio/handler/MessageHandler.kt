@@ -3,10 +3,9 @@ package com.qingzhu.imaccess.socketio.handler
 import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.annotation.OnEvent
-import com.qingzhu.imaccess.domain.dto.MessageDto
-import com.qingzhu.imaccess.domain.query.WebSocketRequest
+import com.qingzhu.common.domain.shared.msg.dto.MessageDto
+import com.qingzhu.imaccess.domain.query.WebSocketRequestMessage
 import com.qingzhu.imaccess.domain.query.messageSubscribe
-import com.qingzhu.imaccess.domain.value.Message
 import com.qingzhu.imaccess.domain.view.MessageResponse
 import com.qingzhu.imaccess.service.MessageFilterService
 import com.qingzhu.imaccess.service.MessageService
@@ -28,7 +27,7 @@ class MessageHandler(
      * 发送聊天消息
      */
     @OnEvent(SocketEvent.Message.send)
-    fun onSend(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequest<Message>) {
+    fun onSend(socketIOClient: SocketIOClient, ackRequest: AckRequest, request: WebSocketRequestMessage) {
         request.toMonoMonad(socketIOClient)
             .doOnNext {
                 val (organizationId, from) = getOrganizationIdAndRegisterName(socketIOClient)

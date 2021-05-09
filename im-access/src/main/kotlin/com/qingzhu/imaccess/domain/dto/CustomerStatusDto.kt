@@ -1,8 +1,8 @@
 package com.qingzhu.imaccess.domain.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.imaccess.broker.KafkaBroker
-import com.qingzhu.imaccess.domain.constant.CreatorType
 import com.qingzhu.imaccess.domain.constant.FromType
 import com.qingzhu.imaccess.domain.query.CustomerConfig
 

@@ -1,6 +1,7 @@
 package com.qingzhu.dispatcher.controller
 
 import com.qingzhu.dispatcher.service.AssignmentService
+import com.qingzhu.dispatcher.service.QueueService
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -10,14 +11,15 @@ import org.springframework.web.reactive.function.server.body
 
 @RestController
 class AssignmentHandler(
-        private val assignmentService: AssignmentService
+    private val assignmentService: AssignmentService,
+    private val queueService: QueueService,
 ) {
     suspend fun assignmentStaff(sr: ServerRequest): ServerResponse {
         val response = ok().build()
         return sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("userId").map(String::toLong).map { uid ->
                 assignmentService.assignmentStaff(oi, uid)
-                        .transform { ok().body(it) }
+                    .transform { ok().body(it) }
             }.orElse(response)
         }.orElse(response).awaitSingle()
     }
@@ -27,6 +29,15 @@ class AssignmentHandler(
         return sr.queryParam("organizationId").map(String::toInt).map { oid ->
             sr.queryParam("userId").map(String::toLong).map { userId ->
                 ok().body(assignmentService.assignmentAuto(oid, userId))
+            }.orElse(response)
+        }.orElse(response).awaitSingle()
+    }
+
+    suspend fun assignmentFromQueue(sr: ServerRequest): ServerResponse {
+        val response = ok().build()
+        return sr.queryParam("organizationId").map(String::toInt).map { oid ->
+            sr.queryParam("userId").map(String::toLong).map { userId ->
+                ok().body(queueService.removeUser(oid, userId))
             }.orElse(response)
         }.orElse(response).awaitSingle()
     }
