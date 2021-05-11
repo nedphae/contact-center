@@ -13,26 +13,26 @@ interface Content
  */
 
 data class Message(
-        val _id: String = getChatMessageSnowFlake().getNextSequenceId().toString(),
-        // text,system,image,card,slot,recommend,quick-replies,cmd
-        val type: String = "text",
-        val content: Content,
-        val createdAt: Long = System.currentTimeMillis(),
-        // 'left' | 'right' | 'center';
-        val position: String? = null,
-        val hasTime: Boolean = false,
+    val _id: String = getChatMessageSnowFlake().getNextSequenceId().toString(),
+    // text,system,image,card,slot,recommend,quick-replies,cmd
+    val type: String = "text",
+    val content: Content,
+    val createdAt: Long = System.currentTimeMillis(),
+    // 'left' | 'right' | 'center';
+    val position: String? = null,
+    val hasTime: Boolean = false,
 )
 
 data class TextContent(
-        val text: String,
+    val text: String,
 ) : Content
 
 data class PicContent(
-        val picUrl: String,
+    val picUrl: String,
 ) : Content
 
 data class HistoryResult(
-        val lastId: Long,
-        val list: List<Message>,
-        val total: Int,
+    val lastId: Long,
+    val list: List<Message>,
+    val total: Int,
 )

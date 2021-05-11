@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.server.bodyValueAndAwait
 
 @RestController
 class BotManageHandler(
-        private val botManageService: BotManageService
+    private val botManageService: BotManageService
 ) {
     suspend fun saveTopic(sr: ServerRequest): ServerResponse {
         return sr.awaitBodyOrNull<Topic>()?.let {

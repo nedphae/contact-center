@@ -6,11 +6,11 @@ import org.mapstruct.ReportingPolicy
 import org.mapstruct.factory.Mappers
 
 data class InnerUser(
-        val organizationId: Int,
-        val id: Long = 0,
-        val username: String,
-        var password: String?,
-        var role: String
+    val organizationId: Int,
+    val id: Long = 0,
+    val username: String,
+    var password: String?,
+    var role: String
 )
 
 @Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)

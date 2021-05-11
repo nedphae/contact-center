@@ -13,17 +13,19 @@ import org.springframework.web.reactive.function.server.bodyValueAndAwait
 
 @RestController
 class WebSocketAddressController(
-        val webSocketConfigProperties: WebSocketConfigProperties,
-        val consulClient: ConsulClient
+    val webSocketConfigProperties: WebSocketConfigProperties,
+    val consulClient: ConsulClient
 ) {
     data class WebSocketAddress(
-            val address: String,
-            val port: Int
+        val address: String,
+        val port: Int
     )
 
     suspend fun getWebSocketAddress(serverRequest: ServerRequest): ServerResponse {
         val webSocketName = serverRequest.queryParam("serviceName").orElseGet { webSocketConfigProperties.name }
         val catalogService = consulClient.getCatalogService(webSocketName, QueryParams.DEFAULT)
-        return ok().contentType(APPLICATION_JSON).bodyValueAndAwait(catalogService.value.map { WebSocketAddress(it.serviceAddress, it.servicePort) }.toList())
+        return ok().contentType(APPLICATION_JSON)
+            .bodyValueAndAwait(catalogService.value.map { WebSocketAddress(it.serviceAddress, it.servicePort) }
+                .toList())
     }
 }

@@ -12,13 +12,13 @@ import java.util.concurrent.TimeUnit
 
 @Service
 class ConversationStatusService(
-        @Qualifier("hazelcastInstance")
-        private val hazelcastInstance: HazelcastInstance,
-        private val staffStatusService: StaffStatusService,
-        private val clearStatusService: ClearStatusService,
+    @Qualifier("hazelcastInstance")
+    private val hazelcastInstance: HazelcastInstance,
+    private val staffStatusService: StaffStatusService,
+    private val clearStatusService: ClearStatusService,
 ) {
     private fun getStatusMap(organizationId: Int) =
-            hazelcastInstance.getMap<Long, ConversationStatus>("$organizationId:conversation")
+        hazelcastInstance.getMap<Long, ConversationStatus>("$organizationId:conversation")
 
     /**
      * 设置客服状态
@@ -40,25 +40,29 @@ class ConversationStatusService(
     fun endConversation(conversationStatus: ConversationStatus): Mono<ConversationStatus> {
         val statusMap = getStatusMap(conversationStatus.organizationId)
         return Mono.justOrEmpty(statusMap[conversationStatus.id])
-                .doOnNext {
-                    statusMap.put(it.id, it, 15, TimeUnit.MINUTES)
-                    staffStatusService.removeCustomer(it.organizationId,
-                            it.staffId, it.userId)
-                }
+            .doOnNext {
+                statusMap.put(it.id, it, 15, TimeUnit.MINUTES)
+                staffStatusService.removeCustomer(
+                    it.organizationId,
+                    it.staffId, it.userId
+                )
+            }
     }
 
     fun generate(conversationStatusDto: ConversationStatus): Mono<ConversationStatus> {
         return Mono.just(conversationStatusDto)
-                .doOnNext { saveStatus(it) }
+            .doOnNext { saveStatus(it) }
     }
 
     fun findByUserId(organizationId: Int, userId: Long): Mono<ConversationStatus> {
         val statusMap = getStatusMap(organizationId)
         val equalPredicate = EqualPredicate("userId", userId)
         @Suppress("UNCHECKED_CAST")
-        return Mono.justOrEmpty(statusMap
+        return Mono.justOrEmpty(
+            statusMap
                 .values(equalPredicate as Predicate<Long, ConversationStatus>)
-                .stream().findFirst())
+                .stream().findFirst()
+        )
     }
 
 }

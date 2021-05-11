@@ -7,7 +7,7 @@ import com.qingzhu.messageserver.domain.entity.CustomerStatus
 import org.mapstruct.Mapper
 import org.mapstruct.ReportingPolicy
 import org.mapstruct.factory.Mappers
-import java.util.*
+import java.time.Instant
 
 data class CustomerBaseStatusDto(
     /** 公司id */
@@ -19,13 +19,13 @@ data class CustomerBaseStatusDto(
 )
 
 data class CustomerBaseClientDto(
-        /** 公司id */
-        val organizationId: Int,
-        val userId: Long,
-        /** Which server i`m in
-         * 如果需要配置登陆端互提，可将 A 更改为终端类型枚举
-         */
-        val clientAccessServer: Pair<String, String>
+    /** 公司id */
+    val organizationId: Int,
+    val userId: Long,
+    /** Which server i`m in
+     * 如果需要配置登陆端互提，可将 A 更改为终端类型枚举
+     */
+    val clientAccessServer: Pair<String, String>
 )
 
 data class CustomerStatusDto(
@@ -52,14 +52,12 @@ data class CustomerStatusDto(
     /** 客户来源类型 */
     val fromType: FromType,
     /** 客户IP */
-    val ip: String
-) {
+    val ip: String,
     /** 登录时间 */
-    val loginTime: Date = Date()
-
+    val loginTime: Instant = Instant.now(),
     //是否在线
-    var onlineStatus: OnlineStatus = OnlineStatus.ONLINE
-
+    var onlineStatus: OnlineStatus = OnlineStatus.ONLINE,
+) {
     fun toCustomerStatus(): CustomerStatus = CustomerStatusMapper.mapper.mapFromDto(this)
 }
 

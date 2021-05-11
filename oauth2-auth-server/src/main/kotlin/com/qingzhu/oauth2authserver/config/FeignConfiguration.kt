@@ -12,8 +12,10 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 @Configuration
 class FeignConfiguration {
     @Bean
-    fun oauth2FeignRequestInterceptor(@Qualifier("oauth2ClientContext") context: OAuth2ClientContext,
-                                      resource: ObjectProvider<OAuth2ProtectedResourceDetails>): RequestInterceptor {
+    fun oauth2FeignRequestInterceptor(
+        @Qualifier("oauth2ClientContext") context: OAuth2ClientContext,
+        resource: ObjectProvider<OAuth2ProtectedResourceDetails>
+    ): RequestInterceptor {
         return OAuth2FeignRequestInterceptor(context, resource.ifAvailable)
     }
 }

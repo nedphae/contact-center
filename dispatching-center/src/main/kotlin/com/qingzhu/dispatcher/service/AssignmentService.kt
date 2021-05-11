@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 import java.time.Duration
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Service
 class AssignmentService(private val assignmentComponent: AssignmentComponent) {
@@ -72,7 +72,7 @@ class AssignmentService(private val assignmentComponent: AssignmentComponent) {
                         lc.closeReason = CloseReason.BOT_TO_STAFF
                         lc.isValid = 1
                         lc.terminator = CreatorType.CUSTOMER
-                        lc.endTime = LocalDateTime.now()
+                        lc.endTime = Instant.now()
                     }
                     .map { lc ->
                         it.relatedId = lc.id

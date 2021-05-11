@@ -10,15 +10,17 @@ import org.springframework.security.oauth2.client.token.grant.client.ClientCrede
 @ConditionalOnClass(ClientCredentialsResourceDetails::class, LoadBalancerClient::class)
 @ConditionalOnProperty(prefix = "im.security.inner-oauth", name = ["enable"], havingValue = "true")
 class InnerLoadBalanceAutoConfiguration(
-        private val innerLoadBalanceProperties: InnerLoadBalanceProperties
+    private val innerLoadBalanceProperties: InnerLoadBalanceProperties
 ) {
     @Bean
-    fun loadBalancedResourceDetails(loadBalancerClient: LoadBalancerClient) = LoadBalancedResourceDetails(loadBalancerClient,
-            innerLoadBalanceProperties.clientAuthorization.tokenServiceId)
-            .apply {
-                val clientAuthorization = innerLoadBalanceProperties.clientAuthorization
-                accessTokenUri = clientAuthorization.accessTokenUri
-                clientId = clientAuthorization.clientId
-                clientSecret = clientAuthorization.clientSecret
-            }
+    fun loadBalancedResourceDetails(loadBalancerClient: LoadBalancerClient) = LoadBalancedResourceDetails(
+        loadBalancerClient,
+        innerLoadBalanceProperties.clientAuthorization.tokenServiceId
+    )
+        .apply {
+            val clientAuthorization = innerLoadBalanceProperties.clientAuthorization
+            accessTokenUri = clientAuthorization.accessTokenUri
+            clientId = clientAuthorization.clientId
+            clientSecret = clientAuthorization.clientSecret
+        }
 }

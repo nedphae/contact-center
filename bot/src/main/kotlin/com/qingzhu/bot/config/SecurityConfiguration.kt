@@ -28,17 +28,17 @@ class SecurityConfiguration {
         http.cors().configurationSource(source)
 
         http.csrf().disable()
-                .authorizeExchange()
-                .pathMatchers("/actuator/**").permitAll()
-                .pathMatchers("/bot/qa").permitAll()
-                // /* 无效 必须 /**
-                .pathMatchers("/**").hasAuthority("SCOPE_bot")
-                .anyExchange().authenticated()
-                // oauth2Client 与 oauth2ResourceServer 冲突
-                .and()
-                .oauth2Client()
-                .and()
-                .oauth2ResourceServerConfig()
+            .authorizeExchange()
+            .pathMatchers("/actuator/**").permitAll()
+            .pathMatchers("/bot/qa").permitAll()
+            // /* 无效 必须 /**
+            .pathMatchers("/**").hasAuthority("SCOPE_bot")
+            .anyExchange().authenticated()
+            // oauth2Client 与 oauth2ResourceServer 冲突
+            .and()
+            .oauth2Client()
+            .and()
+            .oauth2ResourceServerConfig()
         return http.build()
     }
 

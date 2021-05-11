@@ -14,13 +14,13 @@ import kotlin.reflect.KClass
 @MustBeDocumented
 @FeignClient
 annotation class AuthorizedFeignClient(
-        @get:AliasFor(annotation = FeignClient::class, attribute = "name")
-        val name: String = "",
-        @get:AliasFor(annotation = FeignClient::class, attribute = "configuration")
-        val configuration: Array<KClass<*>> = [OAuth2InterceptedFeignConfiguration::class],
-        val url: String = "",
-        val decode404: Boolean = false,
-        val fallback: KClass<*> = Void::class,
-        val path: String = ""
+    @get:AliasFor(annotation = FeignClient::class, attribute = "name")
+    val name: String = "",
+    @get:AliasFor(annotation = FeignClient::class, attribute = "configuration")
+    val configuration: Array<KClass<*>> = [OAuth2InterceptedFeignConfiguration::class],
+    val url: String = "",
+    val decode404: Boolean = false,
+    val fallback: KClass<*> = Void::class,
+    val path: String = ""
 ) {
 }

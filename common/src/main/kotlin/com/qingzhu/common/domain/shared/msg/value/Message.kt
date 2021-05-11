@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.common.constant.NoArg
 import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.common.message.getChatMessageSnowFlake
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.*
 
 /**
@@ -24,7 +24,7 @@ data class Message(
      */
     val uuid: String = UUID.randomUUID().toString(),
     val seqId: Long = getChatMessageSnowFlake().getNextSequenceId(),
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val createdAt: Instant = Instant.now(),
     /** 会话id */
     val conversationId: Long,
     /** 消息来源 (服务器设置) */

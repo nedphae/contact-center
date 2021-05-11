@@ -8,7 +8,7 @@ import com.qingzhu.imaccess.ImApplicationTests
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import reactor.core.publisher.Mono
-import java.time.LocalDateTime
+import java.time.Instant
 
 internal class MessageFilterServiceTest : ImApplicationTests() {
 
@@ -22,7 +22,7 @@ internal class MessageFilterServiceTest : ImApplicationTests() {
                 9491,
                 "1",
                 2,
-                LocalDateTime.now(),
+                Instant.now(),
                 1,
                 1,
                 1,

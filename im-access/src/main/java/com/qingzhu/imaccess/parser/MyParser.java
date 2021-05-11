@@ -1,61 +1,50 @@
 // Generated from C:/Users/ned_g/Documents/project/kefu/contact-center/im-access/src/main/java/com/qingzhu/imaccess/parser\MyParser.g4 by ANTLR 4.8
 package com.qingzhu.imaccess.parser;
 
-import org.antlr.v4.runtime.atn.*;
-import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNDeserializer;
+import org.antlr.v4.runtime.atn.ParserATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class MyParser extends Parser {
-    static {
-        RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION);
-    }
-
-    protected static final DFA[] _decisionToDFA;
-    protected static final PredictionContextCache _sharedContextCache =
-            new PredictionContextCache();
     public static final int
             KW_AND = 1, KW_OR = 2, KW_NOT = 3, LPAREN = 4, RPAREN = 5, IDENTIFIER = 6, WS = 7, LINE_COMMENT = 8;
     public static final int
             RULE_expression = 0;
-
-    private static String[] makeRuleNames() {
-        return new String[]{
-                "expression"
-        };
-    }
-
     public static final String[] ruleNames = makeRuleNames();
-
-    private static String[] makeLiteralNames() {
-        return new String[]{
-                null, null, null, null, "'('", "')'"
-        };
-    }
-
-    private static final String[] _LITERAL_NAMES = makeLiteralNames();
-
-    private static String[] makeSymbolicNames() {
-        return new String[]{
-                null, "KW_AND", "KW_OR", "KW_NOT", "LPAREN", "RPAREN", "IDENTIFIER",
-                "WS", "LINE_COMMENT"
-        };
-    }
-
-    private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
-    public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
-
     /**
      * @deprecated Use {@link #VOCABULARY} instead.
      */
     @Deprecated
     public static final String[] tokenNames;
+    public static final String _serializedATN =
+            "\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\n\27\4\2\t\2\3\2" +
+                    "\3\2\3\2\3\2\3\2\3\2\3\2\3\2\5\2\r\n\2\3\2\3\2\3\2\7\2\22\n\2\f\2\16\2" +
+                    "\25\13\2\3\2\2\3\2\3\2\2\3\3\2\3\4\2\30\2\f\3\2\2\2\4\5\b\2\1\2\5\6\7" +
+                    "\6\2\2\6\7\5\2\2\2\7\b\7\7\2\2\b\r\3\2\2\2\t\n\7\5\2\2\n\r\5\2\2\5\13" +
+                    "\r\7\b\2\2\f\4\3\2\2\2\f\t\3\2\2\2\f\13\3\2\2\2\r\23\3\2\2\2\16\17\f\4" +
+                    "\2\2\17\20\t\2\2\2\20\22\5\2\2\5\21\16\3\2\2\2\22\25\3\2\2\2\23\21\3\2" +
+                    "\2\2\23\24\3\2\2\2\24\3\3\2\2\2\25\23\3\2\2\2\4\f\23";
+    public static final ATN _ATN =
+            new ATNDeserializer().deserialize(_serializedATN.toCharArray());
+    protected static final DFA[] _decisionToDFA;
+    protected static final PredictionContextCache _sharedContextCache =
+            new PredictionContextCache();
+    private static final String[] _LITERAL_NAMES = makeLiteralNames();
+    private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
+    public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
+
+    static {
+        RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION);
+    }
 
     static {
         tokenNames = new String[_SYMBOLIC_NAMES.length];
@@ -69,6 +58,37 @@ public class MyParser extends Parser {
                 tokenNames[i] = "<INVALID>";
             }
         }
+    }
+
+    static {
+        _decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
+        for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
+            _decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
+        }
+    }
+
+    public MyParser(TokenStream input) {
+        super(input);
+        _interp = new ParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache);
+    }
+
+    private static String[] makeRuleNames() {
+        return new String[]{
+                "expression"
+        };
+    }
+
+    private static String[] makeLiteralNames() {
+        return new String[]{
+                null, null, null, null, "'('", "')'"
+        };
+    }
+
+    private static String[] makeSymbolicNames() {
+        return new String[]{
+                null, "KW_AND", "KW_OR", "KW_NOT", "LPAREN", "RPAREN", "IDENTIFIER",
+                "WS", "LINE_COMMENT"
+        };
     }
 
     @Override
@@ -101,75 +121,6 @@ public class MyParser extends Parser {
     @Override
     public ATN getATN() {
         return _ATN;
-    }
-
-    public MyParser(TokenStream input) {
-        super(input);
-        _interp = new ParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache);
-    }
-
-    public static class ExpressionContext extends ParserRuleContext {
-        public ExpressionContext leftExpr;
-        public Token operator;
-        public ExpressionContext rightExpr;
-
-        public TerminalNode LPAREN() {
-            return getToken(MyParser.LPAREN, 0);
-        }
-
-        public List<ExpressionContext> expression() {
-            return getRuleContexts(ExpressionContext.class);
-        }
-
-        public ExpressionContext expression(int i) {
-            return getRuleContext(ExpressionContext.class, i);
-        }
-
-        public TerminalNode RPAREN() {
-            return getToken(MyParser.RPAREN, 0);
-        }
-
-        public TerminalNode KW_NOT() {
-            return getToken(MyParser.KW_NOT, 0);
-        }
-
-        public TerminalNode IDENTIFIER() {
-            return getToken(MyParser.IDENTIFIER, 0);
-        }
-
-        public TerminalNode KW_AND() {
-            return getToken(MyParser.KW_AND, 0);
-        }
-
-        public TerminalNode KW_OR() {
-            return getToken(MyParser.KW_OR, 0);
-        }
-
-        public ExpressionContext(ParserRuleContext parent, int invokingState) {
-            super(parent, invokingState);
-        }
-
-        @Override
-        public int getRuleIndex() {
-            return RULE_expression;
-        }
-
-        @Override
-        public void enterRule(ParseTreeListener listener) {
-            if (listener instanceof MyParserListener) ((MyParserListener) listener).enterExpression(this);
-        }
-
-        @Override
-        public void exitRule(ParseTreeListener listener) {
-            if (listener instanceof MyParserListener) ((MyParserListener) listener).exitExpression(this);
-        }
-
-        @Override
-        public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-            if (visitor instanceof MyParserVisitor)
-                return ((MyParserVisitor<? extends T>) visitor).visitExpression(this);
-            else return visitor.visitChildren(this);
-        }
     }
 
     public final ExpressionContext expression() throws RecognitionException {
@@ -277,21 +228,67 @@ public class MyParser extends Parser {
         return true;
     }
 
-    public static final String _serializedATN =
-            "\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\n\27\4\2\t\2\3\2" +
-                    "\3\2\3\2\3\2\3\2\3\2\3\2\3\2\5\2\r\n\2\3\2\3\2\3\2\7\2\22\n\2\f\2\16\2" +
-                    "\25\13\2\3\2\2\3\2\3\2\2\3\3\2\3\4\2\30\2\f\3\2\2\2\4\5\b\2\1\2\5\6\7" +
-                    "\6\2\2\6\7\5\2\2\2\7\b\7\7\2\2\b\r\3\2\2\2\t\n\7\5\2\2\n\r\5\2\2\5\13" +
-                    "\r\7\b\2\2\f\4\3\2\2\2\f\t\3\2\2\2\f\13\3\2\2\2\r\23\3\2\2\2\16\17\f\4" +
-                    "\2\2\17\20\t\2\2\2\20\22\5\2\2\5\21\16\3\2\2\2\22\25\3\2\2\2\23\21\3\2" +
-                    "\2\2\23\24\3\2\2\2\24\3\3\2\2\2\25\23\3\2\2\2\4\f\23";
-    public static final ATN _ATN =
-            new ATNDeserializer().deserialize(_serializedATN.toCharArray());
+    public static class ExpressionContext extends ParserRuleContext {
+        public ExpressionContext leftExpr;
+        public Token operator;
+        public ExpressionContext rightExpr;
 
-    static {
-        _decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
-        for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
-            _decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
+        public ExpressionContext(ParserRuleContext parent, int invokingState) {
+            super(parent, invokingState);
+        }
+
+        public TerminalNode LPAREN() {
+            return getToken(MyParser.LPAREN, 0);
+        }
+
+        public List<ExpressionContext> expression() {
+            return getRuleContexts(ExpressionContext.class);
+        }
+
+        public ExpressionContext expression(int i) {
+            return getRuleContext(ExpressionContext.class, i);
+        }
+
+        public TerminalNode RPAREN() {
+            return getToken(MyParser.RPAREN, 0);
+        }
+
+        public TerminalNode KW_NOT() {
+            return getToken(MyParser.KW_NOT, 0);
+        }
+
+        public TerminalNode IDENTIFIER() {
+            return getToken(MyParser.IDENTIFIER, 0);
+        }
+
+        public TerminalNode KW_AND() {
+            return getToken(MyParser.KW_AND, 0);
+        }
+
+        public TerminalNode KW_OR() {
+            return getToken(MyParser.KW_OR, 0);
+        }
+
+        @Override
+        public int getRuleIndex() {
+            return RULE_expression;
+        }
+
+        @Override
+        public void enterRule(ParseTreeListener listener) {
+            if (listener instanceof MyParserListener) ((MyParserListener) listener).enterExpression(this);
+        }
+
+        @Override
+        public void exitRule(ParseTreeListener listener) {
+            if (listener instanceof MyParserListener) ((MyParserListener) listener).exitExpression(this);
+        }
+
+        @Override
+        public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+            if (visitor instanceof MyParserVisitor)
+                return ((MyParserVisitor<? extends T>) visitor).visitExpression(this);
+            else return visitor.visitChildren(this);
         }
     }
 }

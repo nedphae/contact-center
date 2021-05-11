@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono
 @RestController
 @RequestMapping("/config/props")
 class PropertiesController(
-        val propertiesService: PropertiesService
+    val propertiesService: PropertiesService
 ) {
     @GetMapping
     fun getAllProperties(): Mono<String> {

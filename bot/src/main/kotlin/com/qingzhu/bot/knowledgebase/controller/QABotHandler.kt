@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.server.bodyValueAndAwait
 
 @RestController
 class QABotHandler(
-        private val qaBotService: QABotService,
+    private val qaBotService: QABotService,
 ) {
     suspend fun getAnswer(sr: ServerRequest): ServerResponse {
         val userId = sr.queryParam("u").map { it.toLong() }.orElse(null)

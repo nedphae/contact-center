@@ -3,6 +3,7 @@ package com.qingzhu.dispatcher.customer.service
 import com.qingzhu.common.util.getNullPropertyNames
 import com.qingzhu.dispatcher.customer.domain.dto.CustomerDto
 import com.qingzhu.dispatcher.customer.repo.dao.CustomerRepository
+import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.beans.BeanUtils
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
@@ -11,7 +12,7 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
 class CustomerService(
-        private val customerRepository: CustomerRepository
+    private val customerRepository: CustomerRepository
 ) {
     @PreAuthorize("hasRole('ADMIN')")
     fun saveAndGetCustomer(customerDto: CustomerDto): Mono<CustomerDto> {
@@ -26,5 +27,10 @@ class CustomerService(
             // need id
             customerRepository.save(it).map { dto -> CustomerDto.fromCustomer(dto) }
         }
+    }
+
+    suspend fun getCustomerById(organizationId: Int, userId: Long) {
+        val customer = customerRepository.findById(userId).awaitSingle()
+
     }
 }

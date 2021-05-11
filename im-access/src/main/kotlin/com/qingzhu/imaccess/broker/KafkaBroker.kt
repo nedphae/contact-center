@@ -50,27 +50,27 @@ class KafkaBroker(
     private fun processConsumer(eventType: (String) -> EventType<*>): Consumer<KStream<Any?, String>> {
         return Consumer { input ->
             input
-                    .mapValues { value ->
-                        Mono.just(eventType(value))
-                                .doOnNext {
-                                    val next = disruptorForContext.ringBuffer.next()
-                                    val nextEvent = disruptorForContext.ringBuffer.get(next)
+                .mapValues { value ->
+                    Mono.just(eventType(value))
+                        .doOnNext {
+                            val next = disruptorForContext.ringBuffer.next()
+                            val nextEvent = disruptorForContext.ringBuffer.get(next)
 
-                                    nextEvent.type = it
+                            nextEvent.type = it
 
-                                    disruptorForContext.ringBuffer.publish(next)
-                                }
-                                .onErrorContinue { ex, _ ->
-                                    logger.error("内部异常：{}", ex)
-                                }
-                    }
-                    .foreach { _, value ->
-                        value.subscribe {
-                            if (logger.isDebugEnabled) {
-                                logger.debug("消息：{}", it)
-                            }
+                            disruptorForContext.ringBuffer.publish(next)
+                        }
+                        .onErrorContinue { ex, _ ->
+                            logger.error("内部异常：{}", ex)
+                        }
+                }
+                .foreach { _, value ->
+                    value.subscribe {
+                        if (logger.isDebugEnabled) {
+                            logger.debug("消息：{}", it)
                         }
                     }
+                }
         }
     }
 

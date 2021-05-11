@@ -31,21 +31,23 @@ class TestCoroutine {
     @Test
     fun testFlux() {
         val reactiveJwtDecoder = SecurityConfiguration().reactiveJwtDecoder()
-        val decode = reactiveJwtDecoder.decode("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6YXRpb25JZCI6OTQ5MSwiYXVkIjpbImNzLWFkbWluIiwiYm90Iiwib2F1dGgyIl0sInVzZXJfbmFtZSI6ImFkbWluIiwic2NvcGUiOlsidGVzdCJdLCJleHAiOjE1ODQ2MTI1NTIsImF1dGhvcml0aWVzIjpbIlJPTEVfQURNSU4iXSwianRpIjoiMjM1YmQxMTUtNWIwOS00ZjlkLTk3YzctZmQ4OGEyMDQ4NjkwIiwiY2xpZW50X2lkIjoidXNlcl9jbGllbnQifQ.F_wZxxo14AvwdlrkmrF0-MZMYkd0WLUZITX7FOkpW1c6MFwZLw09f5i8l2BzF-yCI_nTjTFLykKejJl7L7vkaZhABHfEf8NKV5ZVdaVaAmGga-AXqHmvHEwh3guvgn5R552Z5lY9bzq0dDig_vwuT-9E9_T_KYXP7WM2caCj76gqO-iYNfrMkZoRVMIiVUU-psmum-bnFoIE08Yb79DMNx27KIIC2M89XNUKMGwkaRkjlHEOWyVtxaNNZNIYWyTdIEUqPdbX4r2QSJnfQDGWoEEde3W4t2Xso6kPmG-ctZrDEqug6esNQ8F2v7AC2GLP9SOA8QXcpN-RUYQPQJtjIg")
+        val decode =
+            reactiveJwtDecoder.decode("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6YXRpb25JZCI6OTQ5MSwiYXVkIjpbImNzLWFkbWluIiwiYm90Iiwib2F1dGgyIl0sInVzZXJfbmFtZSI6ImFkbWluIiwic2NvcGUiOlsidGVzdCJdLCJleHAiOjE1ODQ2MTI1NTIsImF1dGhvcml0aWVzIjpbIlJPTEVfQURNSU4iXSwianRpIjoiMjM1YmQxMTUtNWIwOS00ZjlkLTk3YzctZmQ4OGEyMDQ4NjkwIiwiY2xpZW50X2lkIjoidXNlcl9jbGllbnQifQ.F_wZxxo14AvwdlrkmrF0-MZMYkd0WLUZITX7FOkpW1c6MFwZLw09f5i8l2BzF-yCI_nTjTFLykKejJl7L7vkaZhABHfEf8NKV5ZVdaVaAmGga-AXqHmvHEwh3guvgn5R552Z5lY9bzq0dDig_vwuT-9E9_T_KYXP7WM2caCj76gqO-iYNfrMkZoRVMIiVUU-psmum-bnFoIE08Yb79DMNx27KIIC2M89XNUKMGwkaRkjlHEOWyVtxaNNZNIYWyTdIEUqPdbX4r2QSJnfQDGWoEEde3W4t2Xso6kPmG-ctZrDEqug6esNQ8F2v7AC2GLP9SOA8QXcpN-RUYQPQJtjIg")
         decode.map { it.claims["organizationId"] as Long }
-                .subscribe {
-                    println(it)
-                }
+            .subscribe {
+                println(it)
+            }
     }
 
     @Test
     fun testFluxWithoutSubscribe() {
         val reactiveJwtDecoder = SecurityConfiguration().reactiveJwtDecoder()
-        val decode = reactiveJwtDecoder.decode("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6YXRpb25JZCI6OTQ5MSwiYXVkIjpbImNzLWFkbWluIiwiYm90Iiwib2F1dGgyIl0sInVzZXJfbmFtZSI6ImFkbWluIiwic2NvcGUiOlsidGVzdCJdLCJleHAiOjE1ODQ2MTI1NTIsImF1dGhvcml0aWVzIjpbIlJPTEVfQURNSU4iXSwianRpIjoiMjM1YmQxMTUtNWIwOS00ZjlkLTk3YzctZmQ4OGEyMDQ4NjkwIiwiY2xpZW50X2lkIjoidXNlcl9jbGllbnQifQ.F_wZxxo14AvwdlrkmrF0-MZMYkd0WLUZITX7FOkpW1c6MFwZLw09f5i8l2BzF-yCI_nTjTFLykKejJl7L7vkaZhABHfEf8NKV5ZVdaVaAmGga-AXqHmvHEwh3guvgn5R552Z5lY9bzq0dDig_vwuT-9E9_T_KYXP7WM2caCj76gqO-iYNfrMkZoRVMIiVUU-psmum-bnFoIE08Yb79DMNx27KIIC2M89XNUKMGwkaRkjlHEOWyVtxaNNZNIYWyTdIEUqPdbX4r2QSJnfQDGWoEEde3W4t2Xso6kPmG-ctZrDEqug6esNQ8F2v7AC2GLP9SOA8QXcpN-RUYQPQJtjIg")
+        val decode =
+            reactiveJwtDecoder.decode("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6YXRpb25JZCI6OTQ5MSwiYXVkIjpbImNzLWFkbWluIiwiYm90Iiwib2F1dGgyIl0sInVzZXJfbmFtZSI6ImFkbWluIiwic2NvcGUiOlsidGVzdCJdLCJleHAiOjE1ODQ2MTI1NTIsImF1dGhvcml0aWVzIjpbIlJPTEVfQURNSU4iXSwianRpIjoiMjM1YmQxMTUtNWIwOS00ZjlkLTk3YzctZmQ4OGEyMDQ4NjkwIiwiY2xpZW50X2lkIjoidXNlcl9jbGllbnQifQ.F_wZxxo14AvwdlrkmrF0-MZMYkd0WLUZITX7FOkpW1c6MFwZLw09f5i8l2BzF-yCI_nTjTFLykKejJl7L7vkaZhABHfEf8NKV5ZVdaVaAmGga-AXqHmvHEwh3guvgn5R552Z5lY9bzq0dDig_vwuT-9E9_T_KYXP7WM2caCj76gqO-iYNfrMkZoRVMIiVUU-psmum-bnFoIE08Yb79DMNx27KIIC2M89XNUKMGwkaRkjlHEOWyVtxaNNZNIYWyTdIEUqPdbX4r2QSJnfQDGWoEEde3W4t2Xso6kPmG-ctZrDEqug6esNQ8F2v7AC2GLP9SOA8QXcpN-RUYQPQJtjIg")
         decode.map { it.claims["organizationId"] as Long }
-                .map {
-                    println(it)
-                }
+            .map {
+                println(it)
+            }
     }
 
     @InternalCoroutinesApi
@@ -59,23 +61,23 @@ class TestCoroutine {
 
     @InternalCoroutinesApi
     private suspend fun setParams(reactiveJwtDecoder: ReactiveJwtDecoder) =
-            suspendCancellableCoroutine { cont: CancellableContinuation<Unit> ->
-                // val decode = reactiveJwtDecoder.decode("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6YXRpb25JZCI6OTQ5MSwiYXVkIjpbImNzLWFkbWluIiwiYm90Iiwib2F1dGgyIl0sInVzZXJfbmFtZSI6ImFkbWluIiwic2NvcGUiOlsidGVzdCJdLCJleHAiOjE1ODQ2MTI1NTIsImF1dGhvcml0aWVzIjpbIlJPTEVfQURNSU4iXSwianRpIjoiMjM1YmQxMTUtNWIwOS00ZjlkLTk3YzctZmQ4OGEyMDQ4NjkwIiwiY2xpZW50X2lkIjoidXNlcl9jbGllbnQifQ.F_wZxxo14AvwdlrkmrF0-MZMYkd0WLUZITX7FOkpW1c6MFwZLw09f5i8l2BzF-yCI_nTjTFLykKejJl7L7vkaZhABHfEf8NKV5ZVdaVaAmGga-AXqHmvHEwh3guvgn5R552Z5lY9bzq0dDig_vwuT-9E9_T_KYXP7WM2caCj76gqO-iYNfrMkZoRVMIiVUU-psmum-bnFoIE08Yb79DMNx27KIIC2M89XNUKMGwkaRkjlHEOWyVtxaNNZNIYWyTdIEUqPdbX4r2QSJnfQDGWoEEde3W4t2Xso6kPmG-ctZrDEqug6esNQ8F2v7AC2GLP9SOA8QXcpN-RUYQPQJtjIg")
-                // decode.map { it.claims["organizationId"] as Long }
-                //         .subscribe {
-                //             println(it)
-                //         }
-                Thread(java.lang.Runnable {
-                    println("新线程睡眠")
-                    cont.tryResumeWithException(TimeoutException("消息超时"))?.let { cont.completeResume(it) }
-                    cont.tryResumeWithException(TimeoutException("消息超时"))?.let { cont.completeResume(it) }
-                    if (cont.isActive) cont.resumeWithException(TimeoutException("消息超时"))
-                    if (cont.isActive) cont.resumeWithException(TimeoutException("消息超时"))
-                    Thread.sleep(10000L)
-                    println("睡眠结束")
-                    if (cont.isActive) cont.resume(Unit)
-                }).start()
-            }
+        suspendCancellableCoroutine { cont: CancellableContinuation<Unit> ->
+            // val decode = reactiveJwtDecoder.decode("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6YXRpb25JZCI6OTQ5MSwiYXVkIjpbImNzLWFkbWluIiwiYm90Iiwib2F1dGgyIl0sInVzZXJfbmFtZSI6ImFkbWluIiwic2NvcGUiOlsidGVzdCJdLCJleHAiOjE1ODQ2MTI1NTIsImF1dGhvcml0aWVzIjpbIlJPTEVfQURNSU4iXSwianRpIjoiMjM1YmQxMTUtNWIwOS00ZjlkLTk3YzctZmQ4OGEyMDQ4NjkwIiwiY2xpZW50X2lkIjoidXNlcl9jbGllbnQifQ.F_wZxxo14AvwdlrkmrF0-MZMYkd0WLUZITX7FOkpW1c6MFwZLw09f5i8l2BzF-yCI_nTjTFLykKejJl7L7vkaZhABHfEf8NKV5ZVdaVaAmGga-AXqHmvHEwh3guvgn5R552Z5lY9bzq0dDig_vwuT-9E9_T_KYXP7WM2caCj76gqO-iYNfrMkZoRVMIiVUU-psmum-bnFoIE08Yb79DMNx27KIIC2M89XNUKMGwkaRkjlHEOWyVtxaNNZNIYWyTdIEUqPdbX4r2QSJnfQDGWoEEde3W4t2Xso6kPmG-ctZrDEqug6esNQ8F2v7AC2GLP9SOA8QXcpN-RUYQPQJtjIg")
+            // decode.map { it.claims["organizationId"] as Long }
+            //         .subscribe {
+            //             println(it)
+            //         }
+            Thread(java.lang.Runnable {
+                println("新线程睡眠")
+                cont.tryResumeWithException(TimeoutException("消息超时"))?.let { cont.completeResume(it) }
+                cont.tryResumeWithException(TimeoutException("消息超时"))?.let { cont.completeResume(it) }
+                if (cont.isActive) cont.resumeWithException(TimeoutException("消息超时"))
+                if (cont.isActive) cont.resumeWithException(TimeoutException("消息超时"))
+                Thread.sleep(10000L)
+                println("睡眠结束")
+                if (cont.isActive) cont.resume(Unit)
+            }).start()
+        }
 
     @Test
     fun testAsync() {

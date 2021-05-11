@@ -11,12 +11,12 @@ import com.qingzhu.common.message.Header
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArg
 data class WebSocketResponse<T>(
-        /** 消息头 */
-        val header: Header,
-        /** 返回参数 */
-        val code: Int,
-        /** 数据 */
-        val body: T? = null
+    /** 消息头 */
+    val header: Header,
+    /** 返回参数 */
+    val code: Int,
+    /** 数据 */
+    val body: T? = null
 ) : java.io.Serializable {
     companion object {
         @JvmStatic
@@ -25,12 +25,12 @@ data class WebSocketResponse<T>(
 }
 
 data class WebSocketResponseWithString(
-        /** 消息头 */
-        val header: Header,
-        /** 返回参数 */
-        val code: Int,
-        /** 数据 */
-        val body: String? = null
+    /** 消息头 */
+    val header: Header,
+    /** 返回参数 */
+    val code: Int,
+    /** 数据 */
+    val body: String? = null
 ) : java.io.Serializable {
     companion object {
         @JvmStatic

@@ -30,66 +30,71 @@ fun piped(dataBuffer: Flux<DataBuffer>): InputStream {
     val osPipe = PipedOutputStream()
     val isPipe = PipedInputStream(osPipe)
     DataBufferUtils.write(dataBuffer
-            .doOnError { isPipe.close() }
-            .doFinally { osPipe.close() }, osPipe)
-            .subscribe(DataBufferUtils.releaseConsumer())
+        .doOnError { isPipe.close() }
+        .doFinally { osPipe.close() }, osPipe
+    )
+        .subscribe(DataBufferUtils.releaseConsumer())
     return isPipe
 }
 
 @RestController
 class FileUploadDownloadHandler(
-        val minioClient: MinioClient
+    val minioClient: MinioClient
 ) {
     suspend fun upload(sr: ServerRequest, bucket: String): ServerResponse {
         return sr.multipartData().flatMap { Mono.justOrEmpty(it["file"]) }
-                .flatMapMany { Flux.fromIterable(it) }
-                .cast(FilePart::class.java)
-                .flatMap { fp ->
-                    val (saveFileName, _, _) = createRandomFileNameByOriginalFilename(fp.filename())
-                    // 合并 DataBuffer 的 stream
-                    fp.content().reduce(object : InputStream() {
-                        override fun read() = -1
-                    }) { s: InputStream, d -> SequenceInputStream(s, d.asInputStream()) }
-                            .map { inputStream ->
-                                // 上传到图片空间
-                                val bucketExistsArgs: BucketExistsArgs = BucketExistsArgs.builder().bucket(bucket).build()
-                                val makeBucketArgs: MakeBucketArgs = MakeBucketArgs.builder().bucket(bucket).build()
-                                if (minioClient.bucketExists(bucketExistsArgs).not()) {
-                                    minioClient.makeBucket(makeBucketArgs)
-                                }
-                                val putObjectArgs = PutObjectArgs.builder().bucket(bucket)
-                                        .`object`(saveFileName)
-                                        .stream(inputStream, -1, 10485760)
-                                        .contentType(fp.headers()["Content-Type"]?.first())
-                                        .build()
-                                minioClient.putObject(putObjectArgs)
-                            }
-                }
-                .collectList()
-                .flatMap {
-                    ServerResponse.ok().bodyValue(it.map { response -> response.`object`() })
-                }
-                .switchIfEmpty(ServerResponse.ok().build())
-                .awaitSingle()
+            .flatMapMany { Flux.fromIterable(it) }
+            .cast(FilePart::class.java)
+            .flatMap { fp ->
+                val (saveFileName, _, _) = createRandomFileNameByOriginalFilename(fp.filename())
+                // 合并 DataBuffer 的 stream
+                fp.content().reduce(object : InputStream() {
+                    override fun read() = -1
+                }) { s: InputStream, d -> SequenceInputStream(s, d.asInputStream()) }
+                    .map { inputStream ->
+                        // 上传到图片空间
+                        val bucketExistsArgs: BucketExistsArgs = BucketExistsArgs.builder().bucket(bucket).build()
+                        val makeBucketArgs: MakeBucketArgs = MakeBucketArgs.builder().bucket(bucket).build()
+                        if (minioClient.bucketExists(bucketExistsArgs).not()) {
+                            minioClient.makeBucket(makeBucketArgs)
+                        }
+                        val putObjectArgs = PutObjectArgs.builder().bucket(bucket)
+                            .`object`(saveFileName)
+                            .stream(inputStream, -1, 10485760)
+                            .contentType(fp.headers()["Content-Type"]?.first())
+                            .build()
+                        minioClient.putObject(putObjectArgs)
+                    }
+            }
+            .collectList()
+            .flatMap {
+                ServerResponse.ok().bodyValue(it.map { response -> response.`object`() })
+            }
+            .switchIfEmpty(ServerResponse.ok().build())
+            .awaitSingle()
 
     }
 
     suspend fun download(sr: ServerRequest, bucket: String): ServerResponse {
         val imgName = sr.pathVariable("fileName")
         val getObjectArgs = GetObjectArgs.builder().bucket(bucket)
-                .`object`(imgName).build()
+            .`object`(imgName).build()
         return ServerResponse.ok().build { t, _ ->
             val zeroCopyResponse = t.response as ZeroCopyHttpOutputMessage
-            zeroCopyResponse.writeWith(DataBufferUtils
-                    .readInputStream({
-                        val inputStream = minioClient.getObject(getObjectArgs)
-                        inputStream.headers().names().map {
-                            zeroCopyResponse.headers.add(it, inputStream.headers()[it])
-                        }
-                        inputStream
-                    },
-                            DefaultDataBufferFactory(), 4096))
+            zeroCopyResponse.writeWith(
+                DataBufferUtils
+                    .readInputStream(
+                        {
+                            val inputStream = minioClient.getObject(getObjectArgs)
+                            inputStream.headers().names().map {
+                                zeroCopyResponse.headers.add(it, inputStream.headers()[it])
+                            }
+                            inputStream
+                        },
+                        DefaultDataBufferFactory(), 4096
+                    )
+            )
         }
-                .awaitSingle()
+            .awaitSingle()
     }
 }

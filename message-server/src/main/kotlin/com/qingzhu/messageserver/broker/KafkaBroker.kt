@@ -42,11 +42,11 @@ class KafkaBroker {
     fun outKStreamProcess(): java.util.function.Function<KStream<Any?, String>, KStream<String?, String>> {
         return java.util.function.Function { input ->
             input
-                    // .filter { _, value -> value.headers["hashKey"] == "1" }
-                    .map { key, value ->
-                        println("outKStreamProcess: Key: $key Value: $value")
-                        KeyValue("im", "outKStreamProcess Forward with :\t $value")
-                    }
+                // .filter { _, value -> value.headers["hashKey"] == "1" }
+                .map { key, value ->
+                    println("outKStreamProcess: Key: $key Value: $value")
+                    KeyValue("im", "outKStreamProcess Forward with :\t $value")
+                }
         }
     }
 

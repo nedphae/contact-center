@@ -19,18 +19,18 @@ class ResourceServerConfig : ResourceServerConfigurerAdapter() {
 
     override fun configure(resourceServerSecurityConfigurer: ResourceServerSecurityConfigurer) {
         resourceServerSecurityConfigurer
-                .tokenStore(tokenStore)
-                .resourceId("oauth2")
+            .tokenStore(tokenStore)
+            .resourceId("oauth2")
     }
 
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http.csrf().disable()
         http
-                .authorizeRequests()
-                .antMatchers("/actuator/**").permitAll()
-                .antMatchers("/users/*")
-                .access("#oauth2.hasScope('oauth2')")
+            .authorizeRequests()
+            .antMatchers("/actuator/**").permitAll()
+            .antMatchers("/users/*")
+            .access("#oauth2.hasScope('oauth2')")
 
     }
 }

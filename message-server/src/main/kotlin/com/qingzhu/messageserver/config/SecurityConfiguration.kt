@@ -16,12 +16,12 @@ class SecurityConfiguration {
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain? {
         http
-                .authorizeExchange()
-                .pathMatchers("/actuator/**").permitAll()
-                .pathMatchers("/**").hasAuthority("SCOPE_msg")
-                .anyExchange().authenticated()
-                .and()
-                .oauth2ResourceServerConfig()
+            .authorizeExchange()
+            .pathMatchers("/actuator/**").permitAll()
+            .pathMatchers("/**").hasAuthority("SCOPE_msg")
+            .anyExchange().authenticated()
+            .and()
+            .oauth2ResourceServerConfig()
         return http.build()
     }
 

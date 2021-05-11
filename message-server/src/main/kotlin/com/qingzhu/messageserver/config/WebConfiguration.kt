@@ -20,7 +20,7 @@ class WebConfiguration : WebFluxConfigurer {
 
     @Bean
     fun handlerAdapter() =
-            WebSocketHandlerAdapter(webSocketService())
+        WebSocketHandlerAdapter(webSocketService())
 
     @Bean
     fun webSocketService(): WebSocketService {
@@ -28,11 +28,13 @@ class WebConfiguration : WebFluxConfigurer {
     }
 
     @Bean
-    fun routerFunction(messageHandler: MessageHandler,
-                       staffStatusHandler: StaffStatusHandler,
-                       customerStatusHandler: CustomerStatusHandler,
-                       conversationStatusHandler: ConversationStatusHandler,
-                       registerHandler: RegisterHandler): RouterFunction<ServerResponse> {
+    fun routerFunction(
+        messageHandler: MessageHandler,
+        staffStatusHandler: StaffStatusHandler,
+        customerStatusHandler: CustomerStatusHandler,
+        conversationStatusHandler: ConversationStatusHandler,
+        registerHandler: RegisterHandler
+    ): RouterFunction<ServerResponse> {
         return coRouter {
             accept(MediaType.APPLICATION_JSON).nest {
                 "/message".nest {

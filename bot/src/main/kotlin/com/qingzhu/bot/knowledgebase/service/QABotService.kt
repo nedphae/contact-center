@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service
  */
 @Service
 class QABotService(
-        private val topicRepository: TopicRepository,
-        private val botConfigRepository: BotConfigRepository,
+    private val topicRepository: TopicRepository,
+    private val botConfigRepository: BotConfigRepository,
 ) {
     /**
      * TODO 后期增加无答案转人工？

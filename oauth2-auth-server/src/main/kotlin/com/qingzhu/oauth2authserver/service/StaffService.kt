@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam
 interface StaffService {
 
     @GetMapping(value = ["/staff"])
-    fun findFirstByUsername(@RequestParam("organizationId") organizationId: Int,
-                            @RequestParam("username") username: String?): InnerUser?
+    fun findFirstByUsername(
+        @RequestParam("organizationId") organizationId: Int,
+        @RequestParam("username") username: String?
+    ): InnerUser?
 }

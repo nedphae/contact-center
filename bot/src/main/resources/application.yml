@@ -30,7 +30,7 @@ spring:
 
   elasticsearch:
     rest:
-      uris: ["http://192.168.50.104:9200"]
+      uris: [ "http://192.168.50.104:9200" ]
 
   cloud:
     inetutils:

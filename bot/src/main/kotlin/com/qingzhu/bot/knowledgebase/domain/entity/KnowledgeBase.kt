@@ -6,11 +6,11 @@ import org.springframework.data.relational.core.mapping.Table
 
 @Table
 data class KnowledgeBase(
-        /** 机构 ID **/
-        val organizationId: Int,
-        var name: String,
-        var description: String,
+    /** 机构 ID **/
+    val organizationId: Int,
+    var name: String,
+    var description: String,
 ) : AbstractAuditingEntity() {
-        @Id
-        var id: Long? = null
+    @Id
+    var id: Long? = null
 }

@@ -7,12 +7,12 @@ import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClient
 import org.springframework.data.elasticsearch.config.AbstractReactiveElasticsearchConfiguration
 
 @Configuration
-class ReactiveRestClientConfig: AbstractReactiveElasticsearchConfiguration() {
+class ReactiveRestClientConfig : AbstractReactiveElasticsearchConfiguration() {
 
     override fun reactiveElasticsearchClient(): ReactiveElasticsearchClient {
         val clientConfiguration = ClientConfiguration.builder()
-                .connectedTo("192.168.50.104:9200")
-                .build();
+            .connectedTo("192.168.50.104:9200")
+            .build();
         return ReactiveRestClients.create(clientConfiguration)
     }
 }

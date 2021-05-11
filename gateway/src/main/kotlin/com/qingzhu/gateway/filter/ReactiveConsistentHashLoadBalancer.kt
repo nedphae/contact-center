@@ -24,8 +24,8 @@ import java.net.URI
  */
 @Component
 class ReactiveConsistentHashLoadBalancer(
-        private val hashLoadBalancer: HashRobinLoadBalancer,
-        private val properties: GatewayLoadBalancerProperties
+    private val hashLoadBalancer: HashRobinLoadBalancer,
+    private val properties: GatewayLoadBalancerProperties
 ) : GlobalFilter, Ordered {
 
     companion object {
@@ -38,13 +38,16 @@ class ReactiveConsistentHashLoadBalancer(
         val schemePrefix = exchange.getAttribute<String>(ServerWebExchangeUtils.GATEWAY_SCHEME_PREFIX_ATTR)
         // hlb for hash load balance
         if (url == null
-                || "hlb" != url.scheme && "hlb" != schemePrefix) {
+            || "hlb" != url.scheme && "hlb" != schemePrefix
+        ) {
             return chain.filter(exchange)
         }
         return choose(exchange).doOnNext { response: Response<ServiceInstance> ->
             if (!response.hasServer()) {
-                throw NotFoundException.create(properties.isUse404,
-                        "Unable to find instance for " + url.host)
+                throw NotFoundException.create(
+                    properties.isUse404,
+                    "Unable to find instance for " + url.host
+                )
             }
             val uri = exchange.request.uri
 
@@ -53,7 +56,8 @@ class ReactiveConsistentHashLoadBalancer(
                 overrideScheme = url.scheme
             }
             val serviceInstance = DelegatingServiceInstance(
-                    response.server, overrideScheme)
+                response.server, overrideScheme
+            )
             val requestUrl = LoadBalancerUriTools.reconstructURI(serviceInstance, uri)
             if (log.isTraceEnabled) {
                 log.trace("ReactiveConsistentHashLoadBalancer url chosen: $requestUrl")

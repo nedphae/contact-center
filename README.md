@@ -33,6 +33,6 @@
 
 ### 后续开发计划
 
-- [ ] ⚫ Apache Kylin + Saiku / SuperSet + Apache Druid  进行 OLAP 数据分析模块开发
+- [ ] ⚫ Apache Kylin + Saiku / SuperSet + Apache Druid 进行 OLAP 数据分析模块开发
 
 - [ ] ⚫ 数据使用 kafka 导入到 kylin / hbase / hadoop

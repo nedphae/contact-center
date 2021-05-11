@@ -15,7 +15,7 @@ import kotlin.coroutines.resumeWithException
 
 
 class AckBuilder<T>(
-        private var request: AckRequest
+    private var request: AckRequest
 ) {
     private var header: Header? = null
     private var httpStatus: HttpStatus = HttpStatus.OK
@@ -44,8 +44,8 @@ fun <T> messageAck(request: AckRequest, webSocketResponse: WebSocketResponse<T>)
 
 fun errorAck(request: AckRequest, header: Header, throwable: Throwable) {
     AckBuilder<String>(request).header(header)
-            .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(throwable.message).send()
+        .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(throwable.message).send()
     throwable.printStackTrace()
 }
 
@@ -75,34 +75,36 @@ fun <T> CancellableContinuation<T>.resumeWithExceptionIfActive(exception: Throwa
 }
 
 suspend inline fun <reified T> SocketIOClient.syncSend(event: String, data: Any) =
-        suspendCancellableCoroutine { cont: CancellableContinuation<WebSocketResponse<T>> ->
-            this.sendWithCallback<T>(event, data, {
-                cont.resumeWithExceptionIfActive(TimeoutException("响应超时"))
-            }) {
-                cont.resumeIfActive(it)
-            }
-            GlobalScope.launch {
-                delay(15050)
-                cont.resumeWithExceptionIfActive(TimeoutException("响应超时"))
-            }
+    suspendCancellableCoroutine { cont: CancellableContinuation<WebSocketResponse<T>> ->
+        this.sendWithCallback<T>(event, data, {
+            cont.resumeWithExceptionIfActive(TimeoutException("响应超时"))
+        }) {
+            cont.resumeIfActive(it)
         }
+        GlobalScope.launch {
+            delay(15050)
+            cont.resumeWithExceptionIfActive(TimeoutException("响应超时"))
+        }
+    }
 
 /** --------------- async --------------- */
 inline fun <reified T> SocketIOClient.sendWithCallback(
-        event: String, data: Any, crossinline onTimeout: () -> Unit = {},
-        crossinline onSuccess: (data: WebSocketResponse<T>) -> Unit = {}) {
+    event: String, data: Any, crossinline onTimeout: () -> Unit = {},
+    crossinline onSuccess: (data: WebSocketResponse<T>) -> Unit = {}
+) {
     this.sendEvent(event,
-            object : AckCallback<WebSocketResponseWithString>(WebSocketResponseWithString::class.java, 15000) {
-                override fun onSuccess(result: WebSocketResponseWithString?) {
-                    result?.let {
-                        // 先转换为 String， 然后再手动序列化
-                        val body = result.body?.let { it1 -> JsonUtils.fromJson<T>(it1) }
-                        onSuccess(WebSocketResponse(it.header, it.code, body))
-                    }
+        object : AckCallback<WebSocketResponseWithString>(WebSocketResponseWithString::class.java, 15000) {
+            override fun onSuccess(result: WebSocketResponseWithString?) {
+                result?.let {
+                    // 先转换为 String， 然后再手动序列化
+                    val body = result.body?.let { it1 -> JsonUtils.fromJson<T>(it1) }
+                    onSuccess(WebSocketResponse(it.header, it.code, body))
                 }
+            }
 
-                override fun onTimeout() {
-                    onTimeout()
-                }
-            }, data)
+            override fun onTimeout() {
+                onTimeout()
+            }
+        }, data
+    )
 }

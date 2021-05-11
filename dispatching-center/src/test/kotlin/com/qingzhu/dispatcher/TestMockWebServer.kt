@@ -19,9 +19,9 @@ internal class TestMockWebServer {
     fun statMockServer() {
         this.server = MockWebServer()
         this.webClient = WebClient
-                .builder()
-                .baseUrl(this.server.url("/").toString())
-                .build()
+            .builder()
+            .baseUrl(this.server.url("/").toString())
+            .build()
     }
 
     @AfterEach
@@ -34,8 +34,8 @@ internal class TestMockWebServer {
         this.server.dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 val response = MockResponse()
-                        .setHeader("Content-Type", "application/json")
-                        .setResponseCode(200)
+                    .setHeader("Content-Type", "application/json")
+                    .setResponseCode(200)
                 return when {
                     request.path.startsWith("/test") -> {
                         response.setBody("good test")
@@ -46,13 +46,13 @@ internal class TestMockWebServer {
         }
 
         val result = this.webClient
-                .get()
-                .uri("/test?id=123")
-                .retrieve()
-                .bodyToMono<String>()
+            .get()
+            .uri("/test?id=123")
+            .retrieve()
+            .bodyToMono<String>()
 
         StepVerifier.create(result)
-                .expectNext("good test")
-                .verifyComplete()
+            .expectNext("good test")
+            .verifyComplete()
     }
 }

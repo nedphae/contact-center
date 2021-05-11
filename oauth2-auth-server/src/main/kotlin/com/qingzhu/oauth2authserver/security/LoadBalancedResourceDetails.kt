@@ -13,8 +13,9 @@ import java.net.URISyntaxException
  * 根据clientId & clientSecret配置自动签发 token
  */
 @ConditionalOnMissingBean
-class LoadBalancedResourceDetails(private val loadBalancerClient: LoadBalancerClient?,
-                                  private val tokenServiceId: String?
+class LoadBalancedResourceDetails(
+    private val loadBalancerClient: LoadBalancerClient?,
+    private val tokenServiceId: String?
 ) : ClientCredentialsResourceDetails() {
     companion object {
         private val log = LoggerFactory.getLogger(LoadBalancedResourceDetails::class.java)
@@ -24,8 +25,8 @@ class LoadBalancedResourceDetails(private val loadBalancerClient: LoadBalancerCl
         return if (loadBalancerClient != null && !tokenServiceId.isNullOrBlank()) {
             try {
                 loadBalancerClient.reconstructURI(
-                        loadBalancerClient.choose(tokenServiceId),
-                        URI(super.getAccessTokenUri())
+                    loadBalancerClient.choose(tokenServiceId),
+                    URI(super.getAccessTokenUri())
                 ).toString()
             } catch (ex: URISyntaxException) {
                 log.error("Returning an invalid URI: {}", ex.message)

@@ -21,11 +21,11 @@ import java.util.concurrent.TimeUnit
 
 @Service
 class StaffStatusService(
-        @Qualifier("hazelcastInstance")
-        private val hazelcastInstance: HazelcastInstance
+    @Qualifier("hazelcastInstance")
+    private val hazelcastInstance: HazelcastInstance
 ) {
     private fun getStatusMap(organizationId: Int) =
-            hazelcastInstance.getMap<Long, StaffStatus>("$organizationId:staff")
+        hazelcastInstance.getMap<Long, StaffStatus>("$organizationId:staff")
 
     /**
      * 设置客服状态
@@ -49,12 +49,12 @@ class StaffStatusService(
     fun findIdleStaff(organizationId: Int, shuntId: Long, bot: Boolean = false): Collection<StaffStatus> {
         val statusMap = getStatusMap(organizationId)
         val predicateList: MutableList<Predicate<*, *>> = mutableListOf(
-                // 在当前接待组
-                EqualPredicate("shunt[any]", shuntId),
-                // 在线
-                EqualPredicate("onlineStatus", OnlineStatus.ONLINE),
-                // 接待未满
-                EqualPredicate("autoBusy", false),
+            // 在当前接待组
+            EqualPredicate("shunt[any]", shuntId),
+            // 在线
+            EqualPredicate("onlineStatus", OnlineStatus.ONLINE),
+            // 接待未满
+            EqualPredicate("autoBusy", false),
         )
         if (bot) {
             predicateList.add(EqualPredicate("staffType", 0))
@@ -68,14 +68,14 @@ class StaffStatusService(
 
     fun findIdleStaffWithStaffDispatcherDto(organizationId: Int, shuntId: Long): Flow<StaffDispatcherDto> {
         return findIdleStaff(organizationId, shuntId)
-                .asFlow()
-                .map { StaffDispatcherDto.fromStaffStatusAndShuntId(shuntId, it) }
+            .asFlow()
+            .map { StaffDispatcherDto.fromStaffStatusAndShuntId(shuntId, it) }
     }
 
     fun findBotStaffWithStaffDispatcherDto(organizationId: Int, shuntId: Long): Flow<StaffDispatcherDto> {
         return findIdleStaff(organizationId, shuntId, true)
-                .asFlow()
-                .map { StaffDispatcherDto.fromStaffStatusAndShuntId(shuntId, it) }
+            .asFlow()
+            .map { StaffDispatcherDto.fromStaffStatusAndShuntId(shuntId, it) }
     }
 
     fun setStatusOffline(staffChangeStatusDto: StaffChangeStatusDto) {
@@ -97,27 +97,27 @@ class StaffStatusService(
      */
     fun assignment(staffChangeStatusDto: StaffChangeStatusDto): Mono<StaffStatus> {
         return findStaff(staffChangeStatusDto.organizationId, staffChangeStatusDto.staffId)
-                .filter {
-                    !it.autoBusy && it.onlineStatus == OnlineStatus.ONLINE
-                }
-                .doOnNext {
-                    it.currentServiceCount++
-                    it.userIdList.add(staffChangeStatusDto.userId!!)
-                    // 重新保存状态
-                    saveStatus(it)
-                }
+            .filter {
+                !it.autoBusy && it.onlineStatus == OnlineStatus.ONLINE
+            }
+            .doOnNext {
+                it.currentServiceCount++
+                it.userIdList.add(staffChangeStatusDto.userId!!)
+                // 重新保存状态
+                saveStatus(it)
+            }
     }
 
     fun removeCustomer(organizationId: Int, staffId: Long, userId: Long) {
         findStaff(organizationId, staffId)
-                .doOnNext {
-                    it.currentServiceCount--
-                    it.userIdList.remove(userId)
-                }
-                .subscribe {
-                    // 重新保存状态
-                    saveStatus(it)
-                }
+            .doOnNext {
+                it.currentServiceCount--
+                it.userIdList.remove(userId)
+            }
+            .subscribe {
+                // 重新保存状态
+                saveStatus(it)
+            }
     }
 
     /**
@@ -128,10 +128,10 @@ class StaffStatusService(
     fun findAllOnlineStaff(organizationId: Int): Collection<StaffStatus> {
         val statusMap = getStatusMap(organizationId)
         val predicateList = mutableListOf(
-                // 接待组不为空
-                NotEqualPredicate("shunt[any]", null),
-                // 在线
-                NotEqualPredicate("onlineStatus", OnlineStatus.OFFLINE),
+            // 接待组不为空
+            NotEqualPredicate("shunt[any]", null),
+            // 在线
+            NotEqualPredicate("onlineStatus", OnlineStatus.OFFLINE),
         )
         val andPredicate = AndPredicate(*predicateList.toTypedArray())
         @Suppress("UNCHECKED_CAST")

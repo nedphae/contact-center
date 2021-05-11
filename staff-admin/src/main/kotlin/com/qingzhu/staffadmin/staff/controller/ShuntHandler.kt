@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.server.body
 class ShuntHandler(
     private val reactiveShuntRepository: ReactiveShuntRepository
 ) {
-    suspend fun findFirstByCode(sr : ServerRequest) : ServerResponse{
+    suspend fun findFirstByCode(sr: ServerRequest): ServerResponse {
         val code = sr.pathVariable("code")
         return ok().body(reactiveShuntRepository.findFirstByCode(code)).awaitSingle()
     }

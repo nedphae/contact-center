@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.server.bodyToMono
 
 @RestController
 class CustomerHandler(
-        private val customerService: CustomerService
+    private val customerService: CustomerService
 ) {
     suspend fun saveAndGetCustomer(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<CustomerDto>().map { customerDto ->

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service
  */
 @Service
 class DefaultDisruptorHandler(
-        private val messageDisruptorHandler: MessageDisruptorHandler,
-        private val convDisruptorHandler: ConvDisruptorHandler,
+    private val messageDisruptorHandler: MessageDisruptorHandler,
+    private val convDisruptorHandler: ConvDisruptorHandler,
 ) : WorkHandler<DisruptorEvent> {
     /**
      * 表示需要处理的工作单元的回调。

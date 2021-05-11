@@ -52,45 +52,45 @@ class AuthorizationServerConfig : AuthorizationServerConfigurerAdapter() {
         // 支持将client参数放在header或body中
         oauthServer.allowFormAuthenticationForClients()
         oauthServer.tokenKeyAccess("isAuthenticated()")
-                .checkTokenAccess("permitAll()")
+            .checkTokenAccess("permitAll()")
     }
 
     @Throws(Exception::class)
     override fun configure(clients: ClientDetailsServiceConfigurer) {
         // 配置客户端信息，从数据库中读取，对应oauth_client_details表
         clients.inMemory()
-                // 外部权限
-                .withClient("user_client")
-                // secret 必须为加密好的字符串 "test_secret"
-                .secret("\$2a\$10\$lPaP9cSdF6QugTCJV4ntAuY1IML7V228WoPxdfDn.BHJqzbvLXoqu")
-                .authorizedGrantTypes("authorization_code", "implicit", "password", "refresh_token")
-                .authorities("ROLE_ADMIN")
-                // scope 可以分组， eg im:read， 但是验证时需要整个字符匹配
-                .scopes("oauth2", "bot", "staff", "im", "dispatcher", "msg")
-                .authorities()
-                // .resourceIds("oauth2", "bot", "cs-admin", "im")
-                .accessTokenValiditySeconds(accessTokenValiditySeconds)
-                .and()
-                // 内部权限
-                .withClient("inner_client")
-                // secret 必须为加密好的字符串
-                .secret("\$2a\$10\$lPaP9cSdF6QugTCJV4ntAuY1IML7V228WoPxdfDn.BHJqzbvLXoqu")
-                .authorizedGrantTypes("client_credentials") // 客户端模式需要单独设置
-                .authorities("ROLE_ADMIN")
-                .scopes("oauth2", "bot", "staff", "im", "dispatcher", "msg")
-                .authorities()
-                // .resourceIds("oauth2", "bot", "cs-admin")
-                .accessTokenValiditySeconds(accessTokenValiditySeconds)
+            // 外部权限
+            .withClient("user_client")
+            // secret 必须为加密好的字符串 "test_secret"
+            .secret("\$2a\$10\$lPaP9cSdF6QugTCJV4ntAuY1IML7V228WoPxdfDn.BHJqzbvLXoqu")
+            .authorizedGrantTypes("authorization_code", "implicit", "password", "refresh_token")
+            .authorities("ROLE_ADMIN")
+            // scope 可以分组， eg im:read， 但是验证时需要整个字符匹配
+            .scopes("oauth2", "bot", "staff", "im", "dispatcher", "msg")
+            .authorities()
+            // .resourceIds("oauth2", "bot", "cs-admin", "im")
+            .accessTokenValiditySeconds(accessTokenValiditySeconds)
+            .and()
+            // 内部权限
+            .withClient("inner_client")
+            // secret 必须为加密好的字符串
+            .secret("\$2a\$10\$lPaP9cSdF6QugTCJV4ntAuY1IML7V228WoPxdfDn.BHJqzbvLXoqu")
+            .authorizedGrantTypes("client_credentials") // 客户端模式需要单独设置
+            .authorities("ROLE_ADMIN")
+            .scopes("oauth2", "bot", "staff", "im", "dispatcher", "msg")
+            .authorities()
+            // .resourceIds("oauth2", "bot", "cs-admin")
+            .accessTokenValiditySeconds(accessTokenValiditySeconds)
     }
 
     override fun configure(endpoints: AuthorizationServerEndpointsConfigurer) {
         // 配置token的数据源、自定义的tokenServices等信息,配置身份认证器，配置认证方式，TokenStore，TokenGranter，OAuth2RequestFactory
         endpoints.tokenStore(tokenStore)
-                .authorizationCodeServices(authorizationCodeServices())
-                .approvalStore(approvalStore())
-                .tokenEnhancer(tokenEnhancerChain())
-                .authenticationManager(authenticationManager)
-                .userDetailsService(userDetailsService)
+            .authorizationCodeServices(authorizationCodeServices())
+            .approvalStore(approvalStore())
+            .tokenEnhancer(tokenEnhancerChain())
+            .authenticationManager(authenticationManager)
+            .userDetailsService(userDetailsService)
     }
 
     @Bean

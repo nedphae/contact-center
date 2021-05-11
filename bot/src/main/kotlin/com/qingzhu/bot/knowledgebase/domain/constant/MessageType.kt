@@ -1,4 +1,4 @@
-package com.qingzhu.imaccess.domain.constant
+package com.qingzhu.bot.knowledgebase.domain.constant
 
 import com.fasterxml.jackson.annotation.JsonFormat
 

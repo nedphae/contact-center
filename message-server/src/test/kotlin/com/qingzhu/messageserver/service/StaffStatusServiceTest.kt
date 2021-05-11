@@ -27,15 +27,15 @@ class StaffStatusServiceTest : MessageServerApplicationTests() {
     fun testLPush() {
         val listOps: ReactiveListOperations<String, String> = redisTemplate.opsForList()
         Mono.just(9491)
-                .flatMap { listOps.delete("queue:9491") }
-                .flatMap { listOps.leftPush("queue:9491", it.toString()) }
-                .map { println(it) }
-                .flatMap { listOps.leftPush("queue:9491", it.toString()) }
-                .map { println(it) }
-                .flatMap { listOps.rightPop("queue:9491") }
-                .map { println(it) }
-                .flatMap { listOps.size("queue:9491") }
-                .subscribe { println(it) }
+            .flatMap { listOps.delete("queue:9491") }
+            .flatMap { listOps.leftPush("queue:9491", it.toString()) }
+            .map { println(it) }
+            .flatMap { listOps.leftPush("queue:9491", it.toString()) }
+            .map { println(it) }
+            .flatMap { listOps.rightPop("queue:9491") }
+            .map { println(it) }
+            .flatMap { listOps.size("queue:9491") }
+            .subscribe { println(it) }
         runBlocking {
             delay(5000L)
         }
@@ -43,10 +43,18 @@ class StaffStatusServiceTest : MessageServerApplicationTests() {
 
     @Test
     fun testStaffStatus() {
-        staffStatusService.saveStatus(StaffStatus(1, 2L, StaffAuthority.ROLE_STAFF, listOf(3L, 4L),
-                mapOf(3L to 15), 10, 1))
-        staffStatusService.saveStatus(StaffStatusDto(1, 12L, StaffAuthority.ROLE_STAFF, listOf(13L, 4L),
-                mapOf(4L to 15), maxServiceCount = 10, staffType = 1).toStaffStatus())
+        staffStatusService.saveStatus(
+            StaffStatus(
+                1, 2L, StaffAuthority.ROLE_STAFF, listOf(3L, 4L),
+                mapOf(3L to 15), 10, 1
+            )
+        )
+        staffStatusService.saveStatus(
+            StaffStatusDto(
+                1, 12L, StaffAuthority.ROLE_STAFF, listOf(13L, 4L),
+                mapOf(4L to 15), maxServiceCount = 10, staffType = 1
+            ).toStaffStatus()
+        )
 
         val staffStatusList = staffStatusService.findIdleStaff(1, 4L)
         println(staffStatusList)

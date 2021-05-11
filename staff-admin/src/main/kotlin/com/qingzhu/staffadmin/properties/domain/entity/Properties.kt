@@ -6,13 +6,13 @@ import org.springframework.data.relational.core.mapping.Table
 
 @Table("properties")
 data class Properties(
-		@Id
-		val id: Int?,
-		/** 公司id */
-		val organizationId: Int,
-		val key: String,
-		var value: String?,
-		var label: String?,
-		/** 是否启用 */
-		var available: Boolean = true
+    @Id
+    val id: Int?,
+    /** 公司id */
+    val organizationId: Int,
+    val key: String,
+    var value: String?,
+    var label: String?,
+    /** 是否启用 */
+    var available: Boolean = true
 ) : AbstractAuditingEntity()

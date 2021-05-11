@@ -2,7 +2,6 @@ package com.qingzhu.dispatcher.service
 
 import org.junit.jupiter.api.Test
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 internal class NginxWeightedAssignmentServiceTest {

@@ -16,15 +16,15 @@ class SecurityConfiguration {
     @Bean
     fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http.csrf().disable()
-                .authorizeExchange()
-                .pathMatchers("/actuator/**").permitAll()
-                .pathMatchers("/staff").hasAuthority("SCOPE_staff")
-                // .pathMatchers("/staff/info").hasRole("ADMIN")
-                .anyExchange().authenticated()
-                .and()
-                .oauth2Client()
-                .and()
-                .oauth2ResourceServerConfig()
+            .authorizeExchange()
+            .pathMatchers("/actuator/**").permitAll()
+            .pathMatchers("/staff").hasAuthority("SCOPE_staff")
+            // .pathMatchers("/staff/info").hasRole("ADMIN")
+            .anyExchange().authenticated()
+            .and()
+            .oauth2Client()
+            .and()
+            .oauth2ResourceServerConfig()
         return http.build()
     }
 }

@@ -13,7 +13,7 @@ internal class NewTest {
     suspend fun createConsumer(): Consumer = Consumer.also { println("Creating consumer") }
     suspend fun createDBHandle(): Handle = Handle.also { println("Creating db handle") }
     suspend fun createFancyService(consumer: Consumer, handle: Handle): Service =
-            Service(handle, consumer).also { println("Creating service") }
+        Service(handle, consumer).also { println("Creating service") }
 
     suspend fun closeConsumer(consumer: Consumer): Unit = println("Closed consumer")
     suspend fun closeDBHandle(handle: Handle): Unit = println("Closed db handle")
@@ -21,14 +21,14 @@ internal class NewTest {
 
     val resourceProgram = suspend {
         Resource(::createConsumer, ::closeConsumer)
-                .zip(Resource(::createDBHandle, ::closeDBHandle))
-                .flatMap { (consumer, handle) ->
-                    Resource({ createFancyService(consumer, handle) }, { service -> shutDownFancyService(service) })
-                }.use { service ->
-                    // use service
-                    // <...>
-                    Unit
-                }
+            .zip(Resource(::createDBHandle, ::closeDBHandle))
+            .flatMap { (consumer, handle) ->
+                Resource({ createFancyService(consumer, handle) }, { service -> shutDownFancyService(service) })
+            }.use { service ->
+                // use service
+                // <...>
+                Unit
+            }
     }
 
     @Test

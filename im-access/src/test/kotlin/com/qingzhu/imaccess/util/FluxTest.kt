@@ -3,7 +3,6 @@ package com.qingzhu.imaccess.util
 import arrow.core.extensions.list.foldable.isNotEmpty
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.awaitLast
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -80,29 +79,28 @@ internal class FluxTest {
     @Test
     fun testTwoTransform() {
         Mono.just(1)
-                .doOnNext {
-                    println(it)
-                }
-                .transform {
-                    text ->
-                    text.flatMap {
-                        println(2)
-                        Mono.just(2)
-                    }.transform { text }
-                }
-                .doOnNext {
-                    println(it)
-                }
-                .subscribe()
+            .doOnNext {
+                println(it)
+            }
+            .transform { text ->
+                text.flatMap {
+                    println(2)
+                    Mono.just(2)
+                }.transform { text }
+            }
+            .doOnNext {
+                println(it)
+            }
+            .subscribe()
     }
 
     @Test
     fun testAwait() {
         runBlocking {
             val i = Flux
-                    .just(1, 1, 2, 3, 4, 4)
-                    // Flux to asFlow
-                    .asFlow().toList()
+                .just(1, 1, 2, 3, 4, 4)
+                // Flux to asFlow
+                .asFlow().toList()
             println(i)
         }
     }

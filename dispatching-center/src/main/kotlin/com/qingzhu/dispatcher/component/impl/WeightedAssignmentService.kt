@@ -16,12 +16,12 @@ import java.security.SecureRandom
 class WeightedAssignmentService : AssignmentInterface {
     override fun assignmentStaff(flux: Flux<StaffDispatcherDto>): Mono<Long> {
         return flux
-                .collectList()
-                .filter { it.isNotEmpty() }
-                .flatMap {
-                    val solution = Solution(it)
-                    Mono.justOrEmpty(it[solution.pickIndex()].staffId)
-                }
+            .collectList()
+            .filter { it.isNotEmpty() }
+            .flatMap {
+                val solution = Solution(it)
+                Mono.justOrEmpty(it[solution.pickIndex()].staffId)
+            }
     }
 
     private class Solution(staffDispatcherDtoList: List<StaffDispatcherDto>) {

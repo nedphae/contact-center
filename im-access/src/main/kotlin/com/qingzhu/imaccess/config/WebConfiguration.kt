@@ -34,7 +34,7 @@ class WebConfiguration : WebFluxConfigurer {
 
     @Bean
     fun handlerAdapter() =
-            WebSocketHandlerAdapter(webSocketService())
+        WebSocketHandlerAdapter(webSocketService())
 
     @Bean
     fun webSocketService(): WebSocketService {
@@ -42,9 +42,11 @@ class WebConfiguration : WebFluxConfigurer {
     }
 
     @Bean
-    fun routerFunction(webSocketAddressController: WebSocketAddressController,
-                       fileUploadDownloadHandler: FileUploadDownloadHandler,
-                       botAccessHandler: BotAccessHandler,): RouterFunction<*> {
+    fun routerFunction(
+        webSocketAddressController: WebSocketAddressController,
+        fileUploadDownloadHandler: FileUploadDownloadHandler,
+        botAccessHandler: BotAccessHandler,
+    ): RouterFunction<*> {
         return coRouter {
             accept(APPLICATION_JSON).nest {
                 // 仅仅测试用的，废弃了

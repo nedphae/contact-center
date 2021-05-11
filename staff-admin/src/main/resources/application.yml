@@ -44,7 +44,7 @@ spring:
         enabled: true
   elasticsearch:
     rest:
-      uris: ["http://192.168.50.104:9200"]
+      uris: [ "http://192.168.50.104:9200" ]
 
   r2dbc:
     url: r2dbc:postgresql://192.168.50.102:5432/postgres?currentSchema=staffadmin

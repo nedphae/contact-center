@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.server.ServerResponse.ok
 
 @RestController
 class ShuntUIConfigHandler(
-        private val shuntUIConfigRepository: ShuntUIConfigRepository
+    private val shuntUIConfigRepository: ShuntUIConfigRepository
 ) {
     /**
      * 通过 接待组获取 界面配置

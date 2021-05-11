@@ -1,6 +1,6 @@
 package com.qingzhu.bot.knowledgebase.domain.dto
 
-import com.qingzhu.imaccess.domain.constant.OnlineStatus
+import com.qingzhu.bot.knowledgebase.domain.constant.OnlineStatus
 
 data class StaffChangeStatusDto(
     /** 公司id */

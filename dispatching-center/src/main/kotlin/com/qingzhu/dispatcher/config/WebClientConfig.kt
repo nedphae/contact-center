@@ -17,16 +17,19 @@ import org.springframework.web.reactive.function.client.WebClient
 class WebClientConfig {
 
     @Bean
-    fun authorizedClientManager(lbFunction: ReactorLoadBalancerExchangeFilterFunction,
-                                clientRegistrationRepository: ReactiveClientRegistrationRepository,
-                                authorizedClientService: ReactiveOAuth2AuthorizedClientService): ReactiveOAuth2AuthorizedClientManager {
+    fun authorizedClientManager(
+        lbFunction: ReactorLoadBalancerExchangeFilterFunction,
+        clientRegistrationRepository: ReactiveClientRegistrationRepository,
+        authorizedClientService: ReactiveOAuth2AuthorizedClientService
+    ): ReactiveOAuth2AuthorizedClientManager {
         val loadBalancerClient = WebClientReactiveClientCredentialsTokenResponseClient()
         loadBalancerClient.setWebClient(WebClient.builder().filter(lbFunction).build())
         val authorizedClientProvider = ReactiveOAuth2AuthorizedClientProviderBuilder.builder()
-                .clientCredentials { it.accessTokenResponseClient(loadBalancerClient) }
-                .build()
+            .clientCredentials { it.accessTokenResponseClient(loadBalancerClient) }
+            .build()
         val authorizedClientManager = AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager(
-                clientRegistrationRepository, authorizedClientService)
+            clientRegistrationRepository, authorizedClientService
+        )
         authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
         return authorizedClientManager
     }
@@ -35,13 +38,15 @@ class WebClientConfig {
      * 内部客户端模式授权的服务间调用 client
      */
     @Bean("innerWebClient")
-    fun innerWebClient(lbFunction: ReactorLoadBalancerExchangeFilterFunction,
-                       authorizedClientManager: ReactiveOAuth2AuthorizedClientManager): WebClient.Builder {
+    fun innerWebClient(
+        lbFunction: ReactorLoadBalancerExchangeFilterFunction,
+        authorizedClientManager: ReactiveOAuth2AuthorizedClientManager
+    ): WebClient.Builder {
         val oauth = ServerOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
         oauth.setDefaultClientRegistrationId("authProvider")
         return WebClient.builder()
-                .filter(lbFunction)
-                .filter(oauth)
+            .filter(lbFunction)
+            .filter(oauth)
     }
 
     /**

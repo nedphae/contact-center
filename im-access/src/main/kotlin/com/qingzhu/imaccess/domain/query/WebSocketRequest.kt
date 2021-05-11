@@ -19,12 +19,12 @@ import java.util.*
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArg
 open class WebSocketRequest<T>(
-        /** 执行的命令 */
-        // val path: String?,
-        /** 消息头 */
-        val header: Header,
-        /** 消息体 */
-        val body: T
+    /** 执行的命令 */
+    // val path: String?,
+    /** 消息头 */
+    val header: Header,
+    /** 消息体 */
+    val body: T
 ) : java.io.Serializable {
 
     companion object {
@@ -33,16 +33,17 @@ open class WebSocketRequest<T>(
 
         fun <T> createRequest(sid: String, body: T): WebSocketRequest<T> {
             return WebSocketRequest(
-                    Header(UUID.randomUUID().toString(), sid),
-                    body)
+                Header(UUID.randomUUID().toString(), sid),
+                body
+            )
         }
     }
 
     fun toMonoMonad(socketIOClient: SocketIOClient): Mono<T> {
         return Mono.just(this)
-                .doOnNext {
-                    it.header.sid = socketIOClient.sessionId.toString()
-                }.map { it.body }
+            .doOnNext {
+                it.header.sid = socketIOClient.sessionId.toString()
+            }.map { it.body }
     }
 }
 
@@ -65,13 +66,13 @@ fun <T> Mono<T>.subscribeWithData(ackRequest: AckRequest, request: WebSocketRequ
 
 fun <T, R> Mono<T>.messageSubscribe(ackRequest: AckRequest, request: WebSocketRequest<*>, block: (T) -> R) {
     this
-            // 清理过滤的消息
-            // 如果有过滤的消息就调用
-            .doOnDiscard(Any::class.java) {
-                // 过滤没设置收件人的消息 并返回 400
-                AckBuilder<String>(ackRequest).header(request.header).httpStatus(HttpStatus.BAD_REQUEST).send()
-            }
-            // 发送到消息服务器
-            .map { block(it) }
-            .subscribeWithData(ackRequest, request)
+        // 清理过滤的消息
+        // 如果有过滤的消息就调用
+        .doOnDiscard(Any::class.java) {
+            // 过滤没设置收件人的消息 并返回 400
+            AckBuilder<String>(ackRequest).header(request.header).httpStatus(HttpStatus.BAD_REQUEST).send()
+        }
+        // 发送到消息服务器
+        .map { block(it) }
+        .subscribeWithData(ackRequest, request)
 }

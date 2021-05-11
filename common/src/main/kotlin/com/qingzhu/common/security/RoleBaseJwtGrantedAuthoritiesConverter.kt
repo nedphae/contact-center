@@ -7,8 +7,6 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.util.StringUtils
-import java.lang.StringBuilder
-import java.util.*
 
 class RoleBaseJwtGrantedAuthoritiesConverter : Converter<Jwt, Collection<GrantedAuthority>> {
     private val logger = LogFactory.getLog(javaClass)
@@ -69,6 +67,7 @@ class RoleBaseJwtGrantedAuthoritiesConverter : Converter<Jwt, Collection<Granted
         val claimName = getAuthoritiesClaimName(jwt)
         return getAuthorities(jwt, claimName)
     }
+
     private fun getAuthorities(jwt: Jwt, claimName: String?): Collection<String> {
         if (claimName == null) {
             logger.trace("Returning no authorities since could not find any claims that might contain scopes")

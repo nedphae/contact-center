@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 class JWTAuthorizationListener(
-        @Qualifier("reactiveJwtDecoderBean") val reactiveJwtDecoder: ReactiveJwtDecoder
+    @Qualifier("reactiveJwtDecoderBean") val reactiveJwtDecoder: ReactiveJwtDecoder
 ) : AuthorizationListener {
 
     private val logger = LoggerFactory.getLogger(JWTAuthorizationListener::class.java)

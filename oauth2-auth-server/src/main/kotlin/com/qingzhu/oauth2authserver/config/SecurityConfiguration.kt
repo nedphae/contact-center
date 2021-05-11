@@ -25,11 +25,11 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http.csrf().disable()
         http.authorizeRequests()
-                .antMatchers("/actuator/**").permitAll()
-                .mvcMatchers("/.well-known/jwks.json").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().permitAll()
+            .antMatchers("/actuator/**").permitAll()
+            .mvcMatchers("/.well-known/jwks.json").permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .formLogin().permitAll()
     }
 
     /**
@@ -41,8 +41,8 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
     @Throws(Exception::class)
     override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {
         authenticationManagerBuilder
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder())
+            .userDetailsService(userDetailsService)
+            .passwordEncoder(passwordEncoder())
     }
 
     /**

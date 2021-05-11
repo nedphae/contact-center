@@ -16,14 +16,14 @@ class TestUserHandler {
 
     suspend fun getStaff(sr: ServerRequest): ServerResponse {
         return authProvider.getStaffInfo(9491, 1)
-                .transform { ServerResponse.ok().body(it) }
-                .awaitSingle()
+            .transform { ServerResponse.ok().body(it) }
+            .awaitSingle()
     }
 
     suspend fun getStaffTest(sr: ServerRequest): ServerResponse {
         return authProvider.getStaffInfoTest(9491, 1)
-                .transform { ServerResponse.ok().body(it) }
-                .awaitSingle()
+            .transform { ServerResponse.ok().body(it) }
+            .awaitSingle()
     }
 
 }

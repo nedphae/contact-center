@@ -8,7 +8,7 @@ import com.qingzhu.dispatcher.domain.constant.*
 import org.mapstruct.Mapper
 import org.mapstruct.ReportingPolicy
 import org.mapstruct.factory.Mappers
-import java.time.LocalDateTime
+import java.time.Instant
 
 /**
  * 返回给用户的会话信息 / 排队信息
@@ -25,7 +25,7 @@ data class ConversationViewDto @Default constructor(
     /** 0=客服正常会话  1=机器人会话 */
     val interaction: Int?,
     /** 会话结束时间 */
-    val endTime: LocalDateTime?,
+    val endTime: Instant?,
     /** 当前排队信息 */
     val queue: Long?
 ) {
@@ -77,7 +77,7 @@ data class ConversationStatusDto(
     /** 客服名字 或为 "机器人" */
     var nickName: String,
     /** 会话开始时间 */
-    val startTime: LocalDateTime = LocalDateTime.now(),
+    val startTime: Instant = Instant.now(),
     /** 客户id */
     val userId: Long,
     /** vip 层级 0=非VIP用户 */
@@ -119,13 +119,13 @@ data class ConversationStatusDto(
     var closeReason: CloseReason? = null
 
     /** 结束时间 */
-    var endTime: LocalDateTime? = null
+    var endTime: Instant? = null
 
     /** 用户评价内容 */
     var evaluate: Evaluate? = null
 
     /** 客服首次响应的时间戳 */
-    var staffFirstReplyTime: LocalDateTime? = null
+    var staffFirstReplyTime: Instant? = null
 
     /** 客服首次响应时长(访客首条消息与客服首次回复消息的时间间隔) */
     var firstReplyCost: Long = 0
@@ -143,7 +143,7 @@ data class ConversationStatusDto(
     var roundNumber: Int = 0
 
     /** 访客首条消息时间 */
-    var clientFirstMessageTime: LocalDateTime? = null
+    var clientFirstMessageTime: Instant? = null
 
     /** 客服平均响应时长 */
     var avgRespDuration: Long? = 0

@@ -13,8 +13,8 @@ import org.antlr.v4.runtime.CommonTokenStream
  * 过滤器返回 Boolean
  */
 class ParserUtils<T>(
-        input: String,
-        private val block: (lowerCaseString: String) -> Specification<T>
+    input: String,
+    private val block: (lowerCaseString: String) -> Specification<T>
 ) {
     private val expression: MyParser.ExpressionContext
 

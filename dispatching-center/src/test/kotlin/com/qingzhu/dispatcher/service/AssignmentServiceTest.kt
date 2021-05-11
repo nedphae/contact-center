@@ -64,16 +64,19 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
 
     // some mock data
     private final val staffList = listOf(
-            StaffDispatcherDto(9491, 1, 1L to 15, 30, 10, 1),
-            StaffDispatcherDto(9491, 2, 1L to 15, 30, 10, 1)
+        StaffDispatcherDto(9491, 1, 1L to 15, 30, 10, 1),
+        StaffDispatcherDto(9491, 2, 1L to 15, 30, 10, 1)
     )
-    final val customerDispatcherDto = CustomerDispatcherDto(9491, 1, null, null, 1L, null, null, FromType.WEB, "127.0.0.1", null, null)
+    final val customerDispatcherDto =
+        CustomerDispatcherDto(9491, 1, null, null, 1L, null, null, FromType.WEB, "127.0.0.1", null, null)
     private final val botList = listOf(
-            StaffDispatcherDto(9491, 3, 1L to 15, 30, 10, 0),
-            StaffDispatcherDto(9491, 4, 1L to 15, 30, 10, 0)
+        StaffDispatcherDto(9491, 3, 1L to 15, 30, 10, 0),
+        StaffDispatcherDto(9491, 4, 1L to 15, 30, 10, 0)
     )
-    private final val staffDto = StaffDto(5 , 9491, "bot", "bot", StaffAuthority.ROLE_STAFF, 1, "乔巴", "狸猫", null, 0, 50, 1)
-    private final val conversationStatusDto = ConversationStatusDto.fromStaffAndCustomer(staffDto, customerDispatcherDto)
+    private final val staffDto =
+        StaffDto(5, 9491, "bot", "bot", StaffAuthority.ROLE_STAFF, 1, "乔巴", "狸猫", null, 0, 50, 1)
+    private final val conversationStatusDto =
+        ConversationStatusDto.fromStaffAndCustomer(staffDto, customerDispatcherDto)
 
     /**
      * set [MockWebServer] response with [Dispatcher]
@@ -82,8 +85,8 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
         this.server.dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 val response = MockResponse()
-                        .setHeader("Content-Type", "application/json")
-                        .setResponseCode(200)
+                    .setHeader("Content-Type", "application/json")
+                    .setResponseCode(200)
                 return with(request.path) {
                     when {
                         startsWith("/status/staff/idle") -> response.setBody(staffList.toJson())
@@ -99,7 +102,20 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
                         startsWith("/status/conversation/end") -> response
                         startsWith("/staff/info") -> {
                             val staffId = this.last().toString().toLong()
-                            val body = StaffDto(staffId, 5, "admin", "bot", StaffAuthority.ROLE_STAFF, 1, "蒙奇D路飞", "草帽", null, 0, 50, 1)
+                            val body = StaffDto(
+                                staffId,
+                                5,
+                                "admin",
+                                "bot",
+                                StaffAuthority.ROLE_STAFF,
+                                1,
+                                "蒙奇D路飞",
+                                "草帽",
+                                null,
+                                0,
+                                50,
+                                1
+                            )
                             response.setBody(body.toJson())
                         }
                         startsWith("/message/send/assignment") -> response
@@ -110,10 +126,10 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
         }
 
         val assignmentComponent = AssignmentComponent(
-                MessageService(webClientBuilder),
-                StaffAdminService(webClientBuilder),
-                WeightedAssignmentService(),
-                redisTemplate
+            MessageService(webClientBuilder),
+            StaffAdminService(webClientBuilder),
+            WeightedAssignmentService(),
+            redisTemplate
         )
         this.assignmentService = AssignmentService(assignmentComponent)
     }
@@ -125,55 +141,55 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
     fun assignmentAutoIn10M() {
         prepareResponse()
         val result = (1..10).asFlow()
-                .asFlux()
-                .flatMap {
-                    this.assignmentService.assignmentAuto(9491, 1)
-                }
-                .collectList()
+            .asFlux()
+            .flatMap {
+                this.assignmentService.assignmentAuto(9491, 1)
+            }
+            .collectList()
         StepVerifier.create(result)
-                .assertNext {
-                    val idSet = it.sortedBy { dto -> dto.staffId }.map { dto -> dto.staffId }.toSet()
-                    println(idSet.toJson())
-                    assertIterableEquals(listOf(5L), idSet)
-                }
-                .verifyComplete()
+            .assertNext {
+                val idSet = it.sortedBy { dto -> dto.staffId }.map { dto -> dto.staffId }.toSet()
+                println(idSet.toJson())
+                assertIterableEquals(listOf(5L), idSet)
+            }
+            .verifyComplete()
     }
 
     @Test
     fun assignmentAuto() {
         prepareResponse(true)
         val result = (1..10).asFlow()
-                .asFlux()
-                .flatMap {
-                    this.assignmentService.assignmentAuto(9491, 1)
-                }
-                .collectList()
+            .asFlux()
+            .flatMap {
+                this.assignmentService.assignmentAuto(9491, 1)
+            }
+            .collectList()
 
         StepVerifier.create(result)
-                .assertNext {
-                    val idSet = it.sortedBy { dto -> dto.staffId }.map { dto -> dto.staffId }.toSet()
-                    println(idSet.toJson())
-                    assertIterableEquals(listOf(3L, 4L), idSet)
-                }
-                .verifyComplete()
+            .assertNext {
+                val idSet = it.sortedBy { dto -> dto.staffId }.map { dto -> dto.staffId }.toSet()
+                println(idSet.toJson())
+                assertIterableEquals(listOf(3L, 4L), idSet)
+            }
+            .verifyComplete()
     }
 
     @Test
     fun assignmentStaff() {
         prepareResponse()
         val result = (1..10).asFlow()
-                .asFlux()
-                .flatMap {
-                    this.assignmentService.assignmentStaff(9491, 1)
-                }
-                .collectList()
+            .asFlux()
+            .flatMap {
+                this.assignmentService.assignmentStaff(9491, 1)
+            }
+            .collectList()
 
         StepVerifier.create(result)
-                .assertNext {
-                    val idSet = it.sortedBy { dto -> dto.staffId }.map { dto -> dto.staffId }.toSet()
-                    println(idSet.toJson())
-                    assertIterableEquals(listOf(1L, 2L), idSet)
-                }
-                .verifyComplete()
+            .assertNext {
+                val idSet = it.sortedBy { dto -> dto.staffId }.map { dto -> dto.staffId }.toSet()
+                println(idSet.toJson())
+                assertIterableEquals(listOf(1L, 2L), idSet)
+            }
+            .verifyComplete()
     }
 }

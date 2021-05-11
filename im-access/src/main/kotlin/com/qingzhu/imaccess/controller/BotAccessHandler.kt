@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.server.bodyValueAndAwait
 
 @RestController
 class BotAccessHandler(
-        private val botAccessService: BotAccessService,
+    private val botAccessService: BotAccessService,
 ) {
     /**
      *  用户注册

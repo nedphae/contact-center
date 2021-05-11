@@ -10,9 +10,9 @@ import reactor.core.publisher.Mono
 class EchoHandler : WebSocketHandler {
     override fun handle(session: WebSocketSession): Mono<Void> {
         return session
-                .send(session.receive()
-                        .map { "RECEIVED ON SERVER :: " + it.payloadAsText }
-                        .map(session::textMessage)
-                )
+            .send(session.receive()
+                .map { "RECEIVED ON SERVER :: " + it.payloadAsText }
+                .map(session::textMessage)
+            )
     }
 }

@@ -9,16 +9,16 @@ import org.springframework.data.relational.core.mapping.Table
  */
 @Table
 data class BotConfig(
-        /** 机构 ID **/
-        val organizationId: Int,
-        /** 机器人ID */
-        var botId: Long,
-        /** 机器人 与 知识库的映射 */
-        // one to one
-        var knowledgeBaseId: Long,
-        /** 没有找到答案时的回复 */
-        var noAnswerReply: String = "抱歉，没有找到您想要的答案",
+    /** 机构 ID **/
+    val organizationId: Int,
+    /** 机器人ID */
+    var botId: Long,
+    /** 机器人 与 知识库的映射 */
+    // one to one
+    var knowledgeBaseId: Long,
+    /** 没有找到答案时的回复 */
+    var noAnswerReply: String = "抱歉，没有找到您想要的答案",
 ) : AbstractAuditingEntity() {
-        @Id
-        var id: Long? = null
+    @Id
+    var id: Long? = null
 }

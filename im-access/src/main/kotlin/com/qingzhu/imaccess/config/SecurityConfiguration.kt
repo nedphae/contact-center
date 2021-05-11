@@ -16,17 +16,17 @@ class SecurityConfiguration {
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain? {
         http
-                .csrf().disable()
-                .authorizeExchange()
-                .pathMatchers("/actuator/**").permitAll()
-                .pathMatchers("/oss/**").permitAll()
-                .pathMatchers("/access/customer/**").permitAll()
-                .pathMatchers("/websocket-address/**").hasAuthority("SCOPE_im")
-                .anyExchange().authenticated()
-                .and()
-                .oauth2Client()
-                .and()
-                .oauth2ResourceServerConfig()
+            .csrf().disable()
+            .authorizeExchange()
+            .pathMatchers("/actuator/**").permitAll()
+            .pathMatchers("/oss/**").permitAll()
+            .pathMatchers("/access/customer/**").permitAll()
+            .pathMatchers("/websocket-address/**").hasAuthority("SCOPE_im")
+            .anyExchange().authenticated()
+            .and()
+            .oauth2Client()
+            .and()
+            .oauth2ResourceServerConfig()
         return http.build()
     }
 

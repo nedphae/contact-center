@@ -19,14 +19,14 @@ class SecurityConfiguration {
     @Bean
     fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http.csrf().disable()
-                .authorizeExchange()
-                .pathMatchers("/actuator/**").permitAll()
-                .pathMatchers("/**").hasAuthority("SCOPE_dispatcher")
-                .anyExchange().authenticated()
-                .and()
-                .oauth2Client()
-                .and()
-                .oauth2ResourceServerConfig()
+            .authorizeExchange()
+            .pathMatchers("/actuator/**").permitAll()
+            .pathMatchers("/**").hasAuthority("SCOPE_dispatcher")
+            .anyExchange().authenticated()
+            .and()
+            .oauth2Client()
+            .and()
+            .oauth2ResourceServerConfig()
         return http.build()
     }
 }

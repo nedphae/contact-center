@@ -17,6 +17,4 @@ data class StaffConfig(
     val shuntId: Long,
     /** 配置优先级 */
     var priority: Int
-) : AbstractAuditingEntity() {
-
-}
+) : AbstractAuditingEntity()

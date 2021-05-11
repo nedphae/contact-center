@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.common.message.getConversationSnowFlake
 import com.qingzhu.imaccess.domain.constant.*
-import java.time.LocalDateTime
+import java.time.Instant
 
 /**
  * 关联到客户状态
@@ -39,7 +39,7 @@ data class ConversationStatusDto(
     /** 客服名字 或为 "机器人" */
     var nickName: String,
     /** 会话开始时间 */
-    val startTime: LocalDateTime = LocalDateTime.now(),
+    val startTime: Instant = Instant.now(),
     /** 客户id */
     val userId: Long,
     /** vip 层级 0=非VIP用户 */
@@ -63,70 +63,50 @@ data class ConversationStatusDto(
      * false :代表非客服邀请会话 */
     val isStaffInvited: Boolean = false,
     /** 会话发起方  1：访客，2：客服 */
-    val beginner: CreatorType = CreatorType.CUSTOMER
-) {
+    val beginner: CreatorType = CreatorType.CUSTOMER,
     /** 关联会话id */
-    var relatedId: Long? = null
-
+    var relatedId: Long? = null,
     /** 关联会话类型 */
-    var relatedType: RelatedType = RelatedType.NO
-
+    var relatedType: RelatedType = RelatedType.NO,
     /** 会话分类信息 "xx"， 必须用字符串，关联查询被删除就失效了 */
-    var category: String? = null
-
+    var category: String? = null,
     /** 会话咨询分类明细 "xx/xx" */
-    var categoryDetail: String? = null
-
+    var categoryDetail: String? = null,
     /** 会话关闭原因 */
-    var closeReason: CloseReason? = null
-
+    var closeReason: CloseReason? = null,
     /** 结束时间 */
-    var endTime: LocalDateTime? = null
-
+    var endTime: Instant? = null,
     /** 用户评价内容 */
-    var evaluate: Evaluate? = null
-
+    var evaluate: Evaluate? = null,
     /** 客服首次响应的时间戳 */
-    var staffFirstReplyTime: LocalDateTime? = null
-
+    var staffFirstReplyTime: Instant? = null,
     /** 客服首次响应时长(访客首条消息与客服首次回复消息的时间间隔) */
-    var firstReplyCost: Long = 0
-
+    var firstReplyCost: Long = 0,
     /** 置顶时长 */
-    var stickDuration: Long = 0
-
+    var stickDuration: Long = 0,
     /** 会话备注 */
-    var remarks: String? = null
-
+    var remarks: String? = null,
     /** 客服标记的解决状态 */
-    var status: SolveStatus? = null
-
+    var status: SolveStatus? = null,
     /** 对话回合数 */
-    var roundNumber: Int = 0
-
+    var roundNumber: Int = 0,
     /** 访客首条消息时间 */
-    var clientFirstMessageTime: LocalDateTime? = null
-
+    var clientFirstMessageTime: Instant? = null,
     /** 客服平均响应时长 */
-    var avgRespDuration: Long? = 0
-
+    var avgRespDuration: Long? = 0,
     /** 是否有效会话 */
-    var isValid: Int? = 0
-
+    var isValid: Int? = 0,
     /** 客服消息数 */
-    var staffMessageCount: Int = 0
-
+    var staffMessageCount: Int = 0,
     /** 用户消息数 */
-    var userMessageCount: Int = 0
-
+    var userMessageCount: Int = 0,
     /** 留言处理时间,若会话不是留言则返回0 */
-    var treatedTime: Int = 0
-
+    var treatedTime: Int = 0,
     //客服是否邀评  0：邀评；1：主动评价
-    var isEvaluationInvited: Boolean? = null
-
+    var isEvaluationInvited: Boolean? = null,
     /** 会话中止方  1：访客，2：客服，3：系统 */
-    var terminator: CreatorType? = null
+    var terminator: CreatorType? = null,
+) {
 }
 
 /**

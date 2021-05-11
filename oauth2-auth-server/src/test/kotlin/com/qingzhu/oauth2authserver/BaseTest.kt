@@ -38,10 +38,12 @@ abstract class BaseTest {
     }
 
     private fun login(): Array<out Cookie> {
-        val result = this.mockMvc.perform(MockMvcRequestBuilders.post("/login")
+        val result = this.mockMvc.perform(
+            MockMvcRequestBuilders.post("/login")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE).param("username", "admin")
-                .param("password", "123456")).andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isFound).andReturn()
+                .param("password", "123456")
+        ).andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isFound).andReturn()
         return result.response.cookies
     }
 
@@ -51,7 +53,7 @@ abstract class BaseTest {
      */
     protected fun baseRequest(requestBuilder: MockHttpServletRequestBuilder) {
         this.mockMvc.perform(requestBuilder.cookie(*cookies)).andExpect(MockMvcResultMatchers.status().isOk)
-                .andDo(MockMvcResultHandlers.print()).andReturn()
+            .andDo(MockMvcResultHandlers.print()).andReturn()
     }
 
     /**
@@ -75,7 +77,10 @@ abstract class BaseTest {
      */
     @Throws(Exception::class)
     protected fun <T> post(url: String, t: T) {
-        baseRequest(MockMvcRequestBuilders.post(url).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(t)))
+        baseRequest(
+            MockMvcRequestBuilders.post(url).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(t))
+        )
     }
 
     /**
@@ -88,7 +93,10 @@ abstract class BaseTest {
      */
     @Throws(Exception::class)
     protected fun <T> put(url: String, t: T) {
-        baseRequest(MockMvcRequestBuilders.put(url).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(t)))
+        baseRequest(
+            MockMvcRequestBuilders.put(url).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(t))
+        )
     }
 
     /**

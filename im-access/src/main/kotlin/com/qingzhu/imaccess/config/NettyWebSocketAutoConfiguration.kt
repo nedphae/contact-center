@@ -30,11 +30,11 @@ import com.corundumstudio.socketio.Configuration as NettyConfig
 
 @Configuration
 class NettyWebSocketAutoConfiguration(
-        val properties: ConsulDiscoveryProperties,
-        val webSocketConfigProperties: WebSocketConfigProperties,
-        val heartbeatProperties: HeartbeatProperties,
-        val consulClient: ConsulClient,
-        val serverProperties: ServerProperties,
+    val properties: ConsulDiscoveryProperties,
+    val webSocketConfigProperties: WebSocketConfigProperties,
+    val heartbeatProperties: HeartbeatProperties,
+    val consulClient: ConsulClient,
+    val serverProperties: ServerProperties,
 ) {
     private val logger = LogFactory.getLog(NettyWebSocketAutoConfiguration::class.java)
 
@@ -94,17 +94,19 @@ class NettyWebSocketAutoConfiguration(
         newService.name = webSocketConfigProperties.name
         newService.address = properties.ipAddress
         newService.port = webSocketConfigProperties.port
-        newService.check = ConsulAutoRegistration.createCheck(properties.port
-                ?: serverProperties.port, heartbeatProperties, properties)
+        newService.check = ConsulAutoRegistration.createCheck(
+            properties.port
+                ?: serverProperties.port, heartbeatProperties, properties
+        )
         IO {
             consulClient.agentServiceRegister(newService)
             logger.info("Register SocketIO")
         }
-                .onError { IO { logger.error(it) } }
-                .fork(Dispatchers.IO)
-                .flatMap { IO.fx { it.join().bind() } }
-                .runAsync { IO.never }
-                // NOTE: 可修改为异步
-                .unsafeRunSync()
+            .onError { IO { logger.error(it) } }
+            .fork(Dispatchers.IO)
+            .flatMap { IO.fx { it.join().bind() } }
+            .runAsync { IO.never }
+            // NOTE: 可修改为异步
+            .unsafeRunSync()
     }
 }

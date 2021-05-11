@@ -29,16 +29,18 @@ class TestArrow {
     fun testSelect() {
         listOf(1, 2, 3).partition { it > 2 }
         val result: List<Int> = listOf(1, 2, 3)
-                .query {
-                    select { this + 1 }.where { this > 2 }
-                }.value()
+            .query {
+                select { this + 1 }.where { this > 2 }
+            }.value()
         println(result)
     }
 
     @Test
     fun testResource() {
         fun createInputStream(): IO<String> = IO { println("Start input"); "input" }
-        fun createOutputStream(input: String): IO<String> = IO { println("Start output"); println("Start copy: $input\toutput");"output" }
+        fun createOutputStream(input: String): IO<String> =
+            IO { println("Start output"); println("Start copy: $input\toutput");"output" }
+
         fun closeInputStream(input: String): IO<Unit> = IO.fx { print(input); println("Closed input") }
         fun closeOutputStream(output: String): IO<Unit> = IO.fx { print(output); println("Closed output") }
         val managedTProgram = Resource.monad(IO.bracket()).fx.monad {
@@ -63,31 +65,31 @@ class TestArrow {
             println("2、${Thread.currentThread().id}")
             0
         }
-                .map {
-                    println("3、${Thread.currentThread().id}")
-                    it
-                }
-                .fork(Dispatchers.Default)
-                .flatMap {
-                    it.join()
-                    // IO.fx {
-                    //     it.join().bind()
-                    // }
-                }
-                // .unsafeRunSync()
-                .unsafeRunAsync {
-                    println("4、${Thread.currentThread().id}")
-                }
+            .map {
+                println("3、${Thread.currentThread().id}")
+                it
+            }
+            .fork(Dispatchers.Default)
+            .flatMap {
+                it.join()
+                // IO.fx {
+                //     it.join().bind()
+                // }
+            }
+            // .unsafeRunSync()
+            .unsafeRunAsync {
+                println("4、${Thread.currentThread().id}")
+            }
         // .unsafeRunAsync { result ->
         //     println("4、${Thread.currentThread().id}")
         //     result.fold({ println("Error") }, { println(it) })
         // }
         // 异步 非多线程
         IO.async()
-                .async { callback: (Either<Throwable, Int>) -> Unit ->
-                    println("6、${Thread.currentThread().id}")
-                    callback(1.right())
-                }.fix().attempt().unsafeRunSync()
+            .async { callback: (Either<Throwable, Int>) -> Unit ->
+                println("6、${Thread.currentThread().id}")
+                callback(1.right())
+            }.fix().attempt().unsafeRunSync()
 
         println("5、${Thread.currentThread().id}")
         Thread.sleep(5000)
@@ -110,11 +112,11 @@ class TestArrow {
 
         // 协程包裹的 IO monad
         IO { 0 }
-                .flatMap { IO { it * 2 } }
-                .map { it + 1 }
-                .map { println(it); it }
-                .runAsync { IO.never }
-                .unsafeRunSync()
+            .flatMap { IO { it * 2 } }
+            .map { it + 1 }
+            .map { println(it); it }
+            .runAsync { IO.never }
+            .unsafeRunSync()
 
         Option(12)
         Option.monadError()
@@ -126,14 +128,16 @@ class TestArrow {
 
     @Test
     fun testFiber() {
-        fun <A, B, C> parallelMap(first: IO<A>,
-                                  second: IO<B>,
-                                  f: (A, B) -> C): IO<C> =
-                IO.fx {
-                    val fiberOne: Fiber<ForIO, A> = first.fork(Dispatchers.Default).bind()
-                    val fiberTwo: Fiber<ForIO, B> = second.fork(Dispatchers.Default).bind()
-                    f(!fiberOne.join(), !fiberTwo.join())
-                }
+        fun <A, B, C> parallelMap(
+            first: IO<A>,
+            second: IO<B>,
+            f: (A, B) -> C
+        ): IO<C> =
+            IO.fx {
+                val fiberOne: Fiber<ForIO, A> = first.fork(Dispatchers.Default).bind()
+                val fiberTwo: Fiber<ForIO, B> = second.fork(Dispatchers.Default).bind()
+                f(!fiberOne.join(), !fiberTwo.join())
+            }
 
         val first = IO<Unit> { Thread.sleep(5000) }.map {
             println("Hi, I am first")
@@ -145,10 +149,10 @@ class TestArrow {
             2
         }
         parallelMap(first, second, Int::plus)
-                //.unsafeRunSync().also { println(it) }
-                .unsafeRunAsync { result ->
-                    result.fold({ println("Error") }, { println(it) })
-                }
+            //.unsafeRunSync().also { println(it) }
+            .unsafeRunAsync { result ->
+                result.fold({ println("Error") }, { println(it) })
+            }
 
         Thread.sleep(5000 * 3)
     }
@@ -156,13 +160,13 @@ class TestArrow {
     @Test
     fun testUnsafe() {
         IO<Int> { throw RuntimeException("Boom!") }
-                .runAsync { result ->
-                    result.fold({ IO { println("Error") } }, { IO { println(it.toString()) } })
+            .runAsync { result ->
+                result.fold({ IO { println("Error") } }, { IO { println(it.toString()) } })
+            }
+            .unsafeRunAsync {
+                if (it.isRight()) {
+                    println(it)
                 }
-                .unsafeRunAsync {
-                    if (it.isRight()){
-                        println(it)
-                    }
-                }
+            }
     }
 }

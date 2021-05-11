@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class BotManageService(
-        private val topicRepository: TopicRepository,
-        private val botConfigRepository: BotConfigRepository,
-        private val knowledgeBaseRepository: KnowledgeBaseRepository,
-        private val topicCategoryRepository: TopicCategoryRepository,
+    private val topicRepository: TopicRepository,
+    private val botConfigRepository: BotConfigRepository,
+    private val knowledgeBaseRepository: KnowledgeBaseRepository,
+    private val topicCategoryRepository: TopicCategoryRepository,
 ) {
     suspend fun saveTopic(topic: Topic): Topic {
         return topicRepository.save(topic)

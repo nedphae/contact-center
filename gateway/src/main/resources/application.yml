@@ -1,4 +1,3 @@
-
 server:
   port: 8700
 
@@ -34,9 +33,9 @@ spring:
   cloud:
     inetutils:
       ignored-interfaces:
-      - eth*
+        - eth*
       preferred-networks:
-      - 192.168.*
+        - 192.168.*
     loadbalancer:
       ribbon:
         enabled: false

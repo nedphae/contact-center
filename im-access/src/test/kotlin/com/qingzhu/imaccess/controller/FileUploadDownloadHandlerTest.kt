@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyExtractors
 import org.springframework.web.reactive.function.client.WebClient
-import java.io.*
+import java.io.IOException
+import java.io.InputStream
+import java.io.StringWriter
 import java.nio.charset.Charset
 
 
@@ -32,9 +34,9 @@ internal class FileUploadDownloadHandlerTest {
     private fun readAsInputStream(url: String): InputStream? {
         val webClient = WebClient.builder().baseUrl(url).build()
         val response = webClient.get()
-                .accept(MediaType.TEXT_HTML)
-                .exchange()
-                .block()
+            .accept(MediaType.TEXT_HTML)
+            .exchange()
+            .block()
         val body = response!!.body(BodyExtractors.toDataBuffers())
 
         return piped(body)

@@ -69,7 +69,12 @@ class StaffAdminApplicationTests {
             nickName = "蜡笔小新",
             avatar = null
         )
-        val staffSave = staffRepositoryR.findFirstByOrganizationIdAndUsernameAndStaffTypeAndEnabled(staff.organizationId, staff.username, 1, true)
+        val staffSave = staffRepositoryR.findFirstByOrganizationIdAndUsernameAndStaffTypeAndEnabled(
+            staff.organizationId,
+            staff.username,
+            1,
+            true
+        )
             .switchIfEmpty(staffRepositoryR.save(staff))
 
         StepVerifier.create(staffSave)

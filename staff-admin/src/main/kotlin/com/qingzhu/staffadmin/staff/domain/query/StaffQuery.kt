@@ -10,31 +10,31 @@ import javax.validation.constraints.Size
 
 
 data class StaffQuery(
-        @field: NotNull(message = "公司ID不能为空")
-        val organizationId: Int,
-        @field: NotEmpty(message = "用户名不能为空")
-        val username: String,
-        @field: Length(message = "密码长度必须大于6小于100", min = 6, max = 100)
-        val password: String,
-        @field: Size(message = "用户角色不能为空", min = 1)
-        val role: StaffAuthority,
-        @field: NotNull(message = "用户分组不能为空")
-        val groupId: Long,
-        val realName: String,
-        val nickName: String,
-        // 头像URL
-        val avatar: String,
+    @field: NotNull(message = "公司ID不能为空")
+    val organizationId: Int,
+    @field: NotEmpty(message = "用户名不能为空")
+    val username: String,
+    @field: Length(message = "密码长度必须大于6小于100", min = 6, max = 100)
+    val password: String,
+    @field: Size(message = "用户角色不能为空", min = 1)
+    val role: StaffAuthority,
+    @field: NotNull(message = "用户分组不能为空")
+    val groupId: Long,
+    val realName: String,
+    val nickName: String,
+    // 头像URL
+    val avatar: String,
 ) {
     fun toCustomerServiceRepresentative(): Staff {
         return Staff(
-                organizationId = organizationId,
-                username = username,
-                password = getBCryptPasswordEncoder().encode(password),
-                role = role,
-                staffGroupId = groupId,
-                realName = realName,
-                nickName = nickName,
-                avatar = avatar,
+            organizationId = organizationId,
+            username = username,
+            password = getBCryptPasswordEncoder().encode(password),
+            role = role,
+            staffGroupId = groupId,
+            realName = realName,
+            nickName = nickName,
+            avatar = avatar,
         )
     }
 }

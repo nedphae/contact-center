@@ -16,9 +16,11 @@ import org.springframework.web.reactive.function.server.coRouter
 @EnableWebFlux
 class WebConfiguration : WebFluxConfigurer {
     @Bean
-    fun routerFunction(staffHandler: StaffHandler,
-                       shuntHandler: ShuntHandler,
-                       shuntUIConfigHandler: ShuntUIConfigHandler): RouterFunction<ServerResponse> {
+    fun routerFunction(
+        staffHandler: StaffHandler,
+        shuntHandler: ShuntHandler,
+        shuntUIConfigHandler: ShuntUIConfigHandler
+    ): RouterFunction<ServerResponse> {
         return coRouter {
             accept(MediaType.APPLICATION_JSON).nest {
                 "/staff".nest {

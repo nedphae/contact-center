@@ -21,7 +21,7 @@ import kotlin.math.abs
  */
 @Component
 class HashRobinLoadBalancer(
-        val consulReactiveDiscoveryClient: ConsulReactiveDiscoveryClient
+    val consulReactiveDiscoveryClient: ConsulReactiveDiscoveryClient
 ) {
     companion object {
         private val log = LogFactory.getLog(HashRobinLoadBalancer::class.java)
@@ -35,12 +35,14 @@ class HashRobinLoadBalancer(
         //     it.success(getInstanceResponse(exchange.request, consulDiscoveryClient.getInstances(uri!!.host)))
         // }
         return consulReactiveDiscoveryClient.getInstances(uri!!.host).collectList()
-                .map { getInstanceResponse(exchange.request, it) }
+            .map { getInstanceResponse(exchange.request, it) }
         // 茴字有几种写法？
     }
 
-    private fun getInstanceResponse(request: ServerHttpRequest,
-                                    instances: List<ServiceInstance>): Response<ServiceInstance> {
+    private fun getInstanceResponse(
+        request: ServerHttpRequest,
+        instances: List<ServiceInstance>
+    ): Response<ServiceInstance> {
         if (instances.isEmpty()) {
             log.warn("No servers available for service: hash load balancer")
             return EmptyResponse()

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 internal class BotManageServiceTest : BotApplicationTests() {
     @Autowired
     private lateinit var botManageService: BotManageService
+
     @Autowired
     private lateinit var qaBotService: QABotService
 
@@ -33,10 +34,12 @@ internal class BotManageServiceTest : BotApplicationTests() {
             println("知识类别: $topicCategory")
             val md5 = "你好".toMd5Hex()
             println("md5: $md5")
-            var topic = Topic(9491, 1, "你好",
-                    md5, "你好，这里是 QA 机器人", null, 0,
-                    1, null, null, true,
-                    null, null, 1)
+            var topic = Topic(
+                9491, 1, "你好",
+                md5, "你好，这里是 QA 机器人", null, 0,
+                1, null, null, true,
+                null, null, 1
+            )
             topic = botManageService.saveTopic(topic)
             println("知识: $topic")
             val ans = qaBotService.findAnswerByQuestion(1, 1, "你好")
