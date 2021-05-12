@@ -12,5 +12,5 @@ rootProject.name = "contact-center-all"
 
 include(
     "bot", "gateway", "common", "im-access",
-    "dispatching-center", "staff-admin", "message-server"
+    "dispatching-center", "staff-admin", "message-server", "GraphQLBFF"
 )

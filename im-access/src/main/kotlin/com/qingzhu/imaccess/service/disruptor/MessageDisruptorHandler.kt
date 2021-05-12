@@ -20,13 +20,16 @@ class MessageDisruptorHandler : WorkHandler<UpdateMessage> {
             .subscribe {
                 val clientFlux = MapUtils.get(Key(it.message.organizationId!!, it.message.type, it.message.to!!))
                 val sentFlux = MapUtils.get(Key(it.message.organizationId!!, it.message.creatorType, it.message.from!!))
-                // 推送的消息不需要设置接收者
-                it.message.organizationId = null
-                it.message.to = null
-                it.sentClientId = null
                 // 需要记录日志 或增加成功回调 可添加 callback 函数
                 // TODO: 增加回调通知消息送达
-                clientFlux.concatWith(sentFlux).filter { client -> client.sessionId.toString() != it.sentClientId }
+                val messageFromClientId = it.sentClientId
+                clientFlux.concatWith(sentFlux).filter { client -> client.sessionId.toString() != messageFromClientId }
+                    .doOnNext { _ ->
+                        // 推送的消息不需要设置接收者
+                        it.message.organizationId = null
+                        it.message.to = null
+                        it.sentClientId = null
+                    }
                     .subscribe { client ->
                         client?.sendWithCallback<Void>(
                             SocketEvent.Message.sync,

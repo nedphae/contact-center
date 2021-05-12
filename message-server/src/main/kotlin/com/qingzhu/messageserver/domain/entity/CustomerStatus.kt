@@ -29,8 +29,6 @@ data class CustomerStatus(
     val fromType: FromType,
     /** 客户IP */
     val ip: String,
-    /** 客户所处服务器名称 */
-    var clientAccessServerMap: MutableMap<String, String> = HashMap(),
     /** 登录时间 */
     var loginTime: Instant = Instant.now(),
     //是否在线
@@ -39,8 +37,10 @@ data class CustomerStatus(
      * 上一条接受的消息ID，或者事件序列ID
      * 用以检查是否漏收了消息
      */
-    var pts: Long? = null
+    var pts: Long? = null,
 ) : java.io.Serializable {
+    /** 客户所处服务器名称 */
+    var clientAccessServerMap: MutableMap<String, String> = HashMap()
 
     companion object {
         @JvmStatic

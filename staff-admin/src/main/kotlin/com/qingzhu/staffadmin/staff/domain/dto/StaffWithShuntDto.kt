@@ -42,11 +42,12 @@ data class StaffWithShuntDto(
     var personalizedSignature: String? = null,
     /** 是否启用 */
     var enabled: Boolean = true,
+) {
     /** 所处接待组 */
-    var shunt: List<Long> = emptyList(),
+    var shunt: List<Long> = emptyList()
     /** 不同接待组的优先级 */
-    var priorityOfShunt: Map<Long, Int> = emptyMap(),
-)
+    var priorityOfShunt: Map<Long, Int> = emptyMap()
+}
 
 @Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 abstract class StaffWithShuntDtoMapper {

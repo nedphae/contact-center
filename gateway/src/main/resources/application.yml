@@ -5,12 +5,12 @@ spring:
   application:
     name: gateway-server
 
-  r2dbc:
-    url: r2dbc:postgresql://192.168.50.102:5432/postgres?currentSchema=gateway
-    username: postgres
-    password: JpESiz1nHf
-    pool:
-      enabled: true
+  # r2dbc:
+  #   url: r2dbc:postgresql://192.168.50.102:5432/postgres?currentSchema=gateway
+  #   username: postgres
+  #   password: JpESiz1nHf
+  #   pool:
+  #     enabled: true
   # 配置 oauth2 client，现在使用的是动态配置 client，因此无法使用 oauth2
   # security:
   #   oauth2:
@@ -131,6 +131,11 @@ spring:
           predicates:
             - Path=/chat/**
 
+        # 聚合服务
+        - id: graphql-bff_route
+          uri: lb://graphql-bff
+          predicates:
+            - Path=/graphql/**
 logging:
   level:
     root: info

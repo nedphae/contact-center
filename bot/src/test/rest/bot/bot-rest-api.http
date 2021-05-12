@@ -1,6 +1,6 @@
 ###
 # 测试 获取 token
-POST http://localhost:8000/oauth/token?username=admin&password=123456&grant_type=password&org_id=9491&scope=staff bot
+POST http://localhost:8700/oauth/token?username=admin&password=123456&grant_type=password&org_id=9491&scope=staff bot
 Accept: */*
 Cache-Control: max-age=60
 # base64 of user_client:test_secret
@@ -12,7 +12,7 @@ Authorization: Basic dXNlcl9jbGllbnQ6dGVzdF9zZWNyZXQ=
 
 ###
 # 测试 根据 token 获取用户信息
-GET http://localhost:8111/users/test/test
+GET http://localhost:8707/users/test
 Accept: */*
 Cache-Control: no-cache
 # base64 of user_client:test_secret

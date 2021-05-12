@@ -24,6 +24,8 @@ class WebConfiguration : WebFluxConfigurer {
                 "/customer".nest {
                     // 保存客户信息
                     POST("", customerHandler::saveAndGetCustomer)
+                    GET("", customerHandler::getCustomerById)
+                    GET("/detail", customerHandler::getDetailDataByUserId)
                 }
                 // 分配客服
                 "/dispatcher/assignment".nest {

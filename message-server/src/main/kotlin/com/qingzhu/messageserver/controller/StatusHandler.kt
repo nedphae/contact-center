@@ -49,9 +49,9 @@ class StaffStatusHandler(
 
 @RestController
 class CustomerStatusHandler(private val customerStatusService: CustomerStatusService) {
+    val response = ok().build()
 
     suspend fun findStaffIdOrShuntId(sr: ServerRequest): ServerResponse {
-        val response = ok().build()
         return sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("userId").map(String::toLong).map { uid ->
                 ok().body(customerStatusService.findStaffIdOrShuntId(oi, uid))
@@ -60,10 +60,18 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
     }
 
     suspend fun findByUid(sr: ServerRequest): ServerResponse {
-        val response = ok().build()
         return sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("uid").map { uid ->
                 customerStatusService.findByUid(oi, uid)
+                    .transform { ok().body(it) }
+            }.orElse(response)
+        }.orElse(response).awaitSingle()
+    }
+
+    suspend fun findByUserId(sr: ServerRequest): ServerResponse {
+        return sr.queryParam("organizationId").map(String::toInt).map { oi ->
+            sr.queryParam("userId").map(String::toLong).map { uid ->
+                customerStatusService.findByUserId(oi, uid)
                     .transform { ok().body(it) }
             }.orElse(response)
         }.orElse(response).awaitSingle()

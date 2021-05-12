@@ -27,5 +27,5 @@ data class Customer(
     /** 用户手机号 */
     var mobile: String?,
     /** vip等级 1-10 */
-    var vipLevel: Int?
+    var vipLevel: Int?,
 ) : AbstractAuditingEntity()

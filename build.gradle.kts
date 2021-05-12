@@ -4,22 +4,22 @@ group = "com.qingzhu"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    id("org.springframework.boot") version "2.4.1" apply false
-    id("io.spring.dependency-management") version "1.0.10.RELEASE"
+    id("org.springframework.boot") version "2.4.5" apply false
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("org.jetbrains.kotlin.plugin.noarg") version "1.4.21"
-    kotlin("jvm") version "1.4.21"
-    kotlin("plugin.spring") version "1.4.21" apply false
-    kotlin("plugin.jpa") version "1.4.21" apply false
-    kotlin("kapt") version "1.4.21"
-    id("org.jetbrains.dokka") version "1.4.20"
+    kotlin("jvm") version "1.4.32"
+    kotlin("plugin.spring") version "1.4.32" apply false
+    kotlin("plugin.jpa") version "1.4.32" apply false
+    kotlin("kapt") version "1.4.32"
+    id("org.jetbrains.dokka") version "1.4.32"
     id("net.ltgt.apt") version "0.15"
 }
 
 allprojects {
     repositories {
+        mavenCentral()
         maven { url = uri("https://maven.aliyun.com/repository/public") }
         maven { url = uri("https://maven.aliyun.com/repository/spring") }
-        mavenCentral()
         maven { url = uri("https://repo.spring.io/milestone") }
         maven { url = uri("https://dl.bintray.com/arrow-kt/arrow-kt/") }
     }
@@ -47,7 +47,7 @@ subprojects {
         }
     }
 
-    extra["springCloudVersion"] = "2020.0.0"
+    extra["springCloudVersion"] = "2020.0.2"
     extra["springDataBom"] = "2020.0.3"
 
     val arrowVersion = "0.11.0"

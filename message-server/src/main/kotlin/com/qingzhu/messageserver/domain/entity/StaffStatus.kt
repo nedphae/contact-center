@@ -21,22 +21,24 @@ data class StaffStatus(
     var maxServiceCount: Int,
     /** 客服类型，0 表示机器人，1 表示人工。 */
     val staffType: Int = 1,
-    /** 登录时间 */
-    val loginTime: Instant = Instant.now(),
     /** 在线状态 */
     var onlineStatus: OnlineStatus = OnlineStatus.ONLINE,
-    /**
-     * 服务的用户id
-     */
-    val userIdList: MutableList<Long> = ArrayList(maxServiceCount),
-    /** 客服所处服务器名称 */
-    val clientAccessServerMap: MutableMap<String, String> = HashMap(),
     /**
      * 上一条接受的消息ID，或者事件序列ID
      * 用以检查是否漏收了消息
      */
     var pts: Long? = null,
 ) : java.io.Serializable {
+    /** 登录时间 */
+    val loginTime: Instant = Instant.now()
+
+    /**
+     * 服务的用户id
+     */
+    val userIdList: MutableList<Long> = ArrayList(maxServiceCount)
+
+    /** 客服所处服务器名称 */
+    val clientAccessServerMap: MutableMap<String, String> = HashMap()
 
     companion object {
         @JvmStatic

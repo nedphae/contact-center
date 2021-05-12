@@ -20,6 +20,7 @@ import com.expediagroup.graphql.server.spring.execution.SpringDataFetcher
 import com.fasterxml.jackson.databind.ObjectMapper
 import graphql.schema.DataFetchingEnvironment
 import org.springframework.context.ApplicationContext
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import kotlin.reflect.KFunction
 
@@ -35,6 +36,7 @@ class CustomFunctionDataFetcher(
 
     override fun get(environment: DataFetchingEnvironment): Any? = when (val result = super.get(environment)) {
         is Mono<*> -> result.toFuture()
+        is Flux<*> -> result.collectList().toFuture()
         else -> result
     }
 }

@@ -16,8 +16,8 @@
 
 package com.qinghzu.graphqlbff.dataloaders
 
-import com.qinghzu.graphqlbff.model.Company
 import com.expediagroup.graphql.server.execution.KotlinDataLoader
+import com.qinghzu.graphqlbff.model.Company
 import org.dataloader.DataLoader
 import org.springframework.stereotype.Component
 import java.util.concurrent.CompletableFuture
