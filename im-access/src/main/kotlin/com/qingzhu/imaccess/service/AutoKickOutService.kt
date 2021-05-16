@@ -23,7 +23,7 @@ class AutoKickOutService(
         Flux.interval(Duration.ZERO, Duration.ofSeconds(30), Schedulers.boundedElastic())
             .flatMapIterable {
                 // TODO 通过配置获取
-                MapUtils.Time.getExpiredKey(Duration.ofMinutes(15))
+                MapUtils.Time.getExpiredKey(9491, Duration.ofMinutes(15))
             }
             .flatMapSequential { MapUtils.get(it).map { socket -> it to socket } }
             .map { (key, socket) ->

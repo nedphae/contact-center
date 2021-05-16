@@ -1,19 +1,31 @@
 package com.qingzhu.common.security
 
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactive.awaitSingleOrNull
+import org.springframework.http.HttpHeaders
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.oauth2.jwt.*
+import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken
+import org.springframework.security.oauth2.server.resource.BearerTokenErrors
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import org.springframework.security.oauth2.server.resource.authentication.JwtReactiveAuthenticationManager
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter
+import org.springframework.util.StringUtils
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.awaitPrincipal
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.util.context.Context
 import java.math.BigInteger
 import java.security.KeyFactory
 import java.security.Principal
@@ -21,11 +33,19 @@ import java.security.PublicKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.RSAPublicKeySpec
 import java.util.*
+import java.util.regex.Pattern
+
+val jwtReactiveAuthenticationManager = JwtReactiveAuthenticationManager(reactiveJwtDecoder())
+
 
 /**
  * Utility class for Spring WebFlux Security.
  */
 object SecurityUtils {
+    private val authorizationPattern = Pattern.compile(
+        "^Bearer (?<token>[a-zA-Z0-9-._~+/]+=*)$",
+        Pattern.CASE_INSENSITIVE
+    )
 
     /**
      * 获取当前登录的用户名称，仅支持在 *WebFlux* 中调用 / 同一线程内调用
@@ -58,6 +78,24 @@ object SecurityUtils {
             is String -> authentication.principal as String
             else -> null
         }
+    }
+
+    fun getBearerAuthentication(headers: HttpHeaders): Authentication? {
+        val authorization = headers.getFirst(HttpHeaders.AUTHORIZATION)
+        if (!StringUtils.startsWithIgnoreCase(authorization, "bearer")) {
+            return null
+        }
+        val matcher = authorizationPattern.matcher(authorization!!)
+        if (!matcher.matches()) {
+            val error = BearerTokenErrors.invalidToken("Bearer token is malformed")
+            throw OAuth2AuthenticationException(error)
+        }
+        val token = matcher.group("token")
+        if (token.isEmpty()) {
+            val error = BearerTokenErrors.invalidToken("Bearer token is malformed")
+            throw OAuth2AuthenticationException(error)
+        }
+        return BearerTokenAuthenticationToken(token)
     }
 }
 
@@ -130,4 +168,33 @@ suspend fun ServerRequest.awaitGetPrincipalTriple(): Triple<Int?, Long?, String?
     // staff name
     val username = principal.name
     return Triple(orgId, sid, username)
+}
+
+private fun getContextWith(oldContext: Context, authentication: Authentication?): Context {
+    var context = oldContext
+    if (authentication != null) {
+        val securityContext = SecurityContextImpl()
+        val securityContextMono = jwtReactiveAuthenticationManager.authenticate(authentication)
+            .map {
+                securityContext.authentication = it
+                securityContext
+            }.checkpoint("securityContext mono")
+        // fuck fuck fuck context 要返回 put 的结果，操，忘了
+        context = oldContext.put(SecurityContext::class.java, securityContextMono)
+    }
+    return context
+}
+
+suspend fun <T> Mono<T>.awaitWithAuthentication(authentication: Authentication?): T? {
+    return this
+        .checkpoint("webflux mono")
+        .contextWrite { getContextWith(it, authentication) }
+        .awaitSingleOrNull()
+}
+
+suspend fun <T : Any> Flux<T>.awaitWithAuthentication(authentication: Authentication?): List<T> {
+    return this
+        .checkpoint("webflux flux")
+        .contextWrite { getContextWith(it, authentication) }
+        .asFlow().toList()
 }

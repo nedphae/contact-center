@@ -4,6 +4,7 @@ import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.common.constant.NoArg
+import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.common.message.Header
 import com.qingzhu.imaccess.socketio.AckBuilder
 import com.qingzhu.imaccess.socketio.errorAck
@@ -68,8 +69,8 @@ fun <T, R> Mono<T>.messageSubscribe(ackRequest: AckRequest, request: WebSocketRe
     this
         // 清理过滤的消息
         // 如果有过滤的消息就调用
-        .doOnDiscard(Any::class.java) {
-            // 过滤没设置收件人的消息 并返回 400
+        .doOnDiscard(Message::class.java) {
+            // 过滤没设置收件人的消息，或其他有问题消息并返回 400
             AckBuilder<String>(ackRequest).header(request.header).httpStatus(HttpStatus.BAD_REQUEST).send()
         }
         // 发送到消息服务器

@@ -18,6 +18,7 @@ package com.qinghzu.graphqlbff.context
 
 import com.expediagroup.graphql.generator.execution.GraphQLContext
 import com.expediagroup.graphql.server.spring.execution.SpringGraphQLContext
+import org.springframework.security.core.Authentication
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.socket.WebSocketSession
 
@@ -26,7 +27,8 @@ import org.springframework.web.reactive.socket.WebSocketSession
  */
 class MyGraphQLContext(
     request: ServerRequest,
-    val myCustomValue: String
+    val myCustomValue: String,
+    var oAuth: Authentication? = null
 ) : SpringGraphQLContext(request)
 
 /**

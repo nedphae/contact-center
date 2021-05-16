@@ -7,6 +7,7 @@ import com.corundumstudio.socketio.annotation.OnDisconnect
 import com.corundumstudio.socketio.annotation.OnEvent
 import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.imaccess.domain.dto.CustomerBaseClientDto
+import com.qingzhu.imaccess.domain.query.AssignmentInfo
 import com.qingzhu.imaccess.domain.query.WebSocketRequestCustomerConfig
 import com.qingzhu.imaccess.domain.query.subscribeWithData
 import com.qingzhu.imaccess.domain.view.ConversationView
@@ -49,9 +50,11 @@ class CustomerEventHandler(
                 socketIOClient[registerName] = it.userId
                 socketIOClient["organizationId"] = it.organizationId
             }
-            .flatMap { info ->
+            .filter {
                 // 设置 客户端 map
-                MapUtils.put(Key(info.organizationId, CreatorType.CUSTOMER, info.userId), socketIOClient)
+                MapUtils.put(Key(it.organizationId, CreatorType.CUSTOMER, it.userId), socketIOClient)
+            }
+            .flatMap { info ->
                 // 检查是否分配了客服
                 Mono.justOrEmpty(info.staffId)
                     .map {
@@ -68,7 +71,7 @@ class CustomerEventHandler(
             // 没有分配过就新分配一个客服
             .switchIfEmpty(assignmentInfo.flatMap { dispatchingCenter.assignmentStaff(it.organizationId, it.userId) })
             .transformDeferredContextual { t, u ->
-                t.map {
+                t.flatMap {
                     // 更新客户信息，保存客户连接到的服务器
                     messageService.updateCustomerClient(
                         CustomerBaseClientDto(
@@ -77,10 +80,17 @@ class CustomerEventHandler(
                             u.get<String>("clientId")
                         ).toMono()
                     )
-                    it
+                        // fuck, 总是忘了订阅事件
+                        .map { _ -> it }
                 }
             }
+                // sessionId 为客户端创建，所以掉线重连后用户还是原来的 sessionId，重新注册客户端后会重写状态服务器的记录
             .contextWrite { it.put("clientId", socketIOClient.sessionId.toString()) }
+            .doOnDiscard(AssignmentInfo::class.java) {
+                // TODO 提醒已经打开其他客户端
+                // 如果已经注册过就直接关闭该客户端
+                socketIOClient.disconnect()
+            }
             .subscribeWithData(ackRequest, request)
     }
 

@@ -20,34 +20,54 @@ object MapUtils {
         ConcurrentHashMap<Int, ConcurrentHashMap<CreatorType, ConcurrentHashMap<Long, MutableSet<SocketIOClient>>>>()
 
     object Time {
-        private val timeMap = ConcurrentHashMap<Key, Long>()
+        private val timeMap = ConcurrentHashMap<Int, ConcurrentHashMap<Key, Long>>()
 
         fun markTimeByKey(key: Key) {
-            timeMap[key] = System.currentTimeMillis()
+            var orgMap = timeMap[key.organizationId]
+            if (orgMap == null) {
+                orgMap = ConcurrentHashMap()
+                /**
+                 * 线程安全双检
+                 */
+                val map = timeMap.putIfAbsent(key.organizationId, orgMap)
+                if (map != null) {
+                    orgMap = map
+                }
+            }
+            orgMap[key] = System.currentTimeMillis()
         }
 
         /**
          * 获取过期的 key
          */
-        fun getExpiredKey(duration: Duration): List<Key> {
-            return timeMap.entries
-                .parallelStream()
-                .filter {
-                    it.value <= System.currentTimeMillis() - duration.toMillis()
-                }
-                .map { it.key }
-                .toList()
+        fun getExpiredKey(organizationId: Int, duration: Duration): List<Key> {
+            return timeMap[organizationId]?.let { map ->
+                map.entries
+                    .parallelStream()
+                    .filter {
+                        it.value <= System.currentTimeMillis() - duration.toMillis()
+                    }
+                    .map { it.key }
+                    .toList()
+            } ?: emptyList()
         }
 
         fun removeKey(key: Key) {
-            timeMap.remove(key)
+            val orgMap = timeMap[key.organizationId]
+            if (orgMap != null) {
+                orgMap.remove(key)
+                if (orgMap.isEmpty()) {
+                    timeMap.remove(key.organizationId, orgMap)
+                }
+            }
+
         }
     }
 
     /**
      * 类似 java [LocaleObjectCache] 线程安全也只能这样操作了
      */
-    fun put(key: Key, vararg value: SocketIOClient) {
+    fun put(key: Key, vararg value: SocketIOClient): Boolean {
         var orgMap = clientMap[key.organizationId]
         if (orgMap == null) {
             orgMap = ConcurrentHashMap()
@@ -68,8 +88,9 @@ object MapUtils {
             }
         }
         val list = roleMap[key.id] ?: CopyOnWriteArraySet()
-        list.addAll(value)
-        roleMap.putIfAbsent(key.id, list)?.addAll(value)
+        var result = list.addAll(value)
+        result = roleMap.putIfAbsent(key.id, list)?.addAll(value) ?: result
+        return result
     }
 
     fun get(key: Key): Flux<SocketIOClient> {
@@ -86,7 +107,7 @@ object MapUtils {
             it.remove(value)
             if (it.isEmpty()) {
                 Time.removeKey(key)
-                roleMap.remove(key.id)
+                roleMap.remove(key.id, it)
             }
         }
     }

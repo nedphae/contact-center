@@ -19,12 +19,20 @@ internal class FluxTest {
         Mono.just("Hello")
             .flatMap {
                 Mono.deferContextual { ctx ->
-                    println(ctx.get("test") as String)
+                    println("1 " + ctx.get("test") as String)
                     Mono.just(it + " " + ctx.get("test"))
                 }
             }
+            .doOnNext {
+                Mono.subscriberContext()
+                    .map { ctx ->
+                        val rr = ctx.get<String>("test")
+                        println("3 " + rr)
+                        rr
+                    }.subscribe()
+            }
             .transformDeferredContextual { t, u ->
-                println(u.get("test") as String)
+                println("2 " +  u.get("test") as String)
                 t
             }
             .map { "$it World" }

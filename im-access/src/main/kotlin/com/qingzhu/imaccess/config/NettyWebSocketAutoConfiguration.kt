@@ -11,6 +11,8 @@ import com.corundumstudio.socketio.handler.SuccessAuthorizationListener
 import com.corundumstudio.socketio.protocol.JacksonJsonSupport
 import com.ecwid.consul.v1.ConsulClient
 import com.ecwid.consul.v1.agent.model.NewService
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.qingzhu.imaccess.socketio.AbstractHandler
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +26,8 @@ import org.springframework.cloud.consul.discovery.HeartbeatProperties
 import org.springframework.cloud.consul.serviceregistry.ConsulAutoRegistration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.zalando.problem.ProblemModule
+import org.zalando.problem.violations.ConstraintViolationProblemModule
 import javax.annotation.PreDestroy
 import com.corundumstudio.socketio.Configuration as NettyConfig
 
@@ -53,7 +57,7 @@ class NettyWebSocketAutoConfiguration(
         config.socketConfig.isTcpKeepAlive = true
         config.ackMode = AckMode.MANUAL
         // 添加 kotlin 支持
-        config.jsonSupport = JacksonJsonSupport(KotlinModule())
+        config.jsonSupport = JacksonJsonSupport(KotlinModule(), JavaTimeModule(), Jdk8Module(), ProblemModule(), ConstraintViolationProblemModule())
 
         return SocketIOServer(config)
     }

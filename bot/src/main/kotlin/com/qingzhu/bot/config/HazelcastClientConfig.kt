@@ -14,7 +14,7 @@ class HazelcastClientConfig {
         val clientConfig = ClientConfig()
         clientConfig.clusterName = "message-server"
         clientConfig.networkConfig.addAddress("localhost")// , "10.90.0.2:5702" 如果是 kubernetes 就是 message-server 服务名
-        clientConfig.networkConfig.connectionTimeout = 20000
+        clientConfig.networkConfig.connectionTimeout = 1000 * 60 * 5 // 5分钟内连接消息服务器
         return HazelcastClient.newHazelcastClient(clientConfig)
     }
 }

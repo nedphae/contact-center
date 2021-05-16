@@ -1,13 +1,45 @@
 package com.qingzhu.imaccess.util
 
-import com.qingzhu.imaccess.domain.constant.CreatorType
-import com.qingzhu.imaccess.domain.constant.MessageType
+import com.qingzhu.common.domain.shared.msg.constant.CreatorType
+import com.qingzhu.common.domain.shared.msg.constant.MessageType
+import com.qingzhu.common.domain.shared.msg.value.Content
+import com.qingzhu.common.domain.shared.msg.value.Message
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Duration
+import java.time.Instant
 
 internal class MonoTest {
+
+    @Test
+    fun testContextWriteWithDefer() {
+        Mono.defer {
+            Mono.just(1)
+                .flatMap {
+                    Mono.subscriberContext()
+                        .map { ctx ->
+                            val rr = ctx.get<String>("test")
+                            println("1$rr")
+                            rr
+                        }
+                }
+        }
+            .flatMap {
+                println(it)
+                Mono.subscriberContext()
+                    .map { ctx ->
+                        val rr = ctx.get<String>("test")
+                        println("2$rr")
+                        rr
+                    }
+            }
+            .contextWrite {
+                it.put("test", "fuck")
+            }
+            .subscribe()
+    }
+
     @Test
     fun testConcatWith() {
         val from = Mono.just(true)
@@ -49,15 +81,19 @@ internal class MonoTest {
     fun testMono() {
         Mono.just(
             Message(
+                9491,
                 "1",
                 2,
-                null,
+                Instant.now(),
+                1,
+                1,
                 1,
                 CreatorType.CUSTOMER,
                 CreatorType.STAFF,
                 Content(
                     MessageType.TEXT,
-                    Content.TextContent("test")
+                    null,
+                    Content.TextContent("test"),
                 )
             )
         )

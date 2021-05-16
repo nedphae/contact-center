@@ -2,9 +2,10 @@ package com.qinghzu.graphqlbff.model
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
+import com.qinghzu.graphqlbff.context.MyGraphQLContext
 import com.qinghzu.graphqlbff.webclient.CustomerService
 import com.qinghzu.graphqlbff.webclient.MessageService
-import kotlinx.coroutines.flow.toList
+import com.qingzhu.common.security.awaitWithAuthentication
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.Instant
 
@@ -62,19 +63,22 @@ data class Customer(
     @GraphQLDescription("vip等级 1-10")
     var vipLevel: Int?,
 ) {
+    // Mono.just(CustomerStatus(1, 1, null, null,null,null, null, 1, null, null,0, "192", Instant.now().toEpochMilli(), 1))
+    //     .awaitSingle()
     @GraphQLDescription("客户在线状态")
-    suspend fun status(@GraphQLIgnore @Autowired messageService: MessageService) = messageService.findCustomerStatus(organizationId, id)
-        // Mono.just(CustomerStatus(1, 1, null, null,null,null, null, 1, null, null,0, "192", Instant.now().toEpochMilli(), 1))
-        //     .awaitSingle()
+    suspend fun status(@GraphQLIgnore @Autowired messageService: MessageService, context: MyGraphQLContext) =
+        messageService.findCustomerStatus(organizationId, id).awaitWithAuthentication(context.oAuth)
+
     @GraphQLDescription("提供企业自定义的用户信息标识")
-    suspend fun detailData(@GraphQLIgnore @Autowired customerService: CustomerService) = customerService.findCustomerDetailData(organizationId, id).toList()
-        /**
+    suspend fun detailData(@GraphQLIgnore @Autowired customerService: CustomerService, context: MyGraphQLContext) =
+        customerService.findCustomerDetailData(organizationId, id).awaitWithAuthentication(context.oAuth)
+    /**
     Flux.just(DetailData(
     1, "test", "test", "test", 1, ""
     ), DetailData(
     2, "test1", "test", "test", 2, ""
     )).asFlow().toList()
-    */
+     */
 }
 
 @GraphQLDescription("客户在线状态")
@@ -104,7 +108,7 @@ data class CustomerStatus(
     @GraphQLDescription("客户IP")
     val ip: String,
     @GraphQLDescription("登录时间")
-    var loginTime: Long = Instant.now().toEpochMilli(),
+    var loginTime: Double,
     @GraphQLDescription("是否在线")
 
     var onlineStatus: Int,

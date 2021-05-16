@@ -19,6 +19,8 @@ package com.qinghzu.graphqlbff.context
 import com.expediagroup.graphql.server.execution.GraphQLContextFactory
 import com.expediagroup.graphql.server.spring.execution.SpringGraphQLContextFactory
 import com.expediagroup.graphql.server.spring.subscriptions.SpringSubscriptionGraphQLContextFactory
+import com.qingzhu.common.security.SecurityUtils
+import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -31,7 +33,8 @@ class MyGraphQLContextFactory : SpringGraphQLContextFactory<MyGraphQLContext>() 
 
     override suspend fun generateContext(request: ServerRequest): MyGraphQLContext = MyGraphQLContext(
         request = request,
-        myCustomValue = request.headers().firstHeader("MyHeader") ?: "defaultContext"
+        myCustomValue = request.headers().firstHeader("MyHeader") ?: "defaultContext",
+        oAuth = SecurityUtils.getBearerAuthentication(request.headers().asHttpHeaders())
     )
 }
 

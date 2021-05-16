@@ -31,7 +31,7 @@ class MessageDisruptorHandler : WorkHandler<UpdateMessage> {
                         it.sentClientId = null
                     }
                     .subscribe { client ->
-                        client?.sendWithCallback<Void>(
+                        client?.sendWithCallback<String>(
                             SocketEvent.Message.sync,
                             WebSocketRequest.createRequest(client.sessionId.toString(), it)
                         )
@@ -51,7 +51,7 @@ class ConvDisruptorHandler : WorkHandler<ConversationStatusDto> {
                 val clientFlux = MapUtils.get(Key(it.organizationId, CreatorType.STAFF, it.staffId))
                 // 需要记录日志 或增加成功回调 可添加 callback 函数
                 clientFlux.subscribe { client ->
-                    client?.sendWithCallback<Void>(
+                    client?.sendWithCallback<String>(
                         SocketEvent.Message.assign,
                         WebSocketRequest.createRequest(client.sessionId.toString(), it)
                     )
