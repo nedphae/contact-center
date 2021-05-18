@@ -20,6 +20,7 @@ object MapUtils {
         ConcurrentHashMap<Int, ConcurrentHashMap<CreatorType, ConcurrentHashMap<Long, MutableSet<SocketIOClient>>>>()
 
     object Time {
+        // TODO 使用 redis lua 脚本替换单机聊天统计
         private val timeMap = ConcurrentHashMap<Int, ConcurrentHashMap<Key, Long>>()
 
         fun markTimeByKey(key: Key) {

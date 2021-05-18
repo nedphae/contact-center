@@ -49,6 +49,7 @@ class CustomerEventHandler(
             .doOnNext {
                 socketIOClient[registerName] = it.userId
                 socketIOClient["organizationId"] = it.organizationId
+                MapUtils.Time.markTimeByKey(Key(it.organizationId, CreatorType.CUSTOMER, it.userId))
             }
             .filter {
                 // 设置 客户端 map

@@ -7,7 +7,6 @@ import com.qinghzu.graphqlbff.webclient.CustomerService
 import com.qinghzu.graphqlbff.webclient.MessageService
 import com.qingzhu.common.security.awaitWithAuthentication
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.Instant
 
 @GraphQLDescription("提供企业自定义的用户信息标识")
 data class DetailData(
@@ -42,10 +41,16 @@ index相同或未设定的数据项将按照其在 JSON 中出现的顺序排列
     val hidden: Boolean = false
 )
 
+data class DetailDataInput(
+    val id: Long,
+    val value: String,
+)
+
+
 @GraphQLDescription("客户信息")
 data class Customer(
     @GraphQLDescription("用户id")
-    var id: Long,
+    val id: Long,
     @GraphQLDescription("公司id")
     val organizationId: Int,
     @GraphQLDescription(
@@ -62,10 +67,12 @@ data class Customer(
     var mobile: String?,
     @GraphQLDescription("vip等级 1-10")
     var vipLevel: Int?,
+    @GraphQLDescription("用于更新的detailData")
+    val detailDataForUpdate: List<DetailDataInput>?
 ) {
     // Mono.just(CustomerStatus(1, 1, null, null,null,null, null, 1, null, null,0, "192", Instant.now().toEpochMilli(), 1))
     //     .awaitSingle()
-    @GraphQLDescription("客户在线状态")
+    @GraphQLDescription("客户在线状态，readOnly")
     suspend fun status(@GraphQLIgnore @Autowired messageService: MessageService, context: MyGraphQLContext) =
         messageService.findCustomerStatus(organizationId, id).awaitWithAuthentication(context.oAuth)
 

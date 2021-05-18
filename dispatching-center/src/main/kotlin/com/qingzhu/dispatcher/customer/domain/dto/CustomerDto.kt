@@ -2,6 +2,7 @@ package com.qingzhu.dispatcher.customer.domain.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.dispatcher.customer.domain.entity.Customer
+import com.qingzhu.dispatcher.customer.domain.entity.DetailData
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class CustomerDto(
@@ -22,7 +23,9 @@ data class CustomerDto(
     /** 用户手机号 */
     val mobile: String?,
     /** vip等级 1-10 */
-    val vipLevel: Int?
+    val vipLevel: Int?,
+
+    val data: List<DetailData>? = null,
 ) {
     companion object {
         fun fromCustomer(customer: Customer): CustomerDto {
