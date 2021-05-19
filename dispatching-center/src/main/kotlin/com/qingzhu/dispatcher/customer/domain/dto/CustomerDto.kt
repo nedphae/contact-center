@@ -6,6 +6,7 @@ import com.qingzhu.dispatcher.customer.domain.entity.DetailData
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class CustomerDto(
+    val id: Long? = null,
     /** 公司id */
     val organizationId: Int,
     /** 客户 id 服务器自动设置 */
@@ -26,6 +27,8 @@ data class CustomerDto(
     val vipLevel: Int?,
 
     val data: List<DetailData>? = null,
+
+    val detailDataForUpdate: List<DetailDataInput>? = null,
 ) {
     companion object {
         fun fromCustomer(customer: Customer): CustomerDto {
@@ -52,3 +55,8 @@ data class CustomerDto(
         )
     }
 }
+
+data class DetailDataInput(
+    val key: String,
+    val value: String,
+)

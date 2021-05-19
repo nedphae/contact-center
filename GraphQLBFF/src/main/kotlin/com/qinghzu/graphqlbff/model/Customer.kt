@@ -42,10 +42,9 @@ index相同或未设定的数据项将按照其在 JSON 中出现的顺序排列
 )
 
 data class DetailDataInput(
-    val id: Long,
+    val key: String,
     val value: String,
 )
-
 
 @GraphQLDescription("客户信息")
 data class Customer(

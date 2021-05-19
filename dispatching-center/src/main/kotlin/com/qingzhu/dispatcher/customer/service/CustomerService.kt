@@ -24,15 +24,43 @@ class CustomerService(
     fun saveAndGetCustomer(customerDto: CustomerDto): Mono<CustomerDto> {
         val customer = customerDto.toCustomer()
         val dbCustomer = customerRepository.findFirstByOrganizationIdAndUid(customer.organizationId, customer.uid)
-        return dbCustomer.map {
-            BeanUtils.copyProperties(customer, it, *customer.getNullPropertyNames())
-            it
-        }.switchIfEmpty {
-            Mono.just(customer)
-        }.flatMap {
-            // need id
-            customerRepository.save(it).map { dto -> CustomerDto.fromCustomer(dto) }
-        }
+        return dbCustomer
+            .flatMapMany { detailDataRepository.findAllByOrganizationIdAndUserId(it.organizationId, it.id!!) }
+            .collectMap { it.key }
+            .map {
+                var result: List<DetailData> = emptyList()
+                customerDto.data?.let { dataList ->
+                    result = dataList.map { data ->
+                        val old = it[data.key]
+                        if (old != null) {
+                            BeanUtils.copyProperties(data, old, *data.getNullPropertyNames())
+                            old
+                        } else data
+                    }
+                }
+                customerDto.detailDataForUpdate?.let { dataList ->
+                    result = dataList.mapNotNull { data ->
+                        val old = it[data.key]
+                        if (old != null) {
+                            old.value = data.value
+                            old
+                        } else null
+                    }
+                }
+                result
+            }
+            .flatMapIterable { it }
+            .transform(detailDataRepository::saveAll)
+            .then(dbCustomer)
+            .map {
+                BeanUtils.copyProperties(customer, it, *customer.getNullPropertyNames())
+                it
+            }.switchIfEmpty {
+                Mono.just(customer)
+            }.flatMap {
+                // need id
+                customerRepository.save(it).map { dto -> CustomerDto.fromCustomer(dto) }
+            }
     }
 
     suspend fun getCustomerById(organizationId: Int, userId: Long): Customer {

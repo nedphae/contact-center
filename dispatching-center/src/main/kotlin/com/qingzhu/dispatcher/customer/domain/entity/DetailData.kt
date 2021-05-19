@@ -18,7 +18,7 @@ data class DetailData(
      */
     val key: String,
     /** 该数据显示的值，类型不做限定 */
-    val value: String,
+    var value: String,
     /** 该项数据显示的名称 */
     val label: String,
     /**

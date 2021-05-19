@@ -60,4 +60,12 @@ class CustomerService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.
             .retrieve()
             .bodyToFlux()
     }
+    fun updateCustomer(customerDto: Mono<Customer>): Mono<Customer> {
+        return webClient
+            .post()
+            .uri("/customer")
+            .body(customerDto)
+            .retrieve()
+            .bodyToMono()
+    }
 }
