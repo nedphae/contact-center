@@ -1,4 +1,4 @@
-package com.qingzhu.staffadmin.staff.authority
+package com.qingzhu.common.domain.shared.authority
 
 /**
  * Spring 权限默认需要 ROLE_ 开头

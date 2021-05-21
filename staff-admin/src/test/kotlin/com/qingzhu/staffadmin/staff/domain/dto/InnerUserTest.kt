@@ -1,8 +1,9 @@
 package com.qingzhu.staffadmin.staff.domain.dto
 
 import com.qingzhu.common.security.password.getBCryptPasswordEncoder
-import com.qingzhu.staffadmin.staff.authority.StaffAuthority
+import com.qingzhu.common.domain.shared.authority.StaffAuthority
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
+import com.qingzhu.staffadmin.staff.mapper.DtoMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -21,10 +22,10 @@ internal class InnerUserTest {
             nickName = "蜡笔小新",
             avatar = null,
         )
-        var innerUser = StaffInnerMapper.mapper.mapToInner(staff)
+        var innerUser = DtoMapper.mapper.mapToInner(staff)
         println(innerUser)
         // 默认方法修改密码为 123456
-        innerUser = StaffInnerMapper.mapper.mapToInnerWithPassword(staff)
+        innerUser = DtoMapper.mapper.mapToInnerWithPassword(staff)
         println(innerUser)
         assertEquals("123456", innerUser.password)
         assertEquals(staff.username, innerUser.username)

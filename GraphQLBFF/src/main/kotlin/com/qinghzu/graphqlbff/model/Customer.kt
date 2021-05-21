@@ -41,7 +41,8 @@ index相同或未设定的数据项将按照其在 JSON 中出现的顺序排列
     val hidden: Boolean = false
 )
 
-data class DetailDataInput(
+@GraphQLDescription("用于更新配置")
+data class DetailDataUpdate(
     val key: String,
     val value: String,
 )
@@ -67,7 +68,7 @@ data class Customer(
     @GraphQLDescription("vip等级 1-10")
     var vipLevel: Int?,
     @GraphQLDescription("用于更新的detailData")
-    val detailDataForUpdate: List<DetailDataInput>?
+    val detailDataForUpdate: List<DetailDataUpdate>?
 ) {
     // Mono.just(CustomerStatus(1, 1, null, null,null,null, null, 1, null, null,0, "192", Instant.now().toEpochMilli(), 1))
     //     .awaitSingle()

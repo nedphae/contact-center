@@ -1,7 +1,7 @@
 package com.qingzhu.staffadmin.staff.domain.query
 
 import com.qingzhu.common.security.password.getBCryptPasswordEncoder
-import com.qingzhu.staffadmin.staff.authority.StaffAuthority
+import com.qingzhu.common.domain.shared.authority.StaffAuthority
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotEmpty

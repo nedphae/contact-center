@@ -1,10 +1,6 @@
 package com.qingzhu.staffadmin.staff.domain.dto
 
-import com.qingzhu.staffadmin.staff.authority.StaffAuthority
-import com.qingzhu.staffadmin.staff.domain.entity.Staff
-import org.mapstruct.Mapper
-import org.mapstruct.ReportingPolicy
-import org.mapstruct.factory.Mappers
+import com.qingzhu.common.domain.shared.authority.StaffAuthority
 
 data class StaffWithShuntDto(
     val id: Long,
@@ -47,26 +43,4 @@ data class StaffWithShuntDto(
     var shunt: List<Long> = emptyList()
     /** 不同接待组的优先级 */
     var priorityOfShunt: Map<Long, Int> = emptyMap()
-}
-
-@Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-abstract class StaffWithShuntDtoMapper {
-    abstract fun mapToInner(staff: Staff): StaffWithShuntDto
-
-    /**
-     * Test default fun
-     */
-    fun mapToInnerWithPassword(
-        staff: Staff, shunt: List<Long>,
-        priorityOfShunt: Map<Long, Int>,
-    ): StaffWithShuntDto {
-        val staffWithShuntDto = mapToInner(staff)
-        staffWithShuntDto.shunt = shunt
-        staffWithShuntDto.priorityOfShunt = priorityOfShunt
-        return staffWithShuntDto
-    }
-
-    companion object {
-        val mapper: StaffWithShuntDtoMapper = Mappers.getMapper(StaffWithShuntDtoMapper::class.java)
-    }
 }

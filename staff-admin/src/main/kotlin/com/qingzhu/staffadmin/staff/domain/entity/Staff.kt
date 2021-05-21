@@ -1,7 +1,7 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
 import com.qingzhu.common.domain.AbstractAuditingEntity
-import com.qingzhu.staffadmin.staff.authority.StaffAuthority
+import com.qingzhu.common.domain.shared.authority.StaffAuthority
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 

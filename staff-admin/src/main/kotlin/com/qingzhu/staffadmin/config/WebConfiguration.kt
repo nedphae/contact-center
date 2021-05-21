@@ -3,6 +3,7 @@ package com.qingzhu.staffadmin.config
 import com.qingzhu.staffadmin.staff.controller.ShuntHandler
 import com.qingzhu.staffadmin.staff.controller.ShuntUIConfigHandler
 import com.qingzhu.staffadmin.staff.controller.StaffHandler
+import com.qingzhu.staffadmin.staff.controller.QuickRecoveryHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -19,7 +20,8 @@ class WebConfiguration : WebFluxConfigurer {
     fun routerFunction(
         staffHandler: StaffHandler,
         shuntHandler: ShuntHandler,
-        shuntUIConfigHandler: ShuntUIConfigHandler
+        shuntUIConfigHandler: ShuntUIConfigHandler,
+        quickRecoveryHandler: QuickRecoveryHandler
     ): RouterFunction<ServerResponse> {
         return coRouter {
             accept(MediaType.APPLICATION_JSON).nest {
@@ -30,6 +32,8 @@ class WebConfiguration : WebFluxConfigurer {
                     "/shunt".nest {
                         GET("/{code}", shuntHandler::findFirstByCode)
                     }
+                    GET("/quick-reply/personal", quickRecoveryHandler::findQuickRecoveryByStaff)
+                    GET("/quick-reply/all", quickRecoveryHandler::findQuickRecoveryByOrganizationId)
                 }
                 "/config".nest {
                     GET("/chat-ui/config", shuntUIConfigHandler::getUIConfigByShunt)

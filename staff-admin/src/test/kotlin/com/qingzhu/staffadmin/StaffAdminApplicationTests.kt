@@ -1,7 +1,7 @@
 package com.qingzhu.staffadmin
 
 import com.qingzhu.common.security.password.getBCryptPasswordEncoder
-import com.qingzhu.staffadmin.staff.authority.StaffAuthority
+import com.qingzhu.common.domain.shared.authority.StaffAuthority
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffGroupRepository
@@ -48,7 +48,7 @@ class StaffAdminApplicationTests {
      */
     @Test
     fun testInsertStaff() {
-        val staffGroup = StaffGroup(9491, groupName = "客服组")
+        val staffGroup = StaffGroup(null, 9491, groupName = "客服组")
         val groupSave = staffGroupRepositoryR.findDistinctTopByGroupName(staffGroup.groupName)
             .switchIfEmpty(staffGroupRepositoryR.save(staffGroup))
 

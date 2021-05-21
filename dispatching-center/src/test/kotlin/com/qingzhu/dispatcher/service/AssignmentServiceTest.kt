@@ -1,12 +1,12 @@
 package com.qingzhu.dispatcher.service
 
+import com.qingzhu.common.domain.shared.authority.StaffAuthority
 import com.qingzhu.common.util.toJson
 import com.qingzhu.dispatcher.DispatcherApplicationTests
 import com.qingzhu.dispatcher.component.AssignmentComponent
 import com.qingzhu.dispatcher.component.MessageService
 import com.qingzhu.dispatcher.component.StaffAdminService
 import com.qingzhu.dispatcher.component.impl.WeightedAssignmentService
-import com.qingzhu.dispatcher.domain.authority.StaffAuthority
 import com.qingzhu.dispatcher.domain.constant.FromType
 import com.qingzhu.dispatcher.domain.dto.ConversationStatusDto
 import com.qingzhu.dispatcher.domain.dto.CustomerDispatcherDto
@@ -63,19 +63,19 @@ internal class AssignmentServiceTest : DispatcherApplicationTests() {
     }
 
     // some mock data
-    private final val staffList = listOf(
+    private val staffList = listOf(
         StaffDispatcherDto(9491, 1, 1L to 15, 30, 10, 1),
         StaffDispatcherDto(9491, 2, 1L to 15, 30, 10, 1)
     )
     final val customerDispatcherDto =
         CustomerDispatcherDto(9491, 1, null, null, 1L, null, null, FromType.WEB, "127.0.0.1", null, null)
-    private final val botList = listOf(
+    private val botList = listOf(
         StaffDispatcherDto(9491, 3, 1L to 15, 30, 10, 0),
         StaffDispatcherDto(9491, 4, 1L to 15, 30, 10, 0)
     )
-    private final val staffDto =
+    private val staffDto =
         StaffDto(5, 9491, "bot", "bot", StaffAuthority.ROLE_STAFF, 1, "乔巴", "狸猫", null, 0, 50, 1)
-    private final val conversationStatusDto =
+    private val conversationStatusDto =
         ConversationStatusDto.fromStaffAndCustomer(staffDto, customerDispatcherDto)
 
     /**

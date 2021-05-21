@@ -1,6 +1,6 @@
 package com.qingzhu.dispatcher.domain.dto
 
-import com.qingzhu.dispatcher.domain.authority.StaffAuthority
+import com.qingzhu.common.domain.shared.authority.StaffAuthority
 
 /**
  * 客服登录用户

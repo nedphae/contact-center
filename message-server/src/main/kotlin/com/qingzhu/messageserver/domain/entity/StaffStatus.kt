@@ -1,6 +1,6 @@
 package com.qingzhu.messageserver.domain.entity
 
-import com.qingzhu.messageserver.domain.authority.StaffAuthority
+import com.qingzhu.common.domain.shared.authority.StaffAuthority
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import java.time.Instant
 

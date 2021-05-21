@@ -3,8 +3,8 @@ package com.qingzhu.staffadmin.staff.service
 import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistShuntDto
 import com.qingzhu.staffadmin.staff.domain.dto.StaffWithShuntDto
-import com.qingzhu.staffadmin.staff.domain.dto.StaffWithShuntDtoMapper
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
+import com.qingzhu.staffadmin.staff.mapper.DtoMapper
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffConfigRepository
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
 import org.springframework.security.access.prepost.PreAuthorize
@@ -87,7 +87,7 @@ class StaffService(
                                 Mono.zip(entry.value.toMono(), it)
                             }
                             .map {
-                                StaffWithShuntDtoMapper.mapper.mapToInnerWithPassword(it.t1, it.t2.keys.toList(), it.t2)
+                                DtoMapper.mapper.mapToInnerWithPassword(it.t1, it.t2.keys.toList(), it.t2)
                             }
                     }
                 }

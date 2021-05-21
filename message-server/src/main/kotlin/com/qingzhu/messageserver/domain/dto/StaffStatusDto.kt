@@ -1,7 +1,7 @@
 package com.qingzhu.messageserver.domain.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.qingzhu.messageserver.domain.authority.StaffAuthority
+import com.qingzhu.common.domain.shared.authority.StaffAuthority
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import com.qingzhu.messageserver.domain.entity.StaffStatus
 import org.mapstruct.Mapper

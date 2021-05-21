@@ -3,8 +3,10 @@ package com.qinghzu.graphqlbff.webclient
 import com.qinghzu.graphqlbff.model.Customer
 import com.qinghzu.graphqlbff.model.CustomerStatus
 import com.qinghzu.graphqlbff.model.DetailData
+import com.qinghzu.graphqlbff.model.QuickReplyDto
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -67,5 +69,26 @@ class CustomerService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.
             .body(customerDto)
             .retrieve()
             .bodyToMono()
+    }
+}
+
+@Service
+class StaffAdminService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) {
+    private val webClient = webClientBuilder.baseUrl("http://staff-admin").build()
+
+    fun findQuickReplyByStaff(): Flux<QuickReplyDto> {
+        return webClient
+            .get()
+            .uri("/staff/quick-reply/personal")
+            .retrieve()
+            .bodyToFlux()
+    }
+
+    fun findQuickReplyByOrganizationId(): Flux<QuickReplyDto> {
+        return webClient
+            .get()
+            .uri("/staff/quick-reply/all")
+            .retrieve()
+            .bodyToFlux()
     }
 }

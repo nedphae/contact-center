@@ -62,13 +62,12 @@ class PropertiesService(
 
     fun getAllProperties(): IO<Mono<String>> {
         return IO.fx {
-            val properties = propertiesRepository.findAll()
             CacheMono
                 .lookup({ k ->
                     valueOperations[k]
                         .map { Signal.next(it) }
                 }, "prop:all")
-                .onCacheMissResume(createMapFromProperties(properties))
+                .onCacheMissResume(createMapFromProperties(propertiesRepository.findAll()))
                 .andWriteWith { t, u ->
                     Mono.fromRunnable { valueOperations[t] = u.get().toString() }
                 }

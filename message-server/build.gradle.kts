@@ -20,7 +20,8 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka-streams")
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    // implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    implementation("org.springframework.data:spring-data-elasticsearch")
+    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
 
     implementation("com.hazelcast:hazelcast-all:4.0.2")
     /** k8s 依赖 **/
