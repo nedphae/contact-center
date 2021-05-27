@@ -4,9 +4,7 @@ import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.messageserver.domain.constant.FromType
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import com.qingzhu.messageserver.domain.entity.CustomerStatus
-import org.mapstruct.Mapper
-import org.mapstruct.ReportingPolicy
-import org.mapstruct.factory.Mappers
+import com.qingzhu.messageserver.mapper.CustomerStatusMapper
 import java.time.Instant
 
 data class CustomerBaseStatusDto(
@@ -59,13 +57,4 @@ data class CustomerStatusDto(
     var onlineStatus: OnlineStatus = OnlineStatus.ONLINE,
 ) {
     fun toCustomerStatus(): CustomerStatus = CustomerStatusMapper.mapper.mapFromDto(this)
-}
-
-@Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-abstract class CustomerStatusMapper {
-    abstract fun mapFromDto(staff: CustomerStatusDto): CustomerStatus
-
-    companion object {
-        val mapper: CustomerStatusMapper = Mappers.getMapper(CustomerStatusMapper::class.java)
-    }
 }

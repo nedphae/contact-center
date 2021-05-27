@@ -7,7 +7,7 @@ import com.qingzhu.bot.knowledgebase.domain.entity.TopicCategory
 import com.qingzhu.bot.knowledgebase.repository.BotConfigRepository
 import com.qingzhu.bot.knowledgebase.repository.KnowledgeBaseRepository
 import com.qingzhu.bot.knowledgebase.repository.TopicCategoryRepository
-import com.qingzhu.bot.knowledgebase.repository.TopicRepository
+import com.qingzhu.bot.knowledgebase.repository.search.TopicRepository
 import org.springframework.stereotype.Service
 
 @Service

@@ -16,7 +16,9 @@ class ConversationStatusService(
     private val hazelcastInstance: HazelcastInstance,
     private val staffStatusService: StaffStatusService,
     private val clearStatusService: ClearStatusService,
+    private val messagePersistentService: MessagePersistentService,
 ) {
+
     private fun getStatusMap(organizationId: Int) =
         hazelcastInstance.getMap<Long, ConversationStatus>("$organizationId:conversation")
 
@@ -47,8 +49,15 @@ class ConversationStatusService(
                     it.staffId, it.userId
                 )
             }
+            .flatMap {
+                messagePersistentService.convPersistent(it)
+                    .map { _ -> it }
+            }
     }
 
+    /**
+     * 生成会话
+     */
     fun generate(conversationStatusDto: ConversationStatus): Mono<ConversationStatus> {
         return Mono.just(conversationStatusDto)
             .doOnNext { saveStatus(it) }

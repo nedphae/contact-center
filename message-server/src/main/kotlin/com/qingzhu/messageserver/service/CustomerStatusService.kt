@@ -61,9 +61,10 @@ class CustomerStatusService(
                         it.terminator = customerBaseStatusDto.terminator
                         // TODO: 设置一些结束会话的信息
                     }
-                    .subscribe {
+                    .flatMap {
                         conversationStatusService.endConversation(it)
                     }
+                    .subscribe()
             }
             statusMap.put(customerBaseStatusDto.userId, customerStatus, 15, TimeUnit.MINUTES)
         }

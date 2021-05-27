@@ -119,6 +119,7 @@ internal class FluxTest {
             .doOnNext {
                 println(it)
             }
+            .then(Mono.just(1))
             .subscribe()
         Thread.sleep(9000)
     }

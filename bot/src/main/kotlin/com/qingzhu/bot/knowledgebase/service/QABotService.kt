@@ -3,7 +3,7 @@ package com.qingzhu.bot.knowledgebase.service
 import com.qingzhu.bot.knowledgebase.domain.view.Message
 import com.qingzhu.bot.knowledgebase.domain.view.TextContent
 import com.qingzhu.bot.knowledgebase.repository.BotConfigRepository
-import com.qingzhu.bot.knowledgebase.repository.TopicRepository
+import com.qingzhu.bot.knowledgebase.repository.search.TopicRepository
 import kotlinx.coroutines.flow.firstOrNull
 import org.springframework.stereotype.Service
 

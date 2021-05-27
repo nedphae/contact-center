@@ -14,29 +14,34 @@ import java.util.*
 /**
  * 知识库主题 vo
  */
-@Document(indexName = "knowledgebase-topic", shards = 1, replicas = 0)
+@Document(indexName = "knowledge_base_topic", shards = 1, replicas = 0)
 data class Topic(
     /** 机构 ID **/
     val organizationId: Int,
     /** 所属知识库ID **/
     val knowledgeBaseId: Long,
     /** 问题，使用ik分词器查询和索引 */
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    @Field(type = FieldType.Text/*, analyzer = "ik_max_word", searchAnalyzer = "ik_smart"*/)
     var question: String,
     /** 问题的md5 */
+    @Field(type = FieldType.Keyword)
     var md5: String,
     /** 问题的对外答案，如果是相似问题，可以设置为空 */
+    @Field(type = FieldType.Text)
     var answer: String?,
     /** 问题的对内答案 */
+    @Field(type = FieldType.Text)
     var innerAnswer: String?,
     /** 问题的来源,0:用户手动添加,1:寒暄库,2:文件导入 */
     var fromType: Int,
     /** 问题类型,1:标准问题,2:相似问题 */
     var type: Int,
     /** 相似问题(type=10)对应的标准问题id */
-    var refId: Long?,
+    @Field(type = FieldType.Keyword)
+    var refId: String?,
     /** 关联的问题id列表 */
-    var connectIds: List<Long>?,
+    @Field(type = FieldType.Keyword)
+    var connectIds: List<String>?,
     /** 是否有效标记位 */
     var enabled: Boolean,
     /** 问题的有效时间 */

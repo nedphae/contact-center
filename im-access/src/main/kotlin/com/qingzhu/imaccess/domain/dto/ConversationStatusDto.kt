@@ -36,6 +36,8 @@ data class ConversationStatusDto(
     val convType: ConversationType = ConversationType.NORMAL,
     /** 客服id */
     val staffId: Long,
+    /** 客服实名 **/
+    val realName: String,
     /** 客服名字 或为 "机器人" */
     var nickName: String,
     /** 会话开始时间 */

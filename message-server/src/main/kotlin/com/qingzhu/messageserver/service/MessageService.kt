@@ -73,7 +73,7 @@ class MessageService(
                     // 过滤 发送给 用户的系统消息，这个类型的消息没必要写同步库了
                     .filter { it.creatorType != CreatorType.SYS || it.type != CreatorType.CUSTOMER }
                     // 写扩散
-                    .map { zSet.add(key, data, message.seqId.toDouble()) }
+                    .flatMap { zSet.add(key, data, message.seqId.toDouble()) }
             }
             .then(this)
             .flatMapMany {

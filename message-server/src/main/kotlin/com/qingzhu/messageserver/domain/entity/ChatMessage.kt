@@ -2,13 +2,8 @@ package com.qingzhu.messageserver.domain.entity
 
 import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.common.domain.shared.msg.value.Content
-import com.qingzhu.common.domain.shared.msg.value.Message
-import org.mapstruct.Mapper
-import org.mapstruct.ReportingPolicy
-import org.mapstruct.factory.Mappers
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
-import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldType
 import java.time.Instant
@@ -16,7 +11,6 @@ import java.time.Instant
 /**
  * ChatMessage entity in elasticsearch
  */
-@Document(indexName = "message-chat", shards = 1, replicas = 0)
 data class ChatMessage(
     /** ChatMessage uuid */
     @Id
@@ -38,16 +32,8 @@ data class ChatMessage(
     /** 创建者类型 */
     val creatorType: CreatorType,
     /** 内容 */
+    @Field(type = FieldType.Object)
     val content: Content,
     /** 昵称 */
     val nickName: String? = null,
 )
-
-@Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-abstract class ChatMessageMapper {
-    abstract fun mapToFromMessage(message: Message): ChatMessage
-
-    companion object {
-        val mapper: ChatMessageMapper = Mappers.getMapper(ChatMessageMapper::class.java)
-    }
-}

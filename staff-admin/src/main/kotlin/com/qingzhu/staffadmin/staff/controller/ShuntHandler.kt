@@ -16,4 +16,9 @@ class ShuntHandler(
         val code = sr.pathVariable("code")
         return ok().body(reactiveShuntRepository.findFirstByCode(code)).awaitSingle()
     }
+
+    suspend fun findById(sr: ServerRequest): ServerResponse {
+        val id = sr.pathVariable("id").toLong()
+        return ok().body(reactiveShuntRepository.findById(id)).awaitSingle()
+    }
 }

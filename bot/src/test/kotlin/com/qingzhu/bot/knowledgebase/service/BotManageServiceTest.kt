@@ -23,15 +23,15 @@ internal class BotManageServiceTest : BotApplicationTests() {
     @Test
     fun initTest() {
         runBlocking {
-            var base = KnowledgeBase(9491, "机器人测试", "机器人的测试问题")
-            base = botManageService.saveKnowledgeBase(base)
-            println("知识库: $base")
-            var botConfig = BotConfig(9491, 1, base.id ?: -1)
-            botConfig = botManageService.saveBotConfig(botConfig)
-            println("机器人配置: $botConfig")
-            var topicCategory = TopicCategory(9491, "测试", null)
-            topicCategory = botManageService.saveTopicCategory(topicCategory)
-            println("知识类别: $topicCategory")
+            // var base = KnowledgeBase(9491, "机器人测试", "机器人的测试问题")
+            // base = botManageService.saveKnowledgeBase(base)
+            // println("知识库: $base")
+            // var botConfig = BotConfig(9491, 2, base.id ?: -1)
+            // botConfig = botManageService.saveBotConfig(botConfig)
+            // println("机器人配置: $botConfig")
+            // var topicCategory = TopicCategory(9491, "测试", null)
+            // topicCategory = botManageService.saveTopicCategory(topicCategory)
+            // println("知识类别: $topicCategory")
             val md5 = "你好".toMd5Hex()
             println("md5: $md5")
             var topic = Topic(
@@ -42,7 +42,7 @@ internal class BotManageServiceTest : BotApplicationTests() {
             )
             topic = botManageService.saveTopic(topic)
             println("知识: $topic")
-            val ans = qaBotService.findAnswerByQuestion(1, 1, "你好")
+            val ans = qaBotService.findAnswerByQuestion(1, 2, "你好")
             println("答案: $ans")
         }
     }

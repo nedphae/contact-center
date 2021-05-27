@@ -1,7 +1,7 @@
 package com.qingzhu.messageserver.service
 
+import com.qingzhu.common.domain.shared.authority.StaffAuthority
 import com.qingzhu.messageserver.MessageServerApplicationTests
-import com.qingzhu.messageserver.domain.authority.StaffAuthority
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.dto.StaffStatusDto
 import com.qingzhu.messageserver.domain.entity.StaffStatus

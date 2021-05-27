@@ -31,6 +31,7 @@ class WebConfiguration : WebFluxConfigurer {
                     GET("/bots", staffHandler::findAllEnabledBotStaff)
                     "/shunt".nest {
                         GET("/{code}", shuntHandler::findFirstByCode)
+                        GET("/id/{id}", shuntHandler::findById)
                     }
                     GET("/quick-reply/personal", quickRecoveryHandler::findQuickRecoveryByStaff)
                     GET("/quick-reply/all", quickRecoveryHandler::findQuickRecoveryByOrganizationId)

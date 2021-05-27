@@ -1,4 +1,4 @@
-package com.qingzhu.bot.config
+package com.qingzhu.messageserver.config
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.elasticsearch.client.ClientConfiguration
@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.config.AbstractReactiveElasticsear
 import org.springframework.data.elasticsearch.repository.config.EnableReactiveElasticsearchRepositories
 
 @Configuration
-@EnableReactiveElasticsearchRepositories("com.qingzhu.bot.knowledgebase.repository.search")
+@EnableReactiveElasticsearchRepositories("com.qingzhu.messageserver.repository.search")
 class ReactiveRestClientConfig : AbstractReactiveElasticsearchConfiguration() {
 
     override fun reactiveElasticsearchClient(): ReactiveElasticsearchClient {

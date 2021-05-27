@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.common.domain.shared.authority.StaffAuthority
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import com.qingzhu.messageserver.domain.entity.StaffStatus
-import org.mapstruct.Mapper
-import org.mapstruct.ReportingPolicy
-import org.mapstruct.factory.Mappers
+import com.qingzhu.messageserver.mapper.StaffStatusMapper
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class StaffChangeStatusDto(
@@ -44,21 +42,4 @@ data class StaffStatusDto(
     val staffType: Int,
 ) {
     fun toStaffStatus(): StaffStatus = StaffStatusMapper.mapper.fromDtoWithMap(this)
-}
-
-@Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-abstract class StaffStatusMapper {
-    protected abstract fun mapFromDto(staff: StaffStatusDto): StaffStatus
-
-    fun fromDtoWithMap(staff: StaffStatusDto): StaffStatus {
-        val status = mapFromDto(staff)
-        if (staff.clientAccessServer != null) {
-            status.clientAccessServerMap += staff.clientAccessServer
-        }
-        return status
-    }
-
-    companion object {
-        val mapper: StaffStatusMapper = Mappers.getMapper(StaffStatusMapper::class.java)
-    }
 }

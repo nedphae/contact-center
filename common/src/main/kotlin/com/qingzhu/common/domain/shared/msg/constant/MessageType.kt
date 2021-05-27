@@ -34,16 +34,16 @@ enum class SysCode {
  * 这里区分不同的使用者类型 (客服/客户)
  */
 @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-enum class CreatorType {
+enum class CreatorType(val type: String) {
     // 系统
-    SYS,
+    SYS("系统"),
 
     // 工作人员
-    STAFF,
+    STAFF("客服"),
 
     // 客户
-    CUSTOMER,
+    CUSTOMER("客户"),
 
     // 群聊
-    GROUP
+    GROUP("群聊"),
 }
