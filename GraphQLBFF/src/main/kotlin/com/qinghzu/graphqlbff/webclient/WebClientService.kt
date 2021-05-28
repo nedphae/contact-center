@@ -1,9 +1,6 @@
 package com.qinghzu.graphqlbff.webclient
 
-import com.qinghzu.graphqlbff.model.Customer
-import com.qinghzu.graphqlbff.model.CustomerStatus
-import com.qinghzu.graphqlbff.model.DetailData
-import com.qinghzu.graphqlbff.model.QuickReplyDto
+import com.qinghzu.graphqlbff.model.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
@@ -13,7 +10,7 @@ import reactor.core.publisher.Mono
 
 /**
  * NOTE: 因为 这个是通过 kotlin coroutines 调用的，没有通过 spring reactive，所以无法获取 jwt token
- * TODO: innerWebClient 仅仅测试使用，后期修改为 bearerWebClient (使用 MyGraphQLContextFactory)
+ * 完成: innerWebClient 仅仅测试使用，后期修改为 bearerWebClient (使用 MyGraphQLContextFactory)
  */
 @Component
 class MessageService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.Builder) :
@@ -28,6 +25,15 @@ class MessageService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.B
                     .queryParam("userId", userId)
                     .build()
             }
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun searchConv(conversationQuery: ConversationQuery): Mono<String> {
+        return webClient
+            .post()
+            .uri("/message/search")
+            .bodyValue(conversationQuery)
             .retrieve()
             .bodyToMono()
     }

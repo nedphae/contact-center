@@ -1,5 +1,6 @@
 package com.qingzhu.messageserver.domain.entity
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Document
@@ -15,9 +16,6 @@ data class Conversation(
     /** 会话id 唯一 雪花 */
     @Id
     val id: Long,
-    /** 会话id 唯一 雪花 */
-    // 和id一样
-    var seqId: Long?,
     /** 公司id */
     val organizationId: Int,
     /** 冗余部分数据
@@ -58,9 +56,12 @@ data class Conversation(
     var nickName: String,
     /** 会话开始时间 */
     @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val startTime: Instant,
     /** 客户id */
     val userId: Long,
+    /** 客户名称 */
+    var userName: String?,
     /** vip 层级 0=非VIP用户 */
     val vipLevel: Int?,
     /** 与上一次来访的时间差 <=0则忽略 */
@@ -100,6 +101,7 @@ data class Conversation(
     var closeReason: String? = null,
     /** 结束时间 */
     @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     var endTime: Instant? = null,
     /** 用户评价内容 */
     @Field(type = FieldType.Object)
@@ -129,6 +131,8 @@ data class Conversation(
     var staffMessageCount: Int = 0,
     /** 用户消息数 */
     var userMessageCount: Int = 0,
+    /** 总消息数 **/
+    var totalMessageCount: Int = 0,
     /** 留言处理时间,若会话不是留言则返回0 */
     var treatedTime: Int = 0,
     //客服是否邀评  0：邀评；1：主动评价

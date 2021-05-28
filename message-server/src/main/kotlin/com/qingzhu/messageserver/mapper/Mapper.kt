@@ -49,7 +49,6 @@ abstract class ConversationMapper {
 
     fun mapFromStatusWithEnum(conversationStatus: ConversationStatus): Conversation {
         val conversation = mapper.mapFromStatus(conversationStatus)
-        conversation.seqId = conversationStatus.id
         conversation.fromType = conversationStatus.fromType.type
         conversation.beginner = conversationStatus.beginner.type
         conversation.convType = conversationStatus.convType.type

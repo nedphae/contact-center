@@ -1,6 +1,7 @@
 package com.qingzhu.messageserver.config
 
 import com.qingzhu.messageserver.controller.*
+import com.qingzhu.messageserver.service.MessagePersistentService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -33,7 +34,7 @@ class WebConfiguration : WebFluxConfigurer {
         staffStatusHandler: StaffStatusHandler,
         customerStatusHandler: CustomerStatusHandler,
         conversationStatusHandler: ConversationStatusHandler,
-        registerHandler: RegisterHandler
+        registerHandler: RegisterHandler,
     ): RouterFunction<ServerResponse> {
         return coRouter {
             accept(MediaType.APPLICATION_JSON).nest {
@@ -41,6 +42,7 @@ class WebConfiguration : WebFluxConfigurer {
                     // 发送消息
                     POST("/send", messageHandler::send)
                     POST("/send/assignment", messageHandler::sendAssignmentEvent)
+                    POST("/search", messageHandler::search)
                 }
                 "/status".nest {
                     "/register".nest {

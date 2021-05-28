@@ -4,10 +4,13 @@ import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.common.util.JsonUtils
 import com.qingzhu.messageserver.domain.entity.Conversation
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
+import com.qingzhu.messageserver.domain.query.ConversationQuery
 import com.qingzhu.messageserver.mapper.ChatMessageMapper
 import com.qingzhu.messageserver.mapper.ConversationMapper
 import com.qingzhu.messageserver.repository.search.ConversationRepository
 import org.springframework.data.domain.Range
+import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate
+import org.springframework.data.elasticsearch.core.SearchPage
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.ReactiveZSetOperations
 import org.springframework.stereotype.Service
@@ -20,9 +23,10 @@ import reactor.core.publisher.Mono
 class MessagePersistentService(
     redisTemplate: ReactiveRedisTemplate<String, String>,
     private val conversationRepository: ConversationRepository,
+    private val reactiveElasticsearchTemplate: ReactiveElasticsearchTemplate,
+    private val dispatchingCenter: DispatchingCenter,
 ) {
     private val zSet: ReactiveZSetOperations<String, String> = redisTemplate.opsForZSet()
-
     /**
      * 持久化会话和聊天消息
      */
@@ -36,14 +40,22 @@ class MessagePersistentService(
                     ChatMessageMapper.mapper.mapToFromMessage(JsonUtils.fromJson(msg))
                 }
                 .doOnNext {
-
+                    // TODO 清理 聊天消息
                 }
         val conversation = ConversationMapper.mapper.mapFromStatusWithEnum(conversationStatus)
+        val user = dispatchingCenter.findCustomer(conversation.organizationId, conversation.userId)
         return chatMessageList
             .collectList()
             .flatMap { msg ->
                 conversation.chatMessages = msg
+                user.map {
+                    conversation.userName = it.name
+                }
                 conversationRepository.save(conversation)
             }
+    }
+
+    fun searchConv(conversationQuery: ConversationQuery): Mono<SearchPage<Conversation>> {
+        return reactiveElasticsearchTemplate.searchForPage(conversationQuery.buildSearchQuery().build(), Conversation::class.java)
     }
 }
