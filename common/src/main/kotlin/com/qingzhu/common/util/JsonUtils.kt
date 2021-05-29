@@ -4,13 +4,14 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import java.math.BigDecimal
 
 object JsonUtils {
-    val objectMapper: ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
+    val objectMapper: ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule()).registerModule(Jdk8Module())
 
     fun <T> toJson(data: T): String {
         return objectMapper.writeValueAsString(data)

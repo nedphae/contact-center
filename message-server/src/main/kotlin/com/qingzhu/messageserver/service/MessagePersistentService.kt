@@ -27,13 +27,15 @@ class MessagePersistentService(
     private val dispatchingCenter: DispatchingCenter,
 ) {
     private val zSet: ReactiveZSetOperations<String, String> = redisTemplate.opsForZSet()
+
     /**
      * 持久化会话和聊天消息
      */
     fun convPersistent(conversationStatus: ConversationStatus): Mono<Conversation> {
         // 保存聊天消息
         val minMsgId = conversationStatus.id
-        val redisKey = "${conversationStatus.organizationId}:${CreatorType.CUSTOMER.name.toLowerCase()}:${conversationStatus.userId}"
+        val redisKey =
+            "${conversationStatus.organizationId}:${CreatorType.CUSTOMER.name.toLowerCase()}:${conversationStatus.userId}"
         val chatMessageList =
             zSet.reverseRangeByScore(redisKey, Range.closed(minMsgId.toDouble(), Double.MAX_VALUE))
                 .map { msg ->
@@ -48,14 +50,21 @@ class MessagePersistentService(
             .collectList()
             .flatMap { msg ->
                 conversation.chatMessages = msg
-                user.map {
-                    conversation.userName = it.name
-                }
-                conversationRepository.save(conversation)
+                user
+                    .map {
+                        conversation.userName = it.name
+                        conversation
+                    }
+                    .flatMap {
+                        conversationRepository.save(it)
+                    }
             }
     }
 
     fun searchConv(conversationQuery: ConversationQuery): Mono<SearchPage<Conversation>> {
-        return reactiveElasticsearchTemplate.searchForPage(conversationQuery.buildSearchQuery().build(), Conversation::class.java)
+        return reactiveElasticsearchTemplate.searchForPage(
+            conversationQuery.buildSearchQuery().build(),
+            Conversation::class.java
+        )
     }
 }

@@ -3,7 +3,6 @@ package com.qinghzu.graphqlbff.model
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
-import com.qingzhu.common.page.PageParam
 
 @GraphQLDescription("会话搜索")
 data class ConversationQuery(
@@ -13,7 +12,7 @@ data class ConversationQuery(
      * 时间
      */
     @GraphQLDescription("时间区间")
-    val timeRange: RangeQuery<String>?,
+    val timeRange: StringRangeQuery?,
     /**
      * 责任客服
      */
@@ -35,7 +34,7 @@ data class ConversationQuery(
      * 总消息条数
      */
     @GraphQLDescription("总消息条数")
-    val totalMessageCount: RangeQuery<Int>?,
+    val totalMessageCount: IntRangeQuery?,
     /**
      * 分页
      */
@@ -43,11 +42,14 @@ data class ConversationQuery(
     val page: PageParam = PageParam(),
 )
 
-data class RangeQuery<T>(
+class IntRangeQuery: RangeQuery<Int>()
+class StringRangeQuery: RangeQuery<String>()
+
+open class RangeQuery<T>(
     @GraphQLDescription("从")
-    val from: T?,
+    val from: T? = null,
     @GraphQLDescription("到")
-    val to: T?,
+    val to: T? = null,
     @GraphQLDescription("是否包括 从")
     val includeLower: Boolean = true,
     @GraphQLDescription("是否包括 到")

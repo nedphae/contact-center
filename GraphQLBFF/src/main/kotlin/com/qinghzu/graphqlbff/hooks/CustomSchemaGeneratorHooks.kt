@@ -20,17 +20,12 @@ import com.expediagroup.graphql.generator.directives.KotlinDirectiveWiringFactor
 import com.expediagroup.graphql.generator.hooks.SchemaGeneratorHooks
 import graphql.Scalars
 import graphql.language.StringValue
-import graphql.schema.Coercing
-import graphql.schema.CoercingParseLiteralException
-import graphql.schema.CoercingParseValueException
-import graphql.schema.CoercingSerializeException
-import graphql.schema.GraphQLScalarType
-import graphql.schema.GraphQLType
+import graphql.schema.*
 import org.springframework.beans.factory.BeanFactoryAware
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.math.BigDecimal
-import java.util.UUID
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
@@ -54,8 +49,10 @@ class CustomSchemaGeneratorHooks(override val wiringFactory: KotlinDirectiveWiri
      * Register Reactor Mono monad type.
      */
     override fun willResolveMonad(type: KType): KType = when (type.classifier) {
-        Mono::class -> type.arguments.first().type ?: type
-        Flux::class -> List::class.createType(type.arguments)
+        Mono::class ->
+            type.arguments.first().type ?: type
+        Flux::class ->
+            List::class.createType(type.arguments)
         Set::class -> List::class.createType(type.arguments)
         else -> type
     }
