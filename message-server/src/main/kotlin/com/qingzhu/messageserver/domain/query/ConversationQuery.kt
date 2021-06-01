@@ -41,14 +41,21 @@ data class ConversationQuery(
         if (this.keyword.isNullOrEmpty().not()) {
             val andQuery = QueryBuilders.boolQuery()
                 .should(QueryBuilders.multiMatchQuery(this.keyword))
-                .should(QueryBuilders.nestedQuery("chatMessages", QueryBuilders.multiMatchQuery(this.keyword), ScoreMode.Avg))
+                .should(
+                    QueryBuilders.nestedQuery(
+                        "chatMessages",
+                        QueryBuilders.multiMatchQuery(this.keyword),
+                        ScoreMode.Avg
+                    )
+                )
             query = query.withQuery(andQuery)
         }
         if (this.timeRange != null) {
             query = query.withFilter(
                 QueryBuilders.rangeQuery("startTime")
-                .from(this.timeRange.from, this.timeRange.includeLower)
-                .to(this.timeRange.to, this.timeRange.includeUpper))
+                    .from(this.timeRange.from, this.timeRange.includeLower)
+                    .to(this.timeRange.to, this.timeRange.includeUpper)
+            )
         }
         if (!this.staffIdList.isNullOrEmpty()) {
             query = query.withFilter(QueryBuilders.termsQuery("staffId", *this.staffIdList.toLongArray()))

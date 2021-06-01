@@ -7,6 +7,7 @@ import org.apache.lucene.search.join.ScoreMode
 import org.elasticsearch.index.query.QueryBuilders
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
@@ -59,10 +60,11 @@ internal class MessagePersistentServiceTest : MessageServerApplicationTests() {
         val query = NativeSearchQueryBuilder()
             .withQuery(andQuery)
             .withFilter(termQuery)
-            .withPageable(PageRequest.of(0, 2))
+            .withPageable(PageRequest.of(1, 2))
             .build()
 
         val result = reactiveElasticsearchTemplate.searchForPage(query, Conversation::class.java)
+            .map { PageImpl(it.content, it.pageable, it.totalElements) }
         val test = result
             .doOnNext { println(it.toJson()) }
             .map { it.content.toJson() }

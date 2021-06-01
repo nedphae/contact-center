@@ -8,9 +8,11 @@ import com.qingzhu.messageserver.domain.query.ConversationQuery
 import com.qingzhu.messageserver.mapper.ChatMessageMapper
 import com.qingzhu.messageserver.mapper.ConversationMapper
 import com.qingzhu.messageserver.repository.search.ConversationRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Range
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate
-import org.springframework.data.elasticsearch.core.SearchPage
+import org.springframework.data.elasticsearch.core.SearchHit
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.ReactiveZSetOperations
 import org.springframework.stereotype.Service
@@ -61,10 +63,10 @@ class MessagePersistentService(
             }
     }
 
-    fun searchConv(conversationQuery: ConversationQuery): Mono<SearchPage<Conversation>> {
+    fun searchConv(conversationQuery: ConversationQuery): Mono<Page<SearchHit<Conversation>>> {
         return reactiveElasticsearchTemplate.searchForPage(
             conversationQuery.buildSearchQuery().build(),
             Conversation::class.java
-        )
+        ).map { PageImpl(it.content, it.pageable, it.totalElements) }
     }
 }
