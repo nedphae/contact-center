@@ -70,4 +70,13 @@ class StaffHandler(private val staffService: StaffService) {
     suspend fun findAllEnabledBotStaff(sr: ServerRequest): ServerResponse {
         return ok().bodyAndAwait(staffService.findAllEnabledBotStaff().asFlow())
     }
+
+    suspend fun findAllStaff(sr: ServerRequest): ServerResponse {
+        return ok().bodyAndAwait(
+            sr.principal()
+                .getPrincipalTriple()
+                .flatMapMany { (oid, _, _) -> oid.map { staffService.findAllStaff(it) } }
+                .asFlow()
+        )
+    }
 }

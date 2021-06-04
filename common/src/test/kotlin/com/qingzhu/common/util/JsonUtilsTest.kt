@@ -8,7 +8,8 @@ internal class JsonUtilsTest {
     fun testJsonFromString() {
         val int = JsonUtils.fromJson<Int>("1")
         assertEquals(1, int)
-        val str = JsonUtils.fromJson<String>("OK")
+        assertEquals(""""OK"""", "OK".toJson())
+        val str = JsonUtils.fromJson<String>("OK".toJson())
         assertEquals("OK", str)
     }
 }

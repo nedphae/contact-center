@@ -18,10 +18,6 @@ object JsonUtils {
     }
 
     inline fun <reified T> fromJson(content: String): T {
-        // String 类型就不解析了
-        if (T::class == String::class) {
-            return content as T
-        }
         return objectMapper.readValue(content)
     }
 }

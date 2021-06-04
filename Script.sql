@@ -183,7 +183,7 @@ CREATE TABLE staffadmin.quick_reply_group
     last_modified_by   varchar(500) NULL,
     last_modified_date timestamp NULL,
     staff_id           int8 NULL,
-    groupName          varchar(250) NULL,
+    group_name          varchar(250) NULL,
     personal           boolean default false,
     CONSTRAINT quick_reply_group_pkey PRIMARY KEY (id)
 );

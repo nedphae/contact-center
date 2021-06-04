@@ -4,7 +4,10 @@ import com.qinghzu.graphqlbff.model.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.*
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.body
+import org.springframework.web.reactive.function.client.bodyToFlux
+import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -68,6 +71,7 @@ class CustomerService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.
             .retrieve()
             .bodyToFlux()
     }
+
     fun updateCustomer(customerDto: Mono<Customer>): Mono<Customer> {
         return webClient
             .post()
@@ -79,7 +83,7 @@ class CustomerService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.
 }
 
 @Service
-class StaffAdminService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) {
+class StaffAdminService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.Builder) {
     private val webClient = webClientBuilder.baseUrl("http://staff-admin").build()
 
     fun findQuickReplyByStaff(): Flux<QuickReplyDto> {
@@ -96,5 +100,21 @@ class StaffAdminService(@Qualifier("innerWebClient") webClientBuilder: WebClient
             .uri("/staff/quick-reply/all")
             .retrieve()
             .bodyToFlux()
+    }
+
+    fun findAllGroup(): Mono<String> {
+        return webClient
+            .get()
+            .uri("/staff/group")
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun findAllShunt(): Mono<String> {
+        return webClient
+            .get()
+            .uri("/staff/shunt")
+            .retrieve()
+            .bodyToMono()
     }
 }

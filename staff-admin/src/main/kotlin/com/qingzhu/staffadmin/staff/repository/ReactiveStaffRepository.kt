@@ -16,4 +16,6 @@ interface ReactiveStaffRepository : ReactiveSortingRepository<Staff, Long> {
     ): Mono<Staff>
 
     fun findAllByStaffTypeAndEnabled(staffType: Int, enabled: Boolean): Flux<Staff>
+
+    fun findAllByOrganizationId(organizationId: Int): Flux<Staff>
 }

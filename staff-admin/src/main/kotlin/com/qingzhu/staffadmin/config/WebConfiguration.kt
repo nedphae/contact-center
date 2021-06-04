@@ -1,9 +1,6 @@
 package com.qingzhu.staffadmin.config
 
-import com.qingzhu.staffadmin.staff.controller.ShuntHandler
-import com.qingzhu.staffadmin.staff.controller.ShuntUIConfigHandler
-import com.qingzhu.staffadmin.staff.controller.StaffHandler
-import com.qingzhu.staffadmin.staff.controller.QuickRecoveryHandler
+import com.qingzhu.staffadmin.staff.controller.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -21,7 +18,8 @@ class WebConfiguration : WebFluxConfigurer {
         staffHandler: StaffHandler,
         shuntHandler: ShuntHandler,
         shuntUIConfigHandler: ShuntUIConfigHandler,
-        quickRecoveryHandler: QuickRecoveryHandler
+        quickRecoveryHandler: QuickRecoveryHandler,
+        staffGroupHandler: StaffGroupHandler,
     ): RouterFunction<ServerResponse> {
         return coRouter {
             accept(MediaType.APPLICATION_JSON).nest {
@@ -32,9 +30,15 @@ class WebConfiguration : WebFluxConfigurer {
                     "/shunt".nest {
                         GET("/{code}", shuntHandler::findFirstByCode)
                         GET("/id/{id}", shuntHandler::findById)
+                        GET("", shuntHandler::findAllShunt)
                     }
-                    GET("/quick-reply/personal", quickRecoveryHandler::findQuickRecoveryByStaff)
-                    GET("/quick-reply/all", quickRecoveryHandler::findQuickRecoveryByOrganizationId)
+                    "/group".nest {
+                        GET("", staffGroupHandler::findAllGroup)
+                    }
+                    "/quick-reply".nest {
+                        GET("/personal", quickRecoveryHandler::findQuickRecoveryByStaff)
+                        GET("/all", quickRecoveryHandler::findQuickRecoveryByOrganizationId)
+                    }
                 }
                 "/config".nest {
                     GET("/chat-ui/config", shuntUIConfigHandler::getUIConfigByShunt)

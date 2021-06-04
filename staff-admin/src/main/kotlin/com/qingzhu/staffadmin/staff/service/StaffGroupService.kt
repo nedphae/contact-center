@@ -1,0 +1,21 @@
+package com.qingzhu.staffadmin.staff.service
+
+import com.qingzhu.common.util.JsonUtils
+import com.qingzhu.staffadmin.config.ReactorRedisCache
+import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
+import com.qingzhu.staffadmin.staff.repository.ReactiveStaffGroupRepository
+import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
+
+@Service
+class StaffGroupService(
+    private val staffGroupRepository: ReactiveStaffGroupRepository,
+    private val reactorRedisCache: ReactorRedisCache,
+) {
+    fun findAllGroup(organizationId: Int): Flux<StaffGroup> {
+        return reactorRedisCache.cache(
+            "staff:group:all",
+            staffGroupRepository.findAllByOrganizationId(organizationId)
+        ) { JsonUtils.fromJson(it) }
+    }
+}

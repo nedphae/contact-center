@@ -1,9 +1,12 @@
 package com.qingzhu.staffadmin.staff.service
 
+import com.qingzhu.common.util.JsonUtils
+import com.qingzhu.staffadmin.config.ReactorRedisCache
 import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistShuntDto
 import com.qingzhu.staffadmin.staff.domain.dto.StaffWithShuntDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
+import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
 import com.qingzhu.staffadmin.staff.mapper.DtoMapper
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffConfigRepository
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
@@ -19,7 +22,8 @@ import kotlin.streams.toList
 @Service
 class StaffService(
     private val staffRepository: ReactiveStaffRepository,
-    private val staffConfigRepository: ReactiveStaffConfigRepository
+    private val staffConfigRepository: ReactiveStaffConfigRepository,
+    private val reactorRedisCache: ReactorRedisCache,
 ) {
 
     fun findFirstByOrganizationIdAndUsername(organizationId: Int, username: String?): Mono<InnerUser> {
@@ -94,5 +98,13 @@ class StaffService(
             }
             // 压扁
             .flatMap { it }
+    }
+
+    fun findAllStaff(organizationId: Int): Flux<Staff> {
+        return reactorRedisCache
+            .cache(
+                "staff:all",
+                staffRepository.findAllByOrganizationId(organizationId)
+            ) { JsonUtils.fromJson(it) }
     }
 }

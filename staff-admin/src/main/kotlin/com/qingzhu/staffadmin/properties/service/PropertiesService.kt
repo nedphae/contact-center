@@ -5,15 +5,12 @@ import arrow.fx.extensions.fx
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsFactory
 import com.qingzhu.common.util.JsonUtils
-import com.qingzhu.common.util.toJson
+import com.qingzhu.staffadmin.config.ReactorRedisCache
 import com.qingzhu.staffadmin.properties.domain.entity.Properties
 import com.qingzhu.staffadmin.properties.repository.ReactivePropertiesRepository
-import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Service
-import reactor.cache.CacheMono
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.core.publisher.Signal
 
 fun createMapFromProperties(properties: Flux<Properties>): Mono<String> {
     // 使用 JavaPropsFactory 格式化成配置文件格式
@@ -38,9 +35,8 @@ fun createMapFromProperties(properties: Flux<Properties>): Mono<String> {
 @Service
 class PropertiesService(
     private val propertiesRepository: ReactivePropertiesRepository,
-    private val redisTemplate: ReactiveRedisTemplate<String, String>
+    private val reactorRedisCache: ReactorRedisCache,
 ) {
-    private val valueOperations = redisTemplate.opsForValue()
 
     /**
      * 系统内部使用的配置项目接口
@@ -48,38 +44,21 @@ class PropertiesService(
     fun findDistinctTopByKey(organizationId: Int, key: String): Mono<Properties> {
         val result = propertiesRepository.findDistinctTopByKey(key)
             .switchIfEmpty(Mono.just(Properties(null, organizationId, key, null, null)))
-        return CacheMono
-            .lookup({ k ->
-                valueOperations[k]
-                    .map { JsonUtils.fromJson<Properties>(it) }
-                    .map { Signal.next(it) }
-            }, "prop:$organizationId:$key")
-            .onCacheMissResume(result)
-            .andWriteWith { t, u ->
-                Mono.fromRunnable { valueOperations[t] = u.get().toJson() }
-            }
+
+        return reactorRedisCache.cache("prop:$organizationId:$key", result) { JsonUtils.fromJson(it) }
     }
 
     fun getAllProperties(): IO<Mono<String>> {
         return IO.fx {
-            CacheMono
-                .lookup({ k ->
-                    valueOperations[k]
-                        .map { Signal.next(it) }
-                }, "prop:all")
-                .onCacheMissResume(createMapFromProperties(propertiesRepository.findAll()))
-                .andWriteWith { t, u ->
-                    Mono.fromRunnable { valueOperations[t] = u.get().toString() }
-                }
+            reactorRedisCache.cache("prop:all", createMapFromProperties(propertiesRepository.findAll())) { it }
         }
     }
 
     fun saveAll(properties: Iterable<Properties>): IO<Flux<Properties>> {
         return IO.fx {
             val result = propertiesRepository.saveAll(properties).cache()
-            redisTemplate.delete("prop:all")
-            redisTemplate.delete(result.map { "prop::${it.key}" })
-            result
+            reactorRedisCache.removeKey(result.map { "prop::${it.key}" }.concatWith { Mono.just("prop:all") })
+                .flatMapMany { result }
         }
     }
 

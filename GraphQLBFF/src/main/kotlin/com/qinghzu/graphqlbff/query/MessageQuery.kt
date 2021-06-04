@@ -9,6 +9,7 @@ import com.qinghzu.graphqlbff.webclient.MessageService
 import com.qingzhu.common.security.awaitWithAuthentication
 import org.springframework.stereotype.Component
 
+@GraphQLDescription("查询聊天消息")
 @Component
 class MessageQuery(private val messageService: MessageService) : Query {
     @GraphQLDescription("根据参数查询历史消息")
