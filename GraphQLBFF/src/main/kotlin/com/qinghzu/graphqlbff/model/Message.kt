@@ -1,6 +1,7 @@
 package com.qinghzu.graphqlbff.model
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 
@@ -45,13 +46,14 @@ data class ConversationQuery(
 class IntRangeQuery: RangeQuery<Int>()
 class StringRangeQuery: RangeQuery<String>()
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 open class RangeQuery<T>(
     @GraphQLDescription("从")
     val from: T? = null,
     @GraphQLDescription("到")
     val to: T? = null,
     @GraphQLDescription("是否包括 从")
-    val includeLower: Boolean = true,
+    val includeLower: Boolean? = true,
     @GraphQLDescription("是否包括 到")
-    val includeUpper: Boolean = true,
+    val includeUpper: Boolean? = true,
 )

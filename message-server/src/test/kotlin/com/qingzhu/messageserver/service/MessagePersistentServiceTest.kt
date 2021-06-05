@@ -1,5 +1,6 @@
 package com.qingzhu.messageserver.service
 
+import com.qingzhu.common.util.JsonUtils
 import com.qingzhu.common.util.toJson
 import com.qingzhu.messageserver.MessageServerApplicationTests
 import com.qingzhu.messageserver.domain.entity.Conversation
@@ -14,7 +15,6 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.test.StepVerifier
-import java.time.Duration
 
 internal class MessagePersistentServiceTest : MessageServerApplicationTests() {
 
@@ -66,9 +66,13 @@ internal class MessagePersistentServiceTest : MessageServerApplicationTests() {
         val result = reactiveElasticsearchTemplate.searchForPage(query, Conversation::class.java)
             .map { PageImpl(it.content, it.pageable, it.totalElements) }
         val test = result
-            .doOnNext { println(it.toJson()) }
-            .map { it.content.toJson() }
+            .doOnNext { println(it.content.toJson()) }
+            .map { it.toJson() }
             .doOnNext { println(it) }
+            .map { JsonUtils.fromJson<LinkedHashMap<String, Any>>(it) }
+            .map {
+                println(it)
+            }
         StepVerifier.create(test)
             .expectNextCount(1)
             .verifyComplete()
