@@ -14,7 +14,7 @@ class ShuntService(
 ) {
     fun findAllShunt(organizationId: Int): Flux<Shunt> {
         return reactorRedisCache.cache(
-            "staff:shunt:all",
+            "staff:shunt:$organizationId",
             shuntRepository.findAllByOrganizationId(organizationId)
         ) { JsonUtils.fromJson(it) }
     }

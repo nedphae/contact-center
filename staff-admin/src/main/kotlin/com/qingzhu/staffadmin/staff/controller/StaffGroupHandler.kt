@@ -15,7 +15,7 @@ class StaffGroupHandler(private val staffGroupService: StaffGroupService) {
         return ok().bodyAndAwait(
             sr.principal()
                 .getPrincipalTriple()
-                .flatMapMany { (oid, _, _) -> oid.map { staffGroupService.findAllGroup(it) } }
+                .flatMapMany { (oid, _, _) -> oid.flatMapMany { staffGroupService.findAllGroup(it) } }
                 .asFlow()
         )
     }

@@ -15,7 +15,7 @@ spring:
     name: staff-admin
 
   redis:
-    database: 0
+    database: 2
     host: 192.168.50.103
     port: 6379
     password: G!Ps&eEwtsxd7NGf

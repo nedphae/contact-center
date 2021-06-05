@@ -31,7 +31,7 @@ class ShuntHandler(
         return ok().bodyAndAwait(
             sr.principal()
                 .getPrincipalTriple()
-                .flatMapMany { (oid, _, _) -> oid.map { shuntService.findAllShunt(it) } }
+                .flatMapMany { (oid, _, _) -> oid.flatMapMany { shuntService.findAllShunt(it) } }
                 .asFlow()
         )
     }

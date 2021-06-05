@@ -14,7 +14,7 @@ class StaffGroupService(
 ) {
     fun findAllGroup(organizationId: Int): Flux<StaffGroup> {
         return reactorRedisCache.cache(
-            "staff:group:all",
+            "staff:group:$organizationId",
             staffGroupRepository.findAllByOrganizationId(organizationId)
         ) { JsonUtils.fromJson(it) }
     }

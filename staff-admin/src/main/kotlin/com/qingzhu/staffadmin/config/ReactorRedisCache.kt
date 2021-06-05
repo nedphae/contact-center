@@ -23,10 +23,15 @@ class ReactorRedisCache(
     fun <T> cache(key: String, flux: Flux<T>, fromJson: (String) -> T): Flux<T> {
         return CacheFlux
             .lookup({ k ->
-                listOperations.range(k, 0, -1)
-                    .map { fromJson(it) }
-                    .materialize()
-                    .collectList()
+                listOperations.size(k)
+                    .filter { it != 0L }
+                    .flatMap {
+                        listOperations.range(k, 0, -1)
+                            .map { fromJson(it) }
+                            .materialize()
+                            .collectList()
+                    }
+
             }, key)
             .onCacheMissResume(flux)
             .andWriteWith { t, u ->
@@ -36,16 +41,17 @@ class ReactorRedisCache(
                     .map { JsonUtils.toJson(it) }
                     .collectList()
                     .flatMap {
-                        listOperations.leftPushAll(t, it)
-                        redisTemplate.expire(t, timeout)
+                        listOperations
+                            .leftPushAll(t, it)
+                            .flatMap {
+                                redisTemplate.expire(t, timeout)
+                            }
                     }
-                    .flatMap {
-                        Mono.empty()
-                    }
+                    .then()
             }
     }
 
-    fun <T: Any> cache(key: String, mono: Mono<T>, fromJson: (String) -> T): Mono<T> {
+    fun <T : Any> cache(key: String, mono: Mono<T>, fromJson: (String) -> T): Mono<T> {
         return CacheMono
             .lookup({ k ->
                 valueOperations[k]
@@ -54,8 +60,9 @@ class ReactorRedisCache(
             }, key)
             .onCacheMissResume(mono)
             .andWriteWith { t, u ->
-                valueOperations.set(t, u.get().toJson(), timeout)
-                    .flatMap { Mono.empty() }
+                valueOperations
+                    .set(t, u.get().toJson(), timeout)
+                    .then()
             }
     }
 
