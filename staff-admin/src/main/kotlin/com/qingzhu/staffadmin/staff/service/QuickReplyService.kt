@@ -4,8 +4,8 @@ import com.qingzhu.staffadmin.staff.domain.dto.AllQuickReplyDto
 import com.qingzhu.staffadmin.staff.domain.entity.QuickReply
 import com.qingzhu.staffadmin.staff.domain.entity.QuickReplyGroup
 import com.qingzhu.staffadmin.staff.mapper.DtoMapper
-import com.qingzhu.staffadmin.staff.repository.QuickRecoveryGroupRepository
-import com.qingzhu.staffadmin.staff.repository.QuickRecoveryRepository
+import com.qingzhu.staffadmin.staff.repository.QuickReplyGroupRepository
+import com.qingzhu.staffadmin.staff.repository.QuickReplyRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -13,21 +13,37 @@ import kotlin.streams.toList
 
 @Service
 class QuickReplyService(
-    private val quickRecoveryGroupRepository: QuickRecoveryGroupRepository,
-    private val quickRecoveryRepository: QuickRecoveryRepository,
+    private val quickReplyGroupRepository: QuickReplyGroupRepository,
+    private val quickReplyRepository: QuickReplyRepository,
 ) {
     fun findQuickReplyByStaff(organizationId: Int, staffId: Long): Mono<AllQuickReplyDto> {
         val groups =
-            quickRecoveryGroupRepository.findAllByOrganizationIdAndStaffId(organizationId, staffId).cache()
-        val staffQuickRecoveryFlux = quickRecoveryRepository.findAllByOrganizationIdAndStaffId(organizationId, staffId)
+            quickReplyGroupRepository.findAllByOrganizationIdAndStaffId(organizationId, staffId).cache()
+        val staffQuickRecoveryFlux = quickReplyRepository.findAllByOrganizationIdAndStaffId(organizationId, staffId)
         return getStaffQuickReplyWithGroupDto(groups, staffQuickRecoveryFlux)
     }
 
     fun findQuickReplyByOrganizationId(organizationId: Int): Mono<AllQuickReplyDto> {
         val groups =
-            quickRecoveryGroupRepository.findAllByOrganizationIdAndPersonalIsFalse(organizationId).cache()
-        val staffQuickRecoveryFlux = quickRecoveryRepository.findAllByOrganizationIdAndPersonalIsFalse(organizationId)
+            quickReplyGroupRepository.findAllByOrganizationIdAndPersonalIsFalse(organizationId).cache()
+        val staffQuickRecoveryFlux = quickReplyRepository.findAllByOrganizationIdAndPersonalIsFalse(organizationId)
         return getStaffQuickReplyWithGroupDto(groups, staffQuickRecoveryFlux)
+    }
+
+    fun saveQuickReply(quickReply: QuickReply): Mono<QuickReply> {
+        return quickReplyRepository.save(quickReply)
+    }
+
+    fun saveQuickReplyGroup(quickReplyGroup: QuickReplyGroup): Mono<QuickReplyGroup>{
+        return quickReplyGroupRepository.save(quickReplyGroup)
+    }
+
+    fun deleteQuickReply(id: Long): Mono<Void> {
+        return quickReplyRepository.deleteById(id)
+    }
+
+    fun deleteQuickReplyGroup(id: Long): Mono<Void> {
+        return quickReplyGroupRepository.deleteById(id)
     }
 
     /**

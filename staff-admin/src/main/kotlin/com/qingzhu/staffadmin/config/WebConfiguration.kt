@@ -27,6 +27,7 @@ class WebConfiguration : WebFluxConfigurer {
                     GET("/info", staffHandler::findStaffInfo)
                     GET("/receptionist", staffHandler::findStaffConfigByOrganizationIdAndStaffId)
                     GET("/bots", staffHandler::findAllEnabledBotStaff)
+                    GET("/all", staffHandler::findAllStaff)
                     "/shunt".nest {
                         GET("/{code}", shuntHandler::findFirstByCode)
                         GET("/id/{id}", shuntHandler::findById)
@@ -38,6 +39,10 @@ class WebConfiguration : WebFluxConfigurer {
                     "/quick-reply".nest {
                         GET("/personal", quickRecoveryHandler::findQuickRecoveryByStaff)
                         GET("/all", quickRecoveryHandler::findQuickRecoveryByOrganizationId)
+                        POST("", quickRecoveryHandler::saveQuickReply)
+                        POST("/group", quickRecoveryHandler::saveQuickReplyGroup)
+                        DELETE("/{id}", quickRecoveryHandler::deleteQuickReply)
+                        DELETE("/group/{id}", quickRecoveryHandler::deleteQuickReplyGroup)
                     }
                 }
                 "/config".nest {

@@ -6,7 +6,6 @@ import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistShuntDto
 import com.qingzhu.staffadmin.staff.domain.dto.StaffWithShuntDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
-import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
 import com.qingzhu.staffadmin.staff.mapper.DtoMapper
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffConfigRepository
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
@@ -60,6 +59,7 @@ class StaffService(
                 ReceptionistShuntDto(
                     organizationId,
                     staffId,
+                    it.t1.staffGroupId,
                     it.t2.keys.toList(),
                     it.t2,
                     it.t1.simultaneousService
@@ -103,7 +103,7 @@ class StaffService(
     fun findAllStaff(organizationId: Int): Flux<Staff> {
         return reactorRedisCache
             .cache(
-                "staff:all",
+                "staff:$organizationId",
                 staffRepository.findAllByOrganizationId(organizationId)
             ) { JsonUtils.fromJson(it) }
     }

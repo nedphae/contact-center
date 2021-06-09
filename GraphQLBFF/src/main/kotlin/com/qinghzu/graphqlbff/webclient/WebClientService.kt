@@ -40,6 +40,22 @@ class MessageService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.B
             .retrieve()
             .bodyToMono()
     }
+
+    fun findAllOnlineStaff(): Flux<StaffStatus> {
+        return webClient
+            .get()
+            .uri("/status/staff/online")
+            .retrieve()
+            .bodyToFlux()
+    }
+
+    fun findAllOnlineCustomer(): Flux<CustomerStatus> {
+        return webClient
+            .get()
+            .uri("/status/customer/online")
+            .retrieve()
+            .bodyToFlux()
+    }
 }
 
 @Component
@@ -86,35 +102,77 @@ class CustomerService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.
 class StaffAdminService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.Builder) {
     private val webClient = webClientBuilder.baseUrl("http://staff-admin").build()
 
-    fun findQuickReplyByStaff(): Flux<QuickReplyDto> {
+    fun findQuickReplyByStaff(): Mono<QuickReplyDto> {
         return webClient
             .get()
             .uri("/staff/quick-reply/personal")
             .retrieve()
-            .bodyToFlux()
+            .bodyToMono()
     }
 
-    fun findQuickReplyByOrganizationId(): Flux<QuickReplyDto> {
+    fun findQuickReplyByOrganizationId(): Mono<QuickReplyDto> {
         return webClient
             .get()
             .uri("/staff/quick-reply/all")
             .retrieve()
-            .bodyToFlux()
+            .bodyToMono()
     }
 
-    fun findAllGroup(): Mono<String> {
+    fun findAllGroup(): Flux<StaffGroup> {
         return webClient
             .get()
             .uri("/staff/group")
             .retrieve()
-            .bodyToMono()
+            .bodyToFlux()
     }
 
-    fun findAllShunt(): Mono<String> {
+    fun findAllShunt(): Flux<Shunt> {
         return webClient
             .get()
             .uri("/staff/shunt")
             .retrieve()
+            .bodyToFlux()
+    }
+
+    fun findAllStaff(): Flux<Staff> {
+        return webClient
+            .get()
+            .uri("/staff/all")
+            .retrieve()
+            .bodyToFlux()
+    }
+
+    fun saveQuickReply(quickReply: QuickReplyInput): Mono<QuickReply> {
+        return webClient
+            .post()
+            .uri("/staff/quick-reply")
+            .bodyValue(quickReply)
+            .retrieve()
             .bodyToMono()
+    }
+
+    fun saveQuickReplyGroup(quickReplyGroup: QuickReplyGroupInput): Mono<QuickReplyGroup>{
+        return webClient
+            .post()
+            .uri("/staff/quick-reply/group")
+            .bodyValue(quickReplyGroup)
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun deleteQuickReply(id: Long): Mono<Void> {
+        return webClient
+            .delete()
+            .uri("/staff/quick-reply/${id}")
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun deleteQuickReplyGroup(id: Long): Mono<Void> {
+        return webClient
+        .delete()
+        .uri("/staff/quick-reply/group/${id}")
+        .retrieve()
+        .bodyToMono()
     }
 }

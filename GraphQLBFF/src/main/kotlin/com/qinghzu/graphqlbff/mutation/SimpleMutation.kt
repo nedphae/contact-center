@@ -34,4 +34,13 @@ class SimpleMutation : Mutation {
         data.add(entry)
         return data
     }
+
+    fun clearList(): MutableList<String> {
+        data.clear()
+        return data
+    }
+
+    fun deleteObject(): MutableList<String>? {
+        return null
+    }
 }

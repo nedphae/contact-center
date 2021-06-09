@@ -185,16 +185,26 @@ private fun getContextWith(oldContext: Context, authentication: Authentication?)
     return context
 }
 
-suspend fun <T> Mono<T>.awaitWithAuthentication(authentication: Authentication?): T? {
+fun <T> Mono<T>.withAuthentication(authentication: Authentication?): Mono<T> {
     return this
         .checkpoint("webflux mono")
         .contextWrite { getContextWith(it, authentication) }
+}
+
+fun <T> Flux<T>.withAuthentication(authentication: Authentication?): Flux<T> {
+    return this
+        .checkpoint("webflux flux")
+        .contextWrite { getContextWith(it, authentication) }
+}
+
+suspend fun <T> Mono<T>.awaitWithAuthentication(authentication: Authentication?): T? {
+    return this
+        .withAuthentication(authentication)
         .awaitSingleOrNull()
 }
 
 suspend fun <T : Any> Flux<T>.awaitWithAuthentication(authentication: Authentication?): List<T> {
     return this
-        .checkpoint("webflux flux")
-        .contextWrite { getContextWith(it, authentication) }
+        .withAuthentication(authentication)
         .asFlow().toList()
 }

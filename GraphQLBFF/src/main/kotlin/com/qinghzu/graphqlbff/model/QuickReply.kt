@@ -45,3 +45,20 @@ data class QuickReply(
     val title: String,
     val content: String,
 )
+
+data class QuickReplyInput(
+    var organizationId: Int?,
+    var staffId: Long?,
+    var groupId: Long?,
+    var title: String,
+    var content: String,
+    var personal: Boolean,
+)
+
+
+data class QuickReplyGroupInput(
+    var organizationId: Int?,
+    var staffId: Long?,
+    val groupName: String,
+    var personal: Boolean,
+)

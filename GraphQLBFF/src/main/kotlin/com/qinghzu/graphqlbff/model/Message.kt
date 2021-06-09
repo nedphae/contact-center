@@ -2,8 +2,6 @@ package com.qinghzu.graphqlbff.model
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 
 @GraphQLDescription("会话搜索")
 data class ConversationQuery(
@@ -18,7 +16,6 @@ data class ConversationQuery(
      * 责任客服
      */
     @GraphQLDescription("责任客服")
-    @field: JsonSerialize(using = ToStringSerializer::class)
     val staffIdList: List<Long>?,
     /**
      * 咨询类型
@@ -29,8 +26,11 @@ data class ConversationQuery(
      * 客服组
      */
     @GraphQLDescription("客服组")
-    @field: JsonSerialize(using = ToStringSerializer::class)
-    val staffGroupId: List<Long>?,
+    val staffGroupIdList: List<Long>?,
+    /**
+     * 接待组
+     */
+    val shuntIdList: List<Long>?,
     /**
      * 总消息条数
      */

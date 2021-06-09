@@ -5,6 +5,14 @@ spring:
   application:
     name: message-server
 
+  data:
+    cassandra:
+      contact-points: [192.168.50.111:9042]
+      keyspace-name: message
+      username: cassandra
+      password: 4ge4CxwcFW
+      local-datacenter: datacenter1
+      schema-action: create_if_not_exists
   redis:
     database: 2
     host: 192.168.50.103

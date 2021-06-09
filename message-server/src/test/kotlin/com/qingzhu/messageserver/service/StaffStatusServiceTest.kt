@@ -45,13 +45,13 @@ class StaffStatusServiceTest : MessageServerApplicationTests() {
     fun testStaffStatus() {
         staffStatusService.saveStatus(
             StaffStatus(
-                1, 2L, StaffAuthority.ROLE_STAFF, listOf(3L, 4L),
+                1, 2L, StaffAuthority.ROLE_STAFF, listOf(3L, 4L), 1,
                 mapOf(3L to 15), 10, 1
             )
         )
         staffStatusService.saveStatus(
             StaffStatusDto(
-                1, 12L, StaffAuthority.ROLE_STAFF, listOf(13L, 4L),
+                1, 12L, StaffAuthority.ROLE_STAFF, listOf(13L, 4L), 1,
                 mapOf(4L to 15), maxServiceCount = 10, staffType = 1
             ).toStaffStatus()
         )

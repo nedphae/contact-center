@@ -83,4 +83,12 @@ class SimpleSubscription : Subscription {
     @GraphQLDescription("Returns a value from the subscription context")
     fun subscriptionContext(myGraphQLContext: MySubscriptionGraphQLContext): Flux<String> =
         Flux.just(myGraphQLContext.auth ?: "no-auth")
+
+    @GraphQLDescription("测试定时器")
+    fun fluxInterval(seconds: Long? = 5): Flux<String> {
+        return Flux.interval(Duration.ofSeconds(seconds ?: 5))
+            .map {
+                it.toString()
+            }
+    }
 }

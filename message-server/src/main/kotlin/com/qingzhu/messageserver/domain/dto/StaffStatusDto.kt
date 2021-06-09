@@ -30,6 +30,8 @@ data class StaffStatusDto(
     var role: StaffAuthority,
     /** 所处接待组 */
     var shunt: List<Long>,
+    /** 客服分组 **/
+    var groupId: Long,
     /** 不同接待组的优先级 */
     var priorityOfShunt: Map<Long, Int>,
     /** 客服所处服务器名 */

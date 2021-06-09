@@ -6,6 +6,8 @@ data class ReceptionistShuntDto(
     // 客服id
     /** 每个客服只能保存一个状态 */
     val staffId: Long,
+    /** 客服分组 **/
+    var groupId: Long,
     /** 所处接待组 */
     var shunt: List<Long>,
     /** 不同接待组的优先级 */

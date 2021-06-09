@@ -33,6 +33,7 @@ data class CustomerDto(
     companion object {
         fun fromCustomer(customer: Customer): CustomerDto {
             return CustomerDto(
+                id = customer.id,
                 organizationId = customer.organizationId,
                 uid = customer.uid,
                 name = customer.name,

@@ -1,13 +1,14 @@
 package com.qingzhu.messageserver.controller
 
+import com.qingzhu.common.security.awaitGetPrincipalTriple
+import com.qingzhu.common.util.getOrgAnd
 import com.qingzhu.messageserver.domain.dto.CustomerBaseClientDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
-import com.qingzhu.messageserver.domain.dto.StaffDispatcherDto
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.service.ConversationStatusService
 import com.qingzhu.messageserver.service.CustomerStatusService
 import com.qingzhu.messageserver.service.StaffStatusService
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RestController
@@ -22,8 +23,8 @@ class StaffStatusHandler(
         val result = sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("shuntId").map(String::toLong).map { rg ->
                 staffStatusService.findIdleStaffWithStaffDispatcherDto(oi, rg)
-            }.orElse(listOf<StaffDispatcherDto>().asFlow())
-        }.orElse(listOf<StaffDispatcherDto>().asFlow())
+            }.orElse(emptyFlow())
+        }.orElse(emptyFlow())
         return ok().bodyAndAwait(result)
     }
 
@@ -31,8 +32,8 @@ class StaffStatusHandler(
         val result = sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("shuntId").map(String::toLong).map { rg ->
                 staffStatusService.findBotStaffWithStaffDispatcherDto(oi, rg)
-            }.orElse(listOf<StaffDispatcherDto>().asFlow())
-        }.orElse(listOf<StaffDispatcherDto>().asFlow())
+            }.orElse(emptyFlow())
+        }.orElse(emptyFlow())
         return ok().bodyAndAwait(result)
     }
 
@@ -45,6 +46,14 @@ class StaffStatusHandler(
             .switchIfEmpty(status(HttpStatus.NOT_ACCEPTABLE).build())
             .awaitSingle()
     }
+
+    suspend fun findAllOnlineStaff(sr: ServerRequest): ServerResponse {
+        val (oid, sid, name) = sr.awaitGetPrincipalTriple()
+        return (if (oid != null) {
+            val result = staffStatusService.findAllOnlineStaff(oid)
+            ok().bodyValue(result)
+        } else notFound().build()).awaitSingle()
+    }
 }
 
 @RestController
@@ -52,29 +61,31 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
     val response = ok().build()
 
     suspend fun findStaffIdOrShuntId(sr: ServerRequest): ServerResponse {
-        return sr.queryParam("organizationId").map(String::toInt).map { oi ->
-            sr.queryParam("userId").map(String::toLong).map { uid ->
-                ok().body(customerStatusService.findStaffIdOrShuntId(oi, uid))
-            }.orElse(response)
-        }.orElse(response).awaitSingle()
+        return sr.getOrgAnd("usedId") { oi, uid ->
+            ok().body(customerStatusService.findStaffIdOrShuntId(oi, uid.toLong()))
+        }
     }
 
     suspend fun findByUid(sr: ServerRequest): ServerResponse {
-        return sr.queryParam("organizationId").map(String::toInt).map { oi ->
-            sr.queryParam("uid").map { uid ->
-                customerStatusService.findByUid(oi, uid)
-                    .transform { ok().body(it) }
-            }.orElse(response)
-        }.orElse(response).awaitSingle()
+        return sr.getOrgAnd("usedId") { oi, uid ->
+            customerStatusService.findByUid(oi, uid)
+                .transform { ok().body(it) }
+        }
     }
 
     suspend fun findByUserId(sr: ServerRequest): ServerResponse {
-        return sr.queryParam("organizationId").map(String::toInt).map { oi ->
-            sr.queryParam("userId").map(String::toLong).map { uid ->
-                customerStatusService.findByUserId(oi, uid)
-                    .transform { ok().body(it) }
-            }.orElse(response)
-        }.orElse(response).awaitSingle()
+        return sr.getOrgAnd("usedId") { oi, uid ->
+            customerStatusService.findByUserId(oi, uid.toLong())
+                .transform { ok().body(it) }
+        }
+    }
+
+    suspend fun findAllOnlineCustomer(sr: ServerRequest): ServerResponse {
+        val (oid, sid, name) = sr.awaitGetPrincipalTriple()
+        return (if (oid != null) {
+            val result = customerStatusService.findAllOnlineCustomer(oid)
+            ok().bodyValue(result)
+        } else notFound().build()).awaitSingle()
     }
 
     /**
@@ -96,13 +107,10 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
 class ConversationStatusHandler(private val conversationStatusService: ConversationStatusService) {
 
     suspend fun findByUserId(sr: ServerRequest): ServerResponse {
-        val response = ok().build()
-        return sr.queryParam("organizationId").map(String::toInt).map { oi ->
-            sr.queryParam("userId").map(String::toLong).map { uid ->
-                conversationStatusService.findByUserId(oi, uid)
-                    .transform { ok().body(it) }
-            }.orElse(response)
-        }.orElse(response).awaitSingle()
+        return sr.getOrgAnd("usedId") { oi, uid ->
+            conversationStatusService.findByUserId(oi, uid.toLong())
+                .transform { ok().body(it) }
+        }
     }
 
     suspend fun new(sr: ServerRequest): ServerResponse {

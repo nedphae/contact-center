@@ -51,8 +51,6 @@ class CustomSchemaGeneratorHooks(override val wiringFactory: KotlinDirectiveWiri
     override fun willResolveMonad(type: KType): KType = when (type.classifier) {
         Mono::class ->
             type.arguments.first().type ?: type
-        Flux::class ->
-            List::class.createType(type.arguments)
         Set::class -> List::class.createType(type.arguments)
         else -> type
     }

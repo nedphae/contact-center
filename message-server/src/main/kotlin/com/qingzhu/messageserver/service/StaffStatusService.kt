@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
 @Service
 class StaffStatusService(
     @Qualifier("hazelcastInstance")
-    private val hazelcastInstance: HazelcastInstance
+    private val hazelcastInstance: HazelcastInstance,
 ) {
     private fun getStatusMap(organizationId: Int) =
         hazelcastInstance.getMap<Long, StaffStatus>("$organizationId:staff")

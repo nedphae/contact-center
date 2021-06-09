@@ -49,7 +49,7 @@ abstract class DtoMapper {
         quickReplyDtoList: List<QuickReplyDto>?
     ): QuickReplyGroupDto {
         val quickReplyGroupDto = mapToStaffQuickReplyGroupDto(quickReplyGroup)
-        quickReplyGroupDto.staffQuickReply = quickReplyDtoList
+        quickReplyGroupDto.quickReply = quickReplyDtoList
         return quickReplyGroupDto
     }
 }

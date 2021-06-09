@@ -10,11 +10,11 @@ data class QuickReply(
     @Id
     var id: Long? = null,
     /** 公司id */
-    val organizationId: Int,
+    var organizationId: Int? = null,
     // 配置的客服 (每个客服可以有多个配置)
     /** @ManyToOne */
-    val staffId: Long?,
-    var groupId: Long?,
+    var staffId: Long? = null,
+    var groupId: Long? = null,
     var title: String,
     var content: String,
     var personal: Boolean,
@@ -26,10 +26,10 @@ data class QuickReplyGroup(
     @Id
     var id: Long? = null,
     /** 公司id */
-    val organizationId: Int,
+    var organizationId: Int? = null,
     // 配置的客服 (每个客服可以有多个配置)
     /** @ManyToOne */
-    val staffId: Long?,
+    var staffId: Long? = null,
     val groupName: String,
     var personal: Boolean,
 ) : AbstractAuditingEntity()

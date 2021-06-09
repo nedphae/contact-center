@@ -1,9 +1,8 @@
 package com.qingzhu.messageserver.domain.query
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.qingzhu.common.page.PageParam
 import org.apache.lucene.search.join.ScoreMode
+import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
 
@@ -16,7 +15,6 @@ data class ConversationQuery(
     /**
      * 责任客服
      */
-    @field: JsonSerialize(using = ToStringSerializer::class)
     val staffIdList: List<Long>?,
     /**
      * 咨询类型
@@ -25,8 +23,11 @@ data class ConversationQuery(
     /**
      * 客服组
      */
-    @field: JsonSerialize(using = ToStringSerializer::class)
-    val staffGroupId: List<Long>?,
+    val staffGroupIdList: List<Long>?,
+    /**
+     * 接待组
+     */
+    val shuntIdList: List<Long>?,
     /**
      * 总消息条数
      */
@@ -38,6 +39,7 @@ data class ConversationQuery(
 ) {
     fun buildSearchQuery(): NativeSearchQueryBuilder {
         var query = NativeSearchQueryBuilder()
+        var boolQueryBuilder = BoolQueryBuilder()
         if (this.keyword.isNullOrEmpty().not()) {
             val andQuery = QueryBuilders.boolQuery()
                 .should(QueryBuilders.multiMatchQuery(this.keyword))
@@ -51,19 +53,22 @@ data class ConversationQuery(
             query = query.withQuery(andQuery)
         }
         if (this.timeRange != null) {
-            query = query.withFilter(
+            boolQueryBuilder = boolQueryBuilder.must(
                 QueryBuilders.rangeQuery("startTime")
                     .from(this.timeRange.from, this.timeRange.includeLower)
                     .to(this.timeRange.to, this.timeRange.includeUpper)
             )
         }
         if (!this.staffIdList.isNullOrEmpty()) {
-            query = query.withFilter(QueryBuilders.termsQuery("staffId", *this.staffIdList.toLongArray()))
+            boolQueryBuilder = boolQueryBuilder.must(QueryBuilders.termsQuery("staffId", *this.staffIdList.toLongArray()))
         }
-        if (!this.staffGroupId.isNullOrEmpty()) {
-            query = query.withFilter(QueryBuilders.termsQuery("fromGroupId", *this.staffGroupId.toLongArray()))
+        if (!this.staffGroupIdList.isNullOrEmpty()) {
+            boolQueryBuilder = boolQueryBuilder.must(QueryBuilders.termsQuery("fromGroupId", *this.staffGroupIdList.toLongArray()))
         }
-        query.withPageable(page.toPageable())
+        if (!this.shuntIdList.isNullOrEmpty()) {
+            boolQueryBuilder = boolQueryBuilder.must(QueryBuilders.termsQuery("fromShuntId", *this.shuntIdList.toLongArray()))
+        }
+        query.withPageable(page.toPageable()).withFilter(boolQueryBuilder)
         return query
     }
 }

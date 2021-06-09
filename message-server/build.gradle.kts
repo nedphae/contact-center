@@ -23,6 +23,8 @@ dependencies {
     implementation("org.springframework.data:spring-data-elasticsearch")
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
 
+    implementation("org.springframework.boot:spring-boot-starter-data-cassandra-reactive")
+
     implementation("com.hazelcast:hazelcast-all:4.0.2")
     /** k8s 依赖 **/
     implementation("com.hazelcast:hazelcast-kubernetes:2.2")

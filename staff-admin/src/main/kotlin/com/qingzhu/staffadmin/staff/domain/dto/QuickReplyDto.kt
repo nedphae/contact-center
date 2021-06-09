@@ -14,7 +14,7 @@ data class QuickReplyGroupDto(
     val staffId: Long?,
     val groupName: String,
     val personal: Boolean,
-    var staffQuickReply: List<QuickReplyDto>?,
+    var quickReply: List<QuickReplyDto>?,
 )
 
 data class QuickReplyDto(

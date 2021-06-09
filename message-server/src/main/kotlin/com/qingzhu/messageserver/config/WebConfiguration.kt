@@ -64,6 +64,8 @@ class WebConfiguration : WebFluxConfigurer {
                         GET("/bot/idle", staffStatusHandler::findBotStaffWithStaffDispatcherDto)
                         // 分配客户
                         PUT("/assignment", staffStatusHandler::staffAssignment)
+                        // 获取在线客服列表
+                        GET("/online", staffStatusHandler::findAllOnlineStaff)
                     }
                     "/customer".nest {
                         // 查询客户指定的接待组id或者客服id
@@ -74,6 +76,8 @@ class WebConfiguration : WebFluxConfigurer {
                         GET("/find-by-id", customerStatusHandler::findByUserId)
                         // 更新 客户端 ID
                         PUT("/update-client", customerStatusHandler::updateByClientId)
+                        // 获取在线客服列表
+                        GET("/online", customerStatusHandler::findAllOnlineCustomer)
                     }
                     "/conversation".nest {
                         // 创建新会话 分配机器人客服

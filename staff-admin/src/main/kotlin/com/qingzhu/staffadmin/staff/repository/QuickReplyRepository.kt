@@ -7,14 +7,14 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 
 @Repository
-interface QuickRecoveryRepository : ReactiveSortingRepository<QuickReply, Long> {
+interface QuickReplyRepository : ReactiveSortingRepository<QuickReply, Long> {
     fun findAllByOrganizationIdAndStaffId(organizationId: Int, staffId: Long): Flux<QuickReply>
     fun findAllByOrganizationIdAndPersonalIsFalse(organizationId: Int): Flux<QuickReply>
     fun findAllByGroupIdIsIn(groupId: List<Long>): Flux<QuickReply>
 }
 
 @Repository
-interface QuickRecoveryGroupRepository : ReactiveSortingRepository<QuickReplyGroup, Long> {
+interface QuickReplyGroupRepository : ReactiveSortingRepository<QuickReplyGroup, Long> {
     fun findAllByOrganizationIdAndStaffId(organizationId: Int, staffId: Long): Flux<QuickReplyGroup>
     fun findAllByOrganizationIdAndPersonalIsFalse(organizationId: Int): Flux<QuickReplyGroup>
 }
