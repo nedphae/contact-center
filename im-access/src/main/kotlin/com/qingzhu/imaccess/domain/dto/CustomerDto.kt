@@ -1,5 +1,6 @@
 package com.qingzhu.imaccess.domain.dto
 
+import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.qingzhu.imaccess.domain.query.CustomerConfig
 import com.qingzhu.imaccess.domain.value.DetailData
@@ -9,6 +10,7 @@ data class CustomerDto(
     /** 公司id */
     val organizationId: Int,
     /** 客户 id 服务器自动设置 */
+    @JsonAlias("id")
     val userId: Long? = null,
     /**
      * 用户id

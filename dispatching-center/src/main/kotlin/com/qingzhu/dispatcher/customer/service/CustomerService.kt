@@ -63,7 +63,7 @@ class CustomerService(
             }
     }
 
-    suspend fun getCustomerById(organizationId: Int, userId: Long): Customer {
+    suspend fun getCustomerById(organizationId: Int? = null, userId: Long): Customer {
         return customerRepository.findById(userId).awaitSingle()
     }
 

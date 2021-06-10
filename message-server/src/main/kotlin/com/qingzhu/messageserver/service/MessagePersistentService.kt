@@ -2,21 +2,24 @@ package com.qingzhu.messageserver.service
 
 import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.common.util.JsonUtils
+import com.qingzhu.messageserver.domain.entity.ChatMessage
 import com.qingzhu.messageserver.domain.entity.Conversation
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.domain.query.ConversationQuery
 import com.qingzhu.messageserver.mapper.ChatMessageMapper
 import com.qingzhu.messageserver.mapper.ConversationMapper
+import com.qingzhu.messageserver.repository.ChatMessagePORepository
 import com.qingzhu.messageserver.repository.search.ConversationRepository
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Range
+import org.springframework.data.cassandra.core.query.CassandraPageRequest
+import org.springframework.data.domain.*
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate
 import org.springframework.data.elasticsearch.core.SearchHit
+import org.springframework.data.redis.connection.RedisZSetCommands
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.ReactiveZSetOperations
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 /**
  * 数据持久化服务
@@ -27,6 +30,7 @@ class MessagePersistentService(
     private val conversationRepository: ConversationRepository,
     private val reactiveElasticsearchTemplate: ReactiveElasticsearchTemplate,
     private val dispatchingCenter: DispatchingCenter,
+    private val chatMessagePORepository: ChatMessagePORepository,
 ) {
     private val zSet: ReactiveZSetOperations<String, String> = redisTemplate.opsForZSet()
 
@@ -68,5 +72,69 @@ class MessagePersistentService(
             conversationQuery.buildSearchQuery().build(),
             Conversation::class.java
         ).map { PageImpl(it.content, it.pageable, it.totalElements) }
+    }
+
+    fun hasHistoryMessage(organizationId: Int, userId: Long): Mono<Boolean> {
+        return zSet.size("msg:$organizationId:customer:$userId")
+            .flatMap {
+                if (it == 0L) {
+                    chatMessagePORepository.countAll(organizationId, userId.toString())
+                        .map { count ->
+                            count != 0L
+                        }
+                } else Mono.just(true)
+            }
+    }
+
+    fun loadHistoryMessage(
+        organizationId: Int,
+        userId: Long,
+        lastSeqId: Long,
+        pageSize: Int
+    ): Mono<Slice<ChatMessage>> {
+        val chatMessageList = zSet
+            .reverseRangeByScore(
+                "msg:$organizationId:customer:$userId",
+                Range.rightOpen(Double.MIN_VALUE, lastSeqId.toDouble()),
+                RedisZSetCommands.Limit().count(pageSize + 1)
+            )
+            .map {
+                JsonUtils.fromJson<ChatMessage>(it)
+            }
+            .collectList()
+        val page = CassandraPageRequest.first(pageSize)
+        return chatMessageList
+            .flatMap { list ->
+                when {
+                    list.size == 0 -> {
+                        chatMessagePORepository
+                            .findAllBySeqId(
+                                organizationId,
+                                userId.toString(),
+                                lastSeqId,
+                                CassandraPageRequest.first(pageSize)
+                            )
+                            .map { slice ->
+                                SliceImpl(slice.content.map { it.toChatMessage() }, page, slice.hasNext())
+                            }
+                    }
+                    list.size - 1 == pageSize -> {
+                        list.removeLast()
+                        SliceImpl(list, page, true).toMono()
+                    }
+                    else -> {
+                        val size = pageSize + 1 - list.size
+                        chatMessagePORepository.findAllBySeqId(
+                            organizationId,
+                            userId.toString(),
+                            list.last().seqId,
+                            page
+                        ).map { slice ->
+                            list.addAll(slice.content.map { it.toChatMessage() })
+                            SliceImpl(list, CassandraPageRequest.first(pageSize), slice.hasNext())
+                        }
+                    }
+                }
+            }
     }
 }

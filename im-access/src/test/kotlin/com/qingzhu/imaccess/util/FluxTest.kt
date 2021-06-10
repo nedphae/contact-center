@@ -86,7 +86,7 @@ internal class FluxTest {
      */
     @Test
     fun testTwoTransform() {
-        Mono.just(1)
+        Mono.empty<Int>()
             .doOnNext {
                 println(it)
             }

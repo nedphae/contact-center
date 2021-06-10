@@ -14,6 +14,7 @@ dependencies {
 
     implementation("com.hazelcast:hazelcast:4.0.2")
 
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.data:spring-data-elasticsearch")
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
 }

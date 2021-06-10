@@ -1,9 +1,11 @@
 package com.qingzhu.imaccess.service
 
 import com.qingzhu.common.domain.shared.msg.dto.MessageDto
+import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.imaccess.domain.dto.*
 import com.qingzhu.imaccess.domain.view.ConversationView
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.data.domain.Slice
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.*
@@ -16,6 +18,18 @@ import reactor.core.publisher.Mono
 @Service
 class DispatchingCenter(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) {
     private val webClient = webClientBuilder.baseUrl("http://dispatching-center").build()
+
+    fun findCustomer(userId: Long): Mono<CustomerDto> {
+        return webClient
+            .get()
+            .uri {
+                it.path("/customer")
+                    .queryParam("userId", userId)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
+    }
 
     fun updateCustomer(customerDto: Mono<CustomerDto>): Mono<CustomerDto> {
         return webClient
@@ -137,6 +151,34 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
                 it.path("/status/customer/find-by-uid")
                     .queryParam("organizationId", organizationId)
                     .queryParam("uid", uid)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun hasHistoryMessage(organizationId: Int, userId: Long): Mono<Boolean> {
+        return webClient
+            .get()
+            .uri {
+                it.path("/message/has-history-msg")
+                    .queryParam("organizationId", organizationId)
+                    .queryParam("userId", userId)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun loadHistoryMessage(organizationId: Int, userId: Long, lastSeqId: Long, pageSize: Int): Mono<Slice<Message>> {
+        return webClient
+            .get()
+            .uri {
+                it.path("/message/has-history-msg")
+                    .queryParam("organizationId", organizationId)
+                    .queryParam("userId", userId)
+                    .queryParam("pageSize", userId)
+                    .queryParam("lastSeqId", lastSeqId)
                     .build()
             }
             .retrieve()

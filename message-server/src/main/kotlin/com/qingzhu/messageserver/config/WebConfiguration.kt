@@ -1,7 +1,6 @@
 package com.qingzhu.messageserver.config
 
 import com.qingzhu.messageserver.controller.*
-import com.qingzhu.messageserver.service.MessagePersistentService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -43,6 +42,8 @@ class WebConfiguration : WebFluxConfigurer {
                     POST("/send", messageHandler::send)
                     POST("/send/assignment", messageHandler::sendAssignmentEvent)
                     POST("/search", messageHandler::search)
+                    GET("/has-history-msg", messageHandler::hasHistoryMessage)
+                    GET("/history", messageHandler::loadHistoryMessage)
                 }
                 "/status".nest {
                     "/register".nest {

@@ -7,6 +7,7 @@ import com.qingzhu.common.domain.shared.msg.value.Message
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import java.time.Duration
 import java.time.Instant
 
@@ -143,5 +144,23 @@ internal class MonoTest {
             }
             .switchIfEmpty(Mono.just(2))
             .subscribe(::println)
+    }
+
+    @Test
+    fun testPublishOn() {
+        Mono.just(1)
+            .map {
+                println(Thread.currentThread().name)
+                5
+            }
+            .publishOn(Schedulers.boundedElastic())
+            .doOnNext {
+                println(Thread.currentThread().name)
+            }
+            .flatMap {
+                println(Thread.currentThread().name)
+                Mono.just(3)
+            }
+            .subscribe()
     }
 }

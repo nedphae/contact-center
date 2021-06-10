@@ -13,6 +13,14 @@ management:
 spring:
   application:
     name: bot
+
+  redis:
+    database: 2
+    host: 192.168.50.103
+    port: 6379
+    password: G!Ps&eEwtsxd7NGf
+    timeout: 5000
+
   data:
     jpa:
       repositories:

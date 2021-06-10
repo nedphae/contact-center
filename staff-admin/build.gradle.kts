@@ -14,8 +14,8 @@ dependencies {
     implementation(project(":common"))
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    // implementation("org.springframework.data:spring-data-elasticsearch")
-    // implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+    implementation("org.springframework.data:spring-data-elasticsearch")
+    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
 
     implementation("com.github.java-json-tools:json-schema-validator:2.2.14")
 }

@@ -1,6 +1,6 @@
 package com.qingzhu.imaccess.config
 
-import com.qingzhu.imaccess.controller.BotAccessHandler
+import com.qingzhu.imaccess.controller.CustomerAccessHandler
 import com.qingzhu.imaccess.controller.FileUploadDownloadHandler
 import com.qingzhu.imaccess.controller.WebSocketAddressController
 import com.qingzhu.imaccess.socketio.EchoHandler
@@ -45,7 +45,7 @@ class WebConfiguration : WebFluxConfigurer {
     fun routerFunction(
         webSocketAddressController: WebSocketAddressController,
         fileUploadDownloadHandler: FileUploadDownloadHandler,
-        botAccessHandler: BotAccessHandler,
+        customerAccessHandler: CustomerAccessHandler,
     ): RouterFunction<*> {
         return coRouter {
             accept(APPLICATION_JSON).nest {
@@ -71,7 +71,7 @@ class WebConfiguration : WebFluxConfigurer {
             }
             "/access".nest {
                 "/customer".nest {
-                    POST("/register", botAccessHandler::register)
+                    POST("/register", customerAccessHandler::register)
                 }
             }
         }

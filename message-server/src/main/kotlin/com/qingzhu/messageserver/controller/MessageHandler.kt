@@ -1,6 +1,7 @@
 package com.qingzhu.messageserver.controller
 
 import com.qingzhu.common.domain.shared.msg.dto.MessageDto
+import com.qingzhu.common.message.getChatMessageSnowFlake
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.domain.query.ConversationQuery
 import com.qingzhu.messageserver.service.MessagePersistentService
@@ -42,5 +43,26 @@ class MessageHandler(
         return sr.bodyToMono<ConversationQuery>()
             .flatMap { ok().body(messagePersistentService.searchConv(it)) }
             .awaitSingle()
+    }
+
+    suspend fun hasHistoryMessage(sr: ServerRequest): ServerResponse {
+        val userId = sr.queryParam("userId").map { it.toLong() }.orElse(null)
+        val orgId = sr.queryParam("organizationId").map { it.toInt() }.orElse(null)
+        return messagePersistentService.hasHistoryMessage(orgId, userId)
+            .flatMap {
+                ok().bodyValue(it)
+            }.awaitSingle()
+    }
+
+    suspend fun loadHistoryMessage(sr: ServerRequest): ServerResponse {
+        val userId = sr.queryParam("userId").map { it.toLong() }.orElse(null)
+        val orgId = sr.queryParam("organizationId").map { it.toInt() }.orElse(null)
+        val lastSeqId =
+            sr.queryParam("lastSeqId").map { it.toLong() }.orElse(getChatMessageSnowFlake().getNextSequenceId())
+        val count = sr.queryParam("pageSize").map { it.toInt() }.orElse(null)
+        return messagePersistentService.loadHistoryMessage(orgId, userId, lastSeqId, count)
+            .flatMap {
+                ok().bodyValue(it)
+            }.awaitSingle()
     }
 }

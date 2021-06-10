@@ -22,7 +22,7 @@ class CassandraStoreTest : MessageServerApplicationTests() {
     @Test
     fun testSaveMessage() {
         val messagePO = ChatMessagePO(
-            ChatMessageKey(9491, "1", 1000),
+            ChatMessageKey(9491, "1", 1003),
             UUID.randomUUID().toString(),
             Instant.now(),
             100,
@@ -48,7 +48,33 @@ class CassandraStoreTest : MessageServerApplicationTests() {
 
     @Test
     fun testGetMessage() {
-        val result = chatMessagePORepository.findAllByChatMessageKey_OrganizationIdAndChatMessageKey_OwnerIdAndChatMessageKey_SeqIdBefore(9491, "1", 10001, CassandraPageRequest.first(20))
+        val result = chatMessagePORepository.findAllBySeqId(
+            9491, "1", 1004,
+            CassandraPageRequest.first(2)
+        )
+            .doOnNext {
+                println(it.hasNext())
+                println(it.toJson())
+            }
+        StepVerifier.create(result)
+            .expectNextCount(1)
+            .verifyComplete()
+    }
+
+    @Test
+    fun testGetMessageCount() {
+        val result = chatMessagePORepository.countBySeqId(9491, "1", 10001)
+            .doOnNext {
+                println(it.toJson())
+            }
+        StepVerifier.create(result)
+            .expectNextCount(1)
+            .verifyComplete()
+    }
+
+    @Test
+    fun testAllCount() {
+        val result = chatMessagePORepository.countAll(9491, "1")
             .doOnNext {
                 println(it.toJson())
             }

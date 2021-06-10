@@ -61,20 +61,20 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
     val response = ok().build()
 
     suspend fun findStaffIdOrShuntId(sr: ServerRequest): ServerResponse {
-        return sr.getOrgAnd("usedId") { oi, uid ->
+        return sr.getOrgAnd("userId") { oi, uid ->
             ok().body(customerStatusService.findStaffIdOrShuntId(oi, uid.toLong()))
         }
     }
 
     suspend fun findByUid(sr: ServerRequest): ServerResponse {
-        return sr.getOrgAnd("usedId") { oi, uid ->
+        return sr.getOrgAnd("userId") { oi, uid ->
             customerStatusService.findByUid(oi, uid)
                 .transform { ok().body(it) }
         }
     }
 
     suspend fun findByUserId(sr: ServerRequest): ServerResponse {
-        return sr.getOrgAnd("usedId") { oi, uid ->
+        return sr.getOrgAnd("userId") { oi, uid ->
             customerStatusService.findByUserId(oi, uid.toLong())
                 .transform { ok().body(it) }
         }

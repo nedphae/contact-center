@@ -5,8 +5,11 @@ import com.qingzhu.common.domain.shared.msg.dto.MessageDto
 import com.qingzhu.common.domain.shared.msg.dto.UpdateMessage
 import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.common.util.toJson
+import com.qingzhu.messageserver.domain.entity.ChatMessagePO
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.domain.value.CustomerToStaff
+import com.qingzhu.messageserver.mapper.ChatMessageMapper
+import com.qingzhu.messageserver.repository.ChatMessagePORepository
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.cloud.stream.function.StreamBridge
 import org.springframework.data.redis.core.ReactiveRedisTemplate
@@ -23,7 +26,8 @@ class MessageService(
     private val customerStatusService: CustomerStatusService,
     private val staffStatusService: StaffStatusService,
     redisTemplate: ReactiveRedisTemplate<String, String>,
-    private val streamBridge: StreamBridge
+    private val streamBridge: StreamBridge,
+    private val chatMessagePORepository: ChatMessagePORepository,
 ) {
     private val zSet: ReactiveZSetOperations<String, String> = redisTemplate.opsForZSet()
 
@@ -35,8 +39,8 @@ class MessageService(
         val message = messageDto.message
 
         val from = Mono.justOrEmpty(message.from)
-            .map { "${message.organizationId}:${message.creatorType.name.toLowerCase()}:${it}" }
-        val to = Mono.just("${message.organizationId}:${message.type.name.toLowerCase()}:${message.to}")
+            .map { "msg:${message.organizationId}:${message.creatorType.name.toLowerCase()}:${it}" }
+        val to = Mono.just("msg:${message.organizationId}:${message.type.name.toLowerCase()}:${message.to}")
 
         lateinit var staffUpdateMessage: UpdateMessage
         lateinit var customerUpdateMessage: UpdateMessage
@@ -60,6 +64,7 @@ class MessageService(
                 }
                 it
             }
+            .cache()
 
         val data = message.toJson()
         /**
@@ -100,6 +105,14 @@ class MessageService(
                 }
             }
             .collectList()
+            .publishOn(Schedulers.boundedElastic())
+            .flatMap {
+                // 持久化 到 数据库
+                customer.flatMap { cs ->
+                    val chatMessage = ChatMessageMapper.mapper.mapToFromMessage(messageDto.message)
+                    chatMessagePORepository.save(ChatMessagePO(chatMessage, cs.userId))
+                }
+            }
             .map { true }
     }
 

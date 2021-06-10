@@ -1,7 +1,6 @@
 package com.qinghzu.graphqlbff.model
 
 import com.qingzhu.common.domain.shared.authority.StaffAuthority
-import java.time.Instant
 
 data class StaffStatus(
     /** 公司id */
@@ -17,7 +16,7 @@ data class StaffStatus(
     /** 客服分组 **/
     var groupId: Long,
     /** 不同接待组的优先级 */
-    var priorityOfShunt: Map<Long, Int>,
+    var priorityOfShunt: String,
     /** 最大接待数量 */
     var maxServiceCount: Int,
     /** 客服类型，0 表示机器人，1 表示人工。 */
@@ -27,7 +26,7 @@ data class StaffStatus(
     var currentServiceCount: Int = 0,
     var autoBusy: Boolean,
     var userIdList: MutableList<Long>,
-    val loginTime: Instant,
+    val loginTime: Double,
 )
 
 data class Staff(

@@ -38,6 +38,8 @@ abstract class StaffStatusMapper {
 abstract class ChatMessageMapper {
     abstract fun mapToFromMessage(message: Message): ChatMessage
 
+    abstract fun mapToToMessage(message: ChatMessage): Message
+
     companion object {
         val mapper: ChatMessageMapper = Mappers.getMapper(ChatMessageMapper::class.java)
     }
