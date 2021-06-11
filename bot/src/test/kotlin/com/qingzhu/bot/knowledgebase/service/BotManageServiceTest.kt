@@ -1,10 +1,9 @@
 package com.qingzhu.bot.knowledgebase.service
 
 import com.qingzhu.bot.BotApplicationTests
-import com.qingzhu.bot.knowledgebase.domain.entity.BotConfig
-import com.qingzhu.bot.knowledgebase.domain.entity.KnowledgeBase
 import com.qingzhu.bot.knowledgebase.domain.entity.Topic
-import com.qingzhu.bot.knowledgebase.domain.entity.TopicCategory
+import com.qingzhu.bot.knowledgebase.domain.view.ChatUIContent
+import com.qingzhu.bot.knowledgebase.domain.view.ChatUIMessage
 import com.qingzhu.common.security.password.toMd5Hex
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
@@ -42,7 +41,7 @@ internal class BotManageServiceTest : BotApplicationTests() {
             )
             topic = botManageService.saveTopic(topic)
             println("知识: $topic")
-            val ans = qaBotService.findAnswerByQuestion(1, 2, "你好")
+            val ans = qaBotService.findAnswerByQuestion(1, 2, 1, ChatUIMessage(content = ChatUIContent("你好")))
             println("答案: $ans")
         }
     }

@@ -24,8 +24,12 @@ enum class MessageType {
 
 @JsonFormat(shape = JsonFormat.Shape.NUMBER)
 enum class SysCode {
+    // 更新列队
     UPDATE_QUEUE,
-    ASSIGN
+    // 分配列队
+    ASSIGN,
+    // 无答案
+    NO_ANSWER,
 }
 
 /**

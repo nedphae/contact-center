@@ -1,8 +1,8 @@
 package com.qingzhu.bot.knowledgebase.service
 
+import com.qingzhu.bot.knowledgebase.domain.dto.MessagePair
 import com.qingzhu.common.domain.shared.AbstractSpecification
 import com.qingzhu.common.domain.shared.Specification
-import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.bot.util.ParserUtils
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.stereotype.Service
@@ -15,33 +15,38 @@ import kotlin.streams.toList
  */
 @Service
 class MessageFilterService(
-    filters: ObjectProvider<Specification<Message>>
+    filters: ObjectProvider<AbstractSpecification<MessagePair>>,
 ) {
-    private val filterMap: Map<String, Specification<Message>> =
+    private val filterMap: Map<String, Specification<MessagePair>> =
         filters.stream().toList().associateBy { it::class.simpleName!!.toLowerCase() }
 
     /**
      * 过滤表达式，后期可以读取配置
      */
-    private val expression = "MessageToFilter"
+    private val expression = "SyncMessageFilter"
 
     private val filterChain = ParserUtils(expression) {
-        filterMap[it] ?: object : AbstractSpecification<Message>() {
+        filterMap[it] ?: object : AbstractSpecification<MessagePair>() {
             //如果不存在特定名称的过滤器就返回默认 true 的过滤器
-            override fun isSatisfiedBy(t: Message): Boolean {
+            override fun isSatisfiedBy(t: MessagePair): Boolean {
                 return true
             }
         }
     }.calExpression()
 
-    fun filter(message: Mono<Message>): Mono<Message> {
-        return message.filter(filterChain::isSatisfiedBy)
+    fun filter(messagePair: Mono<MessagePair>): Mono<MessagePair> {
+        return messagePair.filter(filterChain::isSatisfiedBy)
     }
 }
 
 @Service
-class MessageToFilter : AbstractSpecification<Message>() {
-    override fun isSatisfiedBy(t: Message): Boolean {
-        return t.to != null
+class SyncMessageFilter(
+    private val messageService: MessageService,
+) : AbstractSpecification<MessagePair>() {
+    override fun isSatisfiedBy(t: MessagePair): Boolean {
+        // 同步机器人聊天消息
+        Mono.zip(messageService.send(t.questionMessage), messageService.send(t.answerMessage))
+            .subscribe()
+        return true
     }
 }

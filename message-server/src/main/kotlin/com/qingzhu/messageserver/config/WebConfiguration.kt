@@ -40,6 +40,7 @@ class WebConfiguration : WebFluxConfigurer {
                 "/message".nest {
                     // 发送消息
                     POST("/send", messageHandler::send)
+                    POST("/sync", messageHandler::syncBotMessage)
                     POST("/send/assignment", messageHandler::sendAssignmentEvent)
                     POST("/search", messageHandler::search)
                     GET("/has-history-msg", messageHandler::hasHistoryMessage)

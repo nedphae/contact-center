@@ -2,13 +2,16 @@ package com.qingzhu.imaccess.service
 
 import com.qingzhu.imaccess.domain.dto.CustomerBaseStatusDto
 import com.qingzhu.imaccess.domain.query.CustomerConfig
+import com.qingzhu.imaccess.domain.view.ChatUIMessage
 import com.qingzhu.imaccess.domain.view.ConversationView
+import com.qingzhu.imaccess.domain.view.HistoryResult
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactive.awaitSingleOrNull
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 
 @Service
-class BotAccessService(
+class CustomerAccessService(
     private val registerService: RegisterService,
     private val dispatchingCenter: DispatchingCenter,
     private val messageService: MessageService,
@@ -31,5 +34,14 @@ class BotAccessService(
         }
     }
 
+    fun hasHistoryMessage(organizationId: Int, userId: Long): Mono<Boolean> {
+        return messageService.hasHistoryMessage(organizationId, userId)
+    }
 
+    fun loadHistoryMessage(organizationId: Int, userId: Long, lastSeqId: Long?, pageSize: Int?): Mono<HistoryResult> {
+        return messageService.loadHistoryMessage(organizationId, userId, lastSeqId, pageSize)
+            .map {
+                HistoryResult(it.last().seqId, it.content.map(ChatUIMessage::fromMessage).reversed(), it.hasNext())
+            }
+    }
 }

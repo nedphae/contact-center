@@ -37,7 +37,7 @@ data class ConversationViewDto @Default constructor(
 
 @Mapper(componentModel = "default", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface ConversationStatusAndViewMapper {
-    fun map2View(staff: ConversationStatusDto): ConversationViewDto
+    fun map2View(conv: ConversationStatusDto): ConversationViewDto
 
     companion object {
         val mapper: ConversationStatusAndViewMapper = Mappers.getMapper(ConversationStatusAndViewMapper::class.java)

@@ -161,7 +161,13 @@ class MessageService(
         val isBot = message.creatorType == CreatorType.STAFF
         val userId = if (isBot) message.to else message.from
         val key = "${message.organizationId}:${CreatorType.CUSTOMER.name.toLowerCase()}:${userId}"
-        return zSet.add(key, message.toJson(), message.seqId.toDouble())
+        val chatMessage = ChatMessageMapper.mapper.mapToFromMessage(message)
+        return Mono
+            .zip(
+                zSet.add(key, message.toJson(), message.seqId.toDouble()),
+                chatMessagePORepository.save(ChatMessagePO(chatMessage, userId!!))
+            )
+            .map { it.t1 }
     }
 
     suspend fun transformTo() {

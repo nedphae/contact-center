@@ -3,6 +3,7 @@ package com.qingzhu.bot.knowledgebase.service
 import com.qingzhu.bot.knowledgebase.domain.dto.StaffStatusDto
 import com.qingzhu.bot.knowledgebase.domain.dto.StaffWithShuntDto
 import com.qingzhu.common.component.BaseWebClient
+import com.qingzhu.common.domain.shared.msg.value.Message
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -27,7 +28,14 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
             .toEntity()
     }
 
-
+    fun send(message: Message): Mono<ResponseEntity<Unit>> {
+        return webClient
+            .post()
+            .uri("/message/sync")
+            .bodyValue(message)
+            .retrieve()
+            .toEntity()
+    }
 }
 
 @Service

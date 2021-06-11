@@ -1,6 +1,8 @@
 package com.qingzhu.bot.knowledgebase.controller
 
+import com.qingzhu.bot.knowledgebase.domain.view.ChatUIMessage
 import com.qingzhu.bot.knowledgebase.service.QABotService
+import com.qingzhu.common.util.JsonUtils
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -15,9 +17,10 @@ class QABotHandler(
     suspend fun getAnswer(sr: ServerRequest): ServerResponse {
         val userId = sr.queryParam("u").map { it.toLong() }.orElse(null)
         val botId = sr.queryParam("b").map { it.toLong() }.orElse(null)
-        val question = sr.queryParam("q").orElse(null)
-        if (userId != null && botId != null && question != null) {
-            val answer = qaBotService.findAnswerByQuestion(userId, botId, question)
+        val question = sr.queryParam("q").map { JsonUtils.fromJson<ChatUIMessage>(it) }.orElse(null)
+        val conversationId = sr.queryParam("c").map { it.toLong() }.orElse(null)
+        if (userId != null && botId != null && question != null && conversationId != null) {
+            val answer = qaBotService.findAnswerByQuestion(userId, botId, conversationId, question)
             if (answer != null) {
                 return ok().bodyValueAndAwait(answer)
             }
