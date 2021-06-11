@@ -5,7 +5,6 @@ import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.imaccess.domain.dto.*
 import com.qingzhu.imaccess.domain.view.ConversationView
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.data.domain.Slice
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.*
@@ -170,14 +169,14 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
             .bodyToMono()
     }
 
-    fun loadHistoryMessage(organizationId: Int, userId: Long, lastSeqId: Long, pageSize: Int): Mono<Slice<Message>> {
+    fun loadHistoryMessage(organizationId: Int, userId: Long, lastSeqId: Long?, pageSize: Int?): Mono<RestResponsePage<Message>> {
         return webClient
             .get()
             .uri {
-                it.path("/message/has-history-msg")
+                it.path("/message/history")
                     .queryParam("organizationId", organizationId)
                     .queryParam("userId", userId)
-                    .queryParam("pageSize", userId)
+                    .queryParam("pageSize", pageSize)
                     .queryParam("lastSeqId", lastSeqId)
                     .build()
             }

@@ -72,6 +72,8 @@ class WebConfiguration : WebFluxConfigurer {
             "/access".nest {
                 "/customer".nest {
                     POST("/register", customerAccessHandler::register)
+                    GET("/has-history-message", customerAccessHandler::hasHistoryMessage)
+                    GET("/message/history", customerAccessHandler::loadHistoryMessage)
                 }
             }
         }

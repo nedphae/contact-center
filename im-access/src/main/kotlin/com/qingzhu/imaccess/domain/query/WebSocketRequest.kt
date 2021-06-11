@@ -71,7 +71,7 @@ fun <T, R> Mono<T>.messageSubscribe(ackRequest: AckRequest, request: WebSocketRe
         // 如果有过滤的消息就调用
         .doOnDiscard(Message::class.java) {
             // 过滤没设置收件人的消息，或其他有问题消息并返回 400
-            AckBuilder<String>(ackRequest).header(request.header).httpStatus(HttpStatus.BAD_REQUEST).send()
+            AckBuilder<Message>(ackRequest).header(request.header).httpStatus(HttpStatus.BAD_REQUEST).send()
         }
         // 发送到消息服务器
         .map { block(it) }

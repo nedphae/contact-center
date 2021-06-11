@@ -57,3 +57,7 @@ open class RangeQuery<T>(
     @GraphQLDescription("是否包括 到")
     val includeUpper: Boolean? = true,
 )
+
+/******************     拉取历史聊天消息的领域对象      ********************/
+
+

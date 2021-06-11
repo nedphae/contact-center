@@ -1,6 +1,7 @@
 package com.qingzhu.messageserver.controller
 
 import com.qingzhu.common.domain.shared.msg.dto.MessageDto
+import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.common.message.getChatMessageSnowFlake
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.domain.query.ConversationQuery
@@ -34,6 +35,13 @@ class MessageHandler(
             }.awaitSingle()
     }
 
+    suspend fun syncBotMessage(sr: ServerRequest): ServerResponse {
+        return sr.bodyToMono<Message>().flatMap(messageService::syncBotMessage)
+            .flatMap {
+                if (it) ok().build() else status(HttpStatus.NOT_ACCEPTABLE).build()
+            }.awaitSingle()
+    }
+
     suspend fun sendAssignmentEvent(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<ConversationStatus>().transform(messageService::sendAssignmentEvent)
             .then(ok().build()).awaitSingle()
@@ -57,9 +65,15 @@ class MessageHandler(
     suspend fun loadHistoryMessage(sr: ServerRequest): ServerResponse {
         val userId = sr.queryParam("userId").map { it.toLong() }.orElse(null)
         val orgId = sr.queryParam("organizationId").map { it.toInt() }.orElse(null)
-        val lastSeqId =
-            sr.queryParam("lastSeqId").map { it.toLong() }.orElse(getChatMessageSnowFlake().getNextSequenceId())
-        val count = sr.queryParam("pageSize").map { it.toInt() }.orElse(null)
+        val lastSeqId = sr
+            .queryParam("lastSeqId")
+            .filter { it.isNotBlank() }
+            .map { it.toLong() }.orElse(getChatMessageSnowFlake().getNextSequenceId())
+        val count = sr
+            .queryParam("pageSize")
+            .filter { it.isNotBlank() }
+            .map { it.toInt() }
+            .orElse(20)
         return messagePersistentService.loadHistoryMessage(orgId, userId, lastSeqId, count)
             .flatMap {
                 ok().bodyValue(it)

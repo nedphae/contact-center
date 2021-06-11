@@ -10,7 +10,6 @@ import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.domain.value.CustomerToStaff
 import com.qingzhu.messageserver.mapper.ChatMessageMapper
 import com.qingzhu.messageserver.repository.ChatMessagePORepository
-import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.cloud.stream.function.StreamBridge
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.ReactiveZSetOperations
@@ -158,11 +157,11 @@ class MessageService(
     /**
      * bot 消息处理，写入到用户的 redis zSet 列表
      */
-    suspend fun syncBotMessage(message: Message): Boolean {
+    fun syncBotMessage(message: Message): Mono<Boolean> {
         val isBot = message.creatorType == CreatorType.STAFF
         val userId = if (isBot) message.to else message.from
         val key = "${message.organizationId}:${CreatorType.CUSTOMER.name.toLowerCase()}:${userId}"
-        return zSet.add(key, message.toJson(), message.seqId.toDouble()).awaitSingle()
+        return zSet.add(key, message.toJson(), message.seqId.toDouble())
     }
 
     suspend fun transformTo() {

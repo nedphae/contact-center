@@ -26,6 +26,8 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
             .retrieve()
             .toEntity()
     }
+
+
 }
 
 @Service

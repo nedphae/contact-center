@@ -51,9 +51,9 @@ data class ChatMessagePO(
 
     fun toChatMessage(): ChatMessage {
         return ChatMessage(
+            this.chatMessageKey.organizationId,
             this.uuid,
             this.chatMessageKey.seqId,
-            this.chatMessageKey.organizationId,
             this.createdAt,
             this.conversationId,
             this.from,

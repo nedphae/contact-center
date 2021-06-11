@@ -112,7 +112,7 @@ class MessagePersistentService(
                                 organizationId,
                                 userId.toString(),
                                 lastSeqId,
-                                CassandraPageRequest.first(pageSize)
+                                page
                             )
                             .map { slice ->
                                 SliceImpl(slice.content.map { it.toChatMessage() }, page, slice.hasNext())
@@ -123,15 +123,27 @@ class MessagePersistentService(
                         SliceImpl(list, page, true).toMono()
                     }
                     else -> {
-                        val size = pageSize + 1 - list.size
-                        chatMessagePORepository.findAllBySeqId(
-                            organizationId,
-                            userId.toString(),
-                            list.last().seqId,
-                            page
-                        ).map { slice ->
-                            list.addAll(slice.content.map { it.toChatMessage() })
-                            SliceImpl(list, CassandraPageRequest.first(pageSize), slice.hasNext())
+                        when (val size = pageSize - list.size) {
+                            0 -> {
+                                chatMessagePORepository.countAll(organizationId, userId.toString())
+                                    .map { count ->
+                                        count != 0L
+                                    }
+                                    .map {
+                                        SliceImpl(list, page, it)
+                                    }
+                            }
+                            else -> {
+                                chatMessagePORepository.findAllBySeqId(
+                                    organizationId,
+                                    userId.toString(),
+                                    list.last().seqId,
+                                    CassandraPageRequest.first(size)
+                                ).map { slice ->
+                                    list.addAll(slice.content.map { it.toChatMessage() })
+                                    SliceImpl(list, page, slice.hasNext())
+                                }
+                            }
                         }
                     }
                 }

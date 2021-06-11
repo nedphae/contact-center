@@ -12,6 +12,7 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(project(":common"))
 
+    implementation("org.antlr:antlr4-runtime:4.8")
     implementation("com.hazelcast:hazelcast:4.0.2")
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis")

@@ -48,7 +48,7 @@ class StaffStatusHandler(
     }
 
     suspend fun findAllOnlineStaff(sr: ServerRequest): ServerResponse {
-        val (oid, sid, name) = sr.awaitGetPrincipalTriple()
+        val (oid, _, _) = sr.awaitGetPrincipalTriple()
         return (if (oid != null) {
             val result = staffStatusService.findAllOnlineStaff(oid)
             ok().bodyValue(result)
@@ -58,7 +58,6 @@ class StaffStatusHandler(
 
 @RestController
 class CustomerStatusHandler(private val customerStatusService: CustomerStatusService) {
-    val response = ok().build()
 
     suspend fun findStaffIdOrShuntId(sr: ServerRequest): ServerResponse {
         return sr.getOrgAnd("userId") { oi, uid ->
@@ -81,7 +80,7 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
     }
 
     suspend fun findAllOnlineCustomer(sr: ServerRequest): ServerResponse {
-        val (oid, sid, name) = sr.awaitGetPrincipalTriple()
+        val (oid, _, _) = sr.awaitGetPrincipalTriple()
         return (if (oid != null) {
             val result = customerStatusService.findAllOnlineCustomer(oid)
             ok().bodyValue(result)
@@ -107,7 +106,7 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
 class ConversationStatusHandler(private val conversationStatusService: ConversationStatusService) {
 
     suspend fun findByUserId(sr: ServerRequest): ServerResponse {
-        return sr.getOrgAnd("usedId") { oi, uid ->
+        return sr.getOrgAnd("userId") { oi, uid ->
             conversationStatusService.findByUserId(oi, uid.toLong())
                 .transform { ok().body(it) }
         }
