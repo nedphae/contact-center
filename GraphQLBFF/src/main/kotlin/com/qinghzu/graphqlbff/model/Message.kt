@@ -58,6 +58,4 @@ open class RangeQuery<T>(
     val includeUpper: Boolean? = true,
 )
 
-/******************     拉取历史聊天消息的领域对象      ********************/
-
 

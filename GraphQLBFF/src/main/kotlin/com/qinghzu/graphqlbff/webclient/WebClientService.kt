@@ -32,7 +32,7 @@ class MessageService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.B
             .bodyToMono()
     }
 
-    fun searchConv(conversationQuery: ConversationQuery): Mono<String> {
+    fun searchConv(conversationQuery: ConversationQuery): Mono<RestResponsePage<SearchHit<Conversation>>> {
         return webClient
             .post()
             .uri("/message/search")

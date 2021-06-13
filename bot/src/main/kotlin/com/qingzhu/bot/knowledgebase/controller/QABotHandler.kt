@@ -21,7 +21,7 @@ class QABotHandler(
         val conversationId = sr.queryParam("c").map { it.toLong() }.orElse(null)
         if (userId != null && botId != null && question != null && conversationId != null) {
             val answer = qaBotService.findAnswerByQuestion(userId, botId, conversationId, question)
-            if (answer != null) {
+            if (answer.isNullOrEmpty().not()) {
                 return ok().bodyValueAndAwait(answer)
             }
         }

@@ -3,7 +3,6 @@ package com.qingzhu.imaccess.controller
 import com.qingzhu.imaccess.domain.query.CustomerConfig
 import com.qingzhu.imaccess.service.CustomerAccessService
 import com.qingzhu.imaccess.service.DispatchingCenter
-import com.qingzhu.imaccess.service.MessageService
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.ServerRequest

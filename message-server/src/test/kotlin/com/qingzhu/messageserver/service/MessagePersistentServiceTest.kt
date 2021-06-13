@@ -64,9 +64,9 @@ internal class MessagePersistentServiceTest : MessageServerApplicationTests() {
             .build()
 
         val result = reactiveElasticsearchTemplate.searchForPage(query, Conversation::class.java)
-            .map { PageImpl(it.content, it.pageable, it.totalElements) }
         val test = result
-            .doOnNext { println(it.content.toJson()) }
+            .doOnNext { println(it.toJson()) }
+            .map { PageImpl(it.content, it.pageable, it.totalElements) }
             .map { it.toJson() }
             .doOnNext { println(it) }
             .map { JsonUtils.fromJson<LinkedHashMap<String, Any>>(it) }

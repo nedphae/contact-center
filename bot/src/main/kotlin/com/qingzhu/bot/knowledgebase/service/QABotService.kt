@@ -1,5 +1,6 @@
 package com.qingzhu.bot.knowledgebase.service
 
+import arrow.core.extensions.list.applicative.just
 import com.qingzhu.bot.knowledgebase.domain.dto.MessagePair
 import com.qingzhu.bot.knowledgebase.domain.view.ChatUIContent
 import com.qingzhu.bot.knowledgebase.domain.view.ChatUIMessage
@@ -28,7 +29,7 @@ class QABotService(
         botId: Long,
         conversationId: Long,
         question: ChatUIMessage
-    ): ChatUIMessage? {
+    ): List<ChatUIMessage> {
         //根据 bot Id 获取映射的 KnowledgeBaseId
         val botConfig = botConfigRepository.findByBotId(botId)
         if (botConfig != null) {
@@ -66,13 +67,17 @@ class QABotService(
                 answer,
                 sysCode
             )
+            // TODO 将关联消息分装成卡片 recommend
+
             return messageFilterService
                 .filter(Mono.just(MessagePair(requestMessage, responseMessage)))
                 .map { it.answerMessage }
                 .map(ChatUIMessage::fromMessage)
                 .awaitSingleOrDefault(ChatUIMessage(type = "cmd", content = ChatUIContent("agent_join")))
+                .just()
+                // .plus()
         }
-        return ChatUIMessage(content = ChatUIContent("无法找到机器人，请联系管理员"))
+        return ChatUIMessage(content = ChatUIContent("无法找到机器人，请联系管理员")).just()
     }
 
     // TODO 增加 redis cache

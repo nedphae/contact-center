@@ -68,10 +68,13 @@ class MessagePersistentService(
     }
 
     fun searchConv(conversationQuery: ConversationQuery): Mono<Page<SearchHit<Conversation>>> {
-        return reactiveElasticsearchTemplate.searchForPage(
-            conversationQuery.buildSearchQuery().build(),
-            Conversation::class.java
-        ).map { PageImpl(it.content, it.pageable, it.totalElements) }
+        return reactiveElasticsearchTemplate
+            .searchForPage(
+                conversationQuery.buildSearchQuery().build(),
+                Conversation::class.java
+            )
+            // 缩小 SearchHit 导致的序列化太大
+            .map { PageImpl(it.content, it.pageable, it.totalElements) }
     }
 
     fun hasHistoryMessage(organizationId: Int, userId: Long): Mono<Boolean> {
