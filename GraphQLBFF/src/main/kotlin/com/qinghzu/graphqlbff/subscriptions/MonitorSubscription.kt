@@ -4,6 +4,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.server.operations.Subscription
 import com.qinghzu.graphqlbff.context.MyGraphQLContext
+import com.qinghzu.graphqlbff.model.MessagePage
 import com.qinghzu.graphqlbff.model.StaffUnion
 import com.qinghzu.graphqlbff.webclient.MessageService
 import com.qinghzu.graphqlbff.webclient.StaffAdminService
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Duration
+import java.util.concurrent.atomic.AtomicLong
 
 @GraphQLDescription("订阅客服信息")
 @Component
@@ -20,7 +22,7 @@ class MonitorSubscription(
     private val messageService: MessageService,
 ) : Subscription {
 
-    @GraphQLDescription("查询客服组")
+    @GraphQLDescription("监控在线客服组")
     fun staffOnlineList(@GraphQLIgnore context: MyGraphQLContext, seconds: Long? = 5): Flux<StaffUnion> {
         return Flux.interval(Duration.ofSeconds(seconds ?: 5))
             .flatMap {
@@ -39,6 +41,22 @@ class MonitorSubscription(
                     it.t4,
                     it.t5,
                 )
+            }
+    }
+
+    @GraphQLDescription("""同步聊天消息
+        |每5秒同步一次，如果是第一次同步，获取最近的20条消息
+    """)
+    fun monitorMessageByUser(@GraphQLIgnore context: MyGraphQLContext, userId: Long, seconds: Long? = 5): Flux<MessagePage> {
+        val atomicLastId = AtomicLong(-1)
+        return Flux.interval(Duration.ofSeconds(seconds ?: 5))
+            .flatMap {
+                val lastId = atomicLastId.get()
+                val lastSeqId = if (lastId == -1L) null else lastId
+                messageService.syncHistoryMessage(userId, lastSeqId)
+                    .doOnNext {
+                        atomicLastId.compareAndSet(lastId, it.content?.last()?.seqId ?: -1)
+                    }
             }
     }
 }

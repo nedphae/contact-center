@@ -136,6 +136,12 @@ spring:
           uri: lb://graphql-bff
           predicates:
             - Path=/graphql/**
+
+        # 聚合服务
+        - id: graphql_subscriptions_route
+          uri: lb://graphql-bff
+          predicates:
+            - Path=/subscriptions/**
 logging:
   level:
     root: info

@@ -1,6 +1,6 @@
 package com.qingzhu.staffadmin.staff.controller
 
-import com.qingzhu.common.security.awaitGetPrincipalTriple
+import com.qingzhu.common.security.awaitPrincipalTriple
 import com.qingzhu.staffadmin.staff.repository.ShuntUIConfigRepository
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
@@ -15,7 +15,7 @@ class ShuntUIConfigHandler(
      * 通过 接待组获取 界面配置
      */
     suspend fun getUIConfigByShunt(sr: ServerRequest): ServerResponse {
-        val (orgId, _, _) = sr.awaitGetPrincipalTriple()
+        val (orgId, _, _) = sr.awaitPrincipalTriple()
         val shuntId = sr.queryParamOrNull("shuntId")?.toLong()
         var response = ok().build().awaitSingle()
         if (orgId != null) {

@@ -18,7 +18,10 @@ package com.qinghzu.graphqlbff.execution
 
 import com.expediagroup.graphql.generator.execution.GraphQLContext
 import com.expediagroup.graphql.server.spring.subscriptions.ApolloSubscriptionHooks
+import com.qinghzu.graphqlbff.context.MyGraphQLContext
 import com.qinghzu.graphqlbff.context.MySubscriptionGraphQLContext
+import com.qingzhu.common.security.SecurityUtils
+import org.springframework.http.HttpHeaders
 import org.springframework.web.reactive.socket.WebSocketSession
 
 /**
@@ -33,6 +36,10 @@ class MySubscriptionHooks : ApolloSubscriptionHooks {
     ): GraphQLContext? {
         if (graphQLContext != null && graphQLContext is MySubscriptionGraphQLContext) {
             graphQLContext.auth = connectionParams["Authorization"]
+        }
+
+        if (graphQLContext != null && graphQLContext is MyGraphQLContext) {
+            graphQLContext.oAuth = SecurityUtils.getBearerAuthentication(connectionParams[HttpHeaders.AUTHORIZATION])
         }
         return graphQLContext
     }

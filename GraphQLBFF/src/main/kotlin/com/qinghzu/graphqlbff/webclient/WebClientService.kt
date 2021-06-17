@@ -32,7 +32,7 @@ class MessageService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.B
             .bodyToMono()
     }
 
-    fun searchConv(conversationQuery: ConversationQuery): Mono<RestResponsePage<SearchHit<Conversation>>> {
+    fun searchConv(conversationQuery: ConversationQuery): Mono<SearchHitPage> {
         return webClient
             .post()
             .uri("/message/search")
@@ -55,6 +55,19 @@ class MessageService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.B
             .uri("/status/customer/online")
             .retrieve()
             .bodyToFlux()
+    }
+
+    fun syncHistoryMessage(userId: Long, lastSeqId: Long?): Mono<MessagePage> {
+        return webClient
+            .get()
+            .uri {
+                it.path("/message/history/customer/sync")
+                    .queryParam("userId", userId)
+                    .queryParam("lastSeqId", lastSeqId)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
     }
 }
 
@@ -151,7 +164,7 @@ class StaffAdminService(@Qualifier("bearerWebClient") webClientBuilder: WebClien
             .bodyToMono()
     }
 
-    fun saveQuickReplyGroup(quickReplyGroup: QuickReplyGroupInput): Mono<QuickReplyGroup>{
+    fun saveQuickReplyGroup(quickReplyGroup: QuickReplyGroupInput): Mono<QuickReplyGroup> {
         return webClient
             .post()
             .uri("/staff/quick-reply/group")
@@ -170,9 +183,9 @@ class StaffAdminService(@Qualifier("bearerWebClient") webClientBuilder: WebClien
 
     fun deleteQuickReplyGroup(id: Long): Mono<Void> {
         return webClient
-        .delete()
-        .uri("/staff/quick-reply/group/${id}")
-        .retrieve()
-        .bodyToMono()
+            .delete()
+            .uri("/staff/quick-reply/group/${id}")
+            .retrieve()
+            .bodyToMono()
     }
 }

@@ -1,8 +1,11 @@
 package com.qinghzu.graphqlbff.model
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import com.qingzhu.common.domain.shared.msg.value.Message
-import java.time.Instant
+import com.qingzhu.common.message.getChatMessageSnowFlake
+import java.util.*
+
+class MySearchHit : SearchHit<Conversation>()
+
+class SearchHitPage : RestResponsePage<MySearchHit>()
 
 /**
  * 会话信息
@@ -40,8 +43,7 @@ data class Conversation(
     /** 客服名字 或为 "机器人" */
     var nickName: String,
     /** 会话开始时间 */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    val startTime: Instant,
+    val startTime: String,
     /** 客户id */
     val userId: Long,
     /** 客户名称 */
@@ -75,13 +77,11 @@ data class Conversation(
     /** 会话关闭原因 */
     var closeReason: String? = null,
     /** 结束时间 */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    var endTime: Instant? = null,
+    var endTime: String? = null,
     /** 用户评价内容 */
     var evaluate: Evaluate? = null,
     /** 客服首次响应的时间戳 */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    var staffFirstReplyTime: Instant? = null,
+    var staffFirstReplyTime: String? = null,
     /** 客服首次响应时长(访客首条消息与客服首次回复消息的时间间隔) */
     var firstReplyCost: Long = 0,
     /** 置顶时长 */
@@ -93,8 +93,7 @@ data class Conversation(
     /** 对话回合数 */
     var roundNumber: Int = 0,
     /** 访客首条消息时间 */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    var clientFirstMessageTime: Instant? = null,
+    var clientFirstMessageTime: String? = null,
     /** 客服平均响应时长 */
     var avgRespDuration: Long? = 0,
     /** 是否有效会话 */
@@ -113,6 +112,30 @@ data class Conversation(
     var terminator: String? = null,
 
     var chatMessages: List<Message>? = null,
+)
+
+class MessagePage : RestResponsePage<Message>()
+
+data class Message(
+    /** 公司id */
+    var organizationId: Int? = null,
+    val uuid: String = UUID.randomUUID().toString(),
+    val seqId: Long = getChatMessageSnowFlake().getNextSequenceId(),
+    val createdAt: String,
+    /** 会话id */
+    val conversationId: Long,
+    /** 消息来源 (服务器设置) */
+    var from: Long? = null,
+    /** 消息送至 */
+    var to: Long? = null,
+    /** 消息类型 接收者类型 */
+    val type: Int,
+    /** 创建者类型 */
+    val creatorType: Int,
+    /** 内容 */
+    val content: String,
+    /** 昵称 */
+    val nickName: String? = null
 )
 
 class Evaluate(

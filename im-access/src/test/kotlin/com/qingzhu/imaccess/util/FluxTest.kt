@@ -11,36 +11,25 @@ import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import reactor.test.StepVerifier
 import java.time.Duration
+import java.util.concurrent.atomic.AtomicLong
 
 internal class FluxTest {
 
     @Test
-    fun testContext() {
-        Mono.just("Hello")
+    fun testContextWriteWithDefer() {
+        val atomicLastId = AtomicLong(1)
+        Flux.interval(Duration.ofSeconds(5))
             .flatMap {
-                Mono.deferContextual { ctx ->
-                    println("1 " + ctx.get("test") as String)
-                    Mono.just(it + " " + ctx.get("test"))
-                }
+                println("第: ${it + 1} 次")
+                val lastId = atomicLastId.get()
+                Mono.just(listOf(1 * lastId, 2 * lastId, 3 * lastId))
+                    .doOnNext { list ->
+                        atomicLastId.compareAndSet(lastId, list.last())
+                        println(list)
+                    }
             }
-            .doOnNext {
-                Mono.subscriberContext()
-                    .map { ctx ->
-                        val rr = ctx.get<String>("test")
-                        println("3 " + rr)
-                        rr
-                    }.subscribe()
-            }
-            .transformDeferredContextual { t, u ->
-                println("2 " +  u.get("test") as String)
-                t
-            }
-            .map { "$it World" }
-            // contextWrite 必须在使用该 context 的后面
-            .contextWrite { it.put("test", "testContext") }
-            .subscribe {
-                println("subscribe: $it")
-            }
+            .subscribe()
+        Thread.sleep(5000 * 10)
     }
 
     @Test

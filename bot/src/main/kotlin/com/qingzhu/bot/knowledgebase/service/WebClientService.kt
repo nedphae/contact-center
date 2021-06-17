@@ -31,7 +31,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
     fun send(message: Message): Mono<ResponseEntity<Unit>> {
         return webClient
             .post()
-            .uri("/message/sync")
+            .uri("/message/bot-sync")
             .bodyValue(message)
             .retrieve()
             .toEntity()

@@ -3,6 +3,7 @@ package com.qingzhu.messageserver.controller
 import com.qingzhu.common.domain.shared.msg.dto.MessageDto
 import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.common.message.getChatMessageSnowFlake
+import com.qingzhu.common.security.awaitPrincipalTriple
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.domain.query.ConversationQuery
 import com.qingzhu.messageserver.service.MessagePersistentService
@@ -78,5 +79,25 @@ class MessageHandler(
             .flatMap {
                 ok().bodyValue(it)
             }.awaitSingle()
+    }
+
+    /**
+     * 同步聊天消息
+     * 每5秒同步一次，如果是第一次同步，获取最近的20条消息
+     */
+    suspend fun syncHistoryMessage(sr: ServerRequest): ServerResponse {
+        val userId = sr.queryParam("userId").map { it.toLong() }.orElse(null)
+        val lastSeqId = sr.queryParam("lastSeqId").map { it.toLong() }.orElse(null)
+        val (oid, _, _) = sr.awaitPrincipalTriple()
+        return if (oid != null) {
+            if (lastSeqId == null) {
+                // 没有发同步id 就获取最近20 条
+                messagePersistentService.loadHistoryMessage(oid, userId, getChatMessageSnowFlake().getNextSequenceId(), 20)
+            } else {
+                messagePersistentService.syncHistoryMessage(oid, userId, lastSeqId)
+            }.flatMap {
+                ok().bodyValue(it)
+            }.awaitSingle()
+        } else ok().build().awaitSingle()
     }
 }

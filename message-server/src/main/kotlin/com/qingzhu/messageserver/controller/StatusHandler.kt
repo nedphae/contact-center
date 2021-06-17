@@ -1,6 +1,6 @@
 package com.qingzhu.messageserver.controller
 
-import com.qingzhu.common.security.awaitGetPrincipalTriple
+import com.qingzhu.common.security.awaitPrincipalTriple
 import com.qingzhu.common.util.getOrgAnd
 import com.qingzhu.messageserver.domain.dto.CustomerBaseClientDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
@@ -48,7 +48,7 @@ class StaffStatusHandler(
     }
 
     suspend fun findAllOnlineStaff(sr: ServerRequest): ServerResponse {
-        val (oid, _, _) = sr.awaitGetPrincipalTriple()
+        val (oid, _, _) = sr.awaitPrincipalTriple()
         return (if (oid != null) {
             val result = staffStatusService.findAllOnlineStaff(oid)
             ok().bodyValue(result)
@@ -80,7 +80,7 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
     }
 
     suspend fun findAllOnlineCustomer(sr: ServerRequest): ServerResponse {
-        val (oid, _, _) = sr.awaitGetPrincipalTriple()
+        val (oid, _, _) = sr.awaitPrincipalTriple()
         return (if (oid != null) {
             val result = customerStatusService.findAllOnlineCustomer(oid)
             ok().bodyValue(result)

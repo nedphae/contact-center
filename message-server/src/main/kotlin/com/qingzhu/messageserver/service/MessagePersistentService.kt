@@ -18,6 +18,7 @@ import org.springframework.data.redis.connection.RedisZSetCommands
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.ReactiveZSetOperations
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 
@@ -88,6 +89,29 @@ class MessagePersistentService(
                 } else Mono.just(true)
             }
     }
+
+    /**
+     * 手动同步聊天小i下
+     */
+    fun syncHistoryMessage(
+        organizationId: Int,
+        userId: Long,
+        lastSeqId: Long,
+    ): Mono<Slice<ChatMessage>> {
+        return zSet
+            .reverseRangeByScore(
+                "msg:$organizationId:customer:$userId",
+                Range.rightOpen(lastSeqId.toDouble(), Double.MAX_VALUE)
+            )
+            .map {
+                JsonUtils.fromJson<ChatMessage>(it)
+            }
+            .collectList()
+            .map {
+                SliceImpl(it, CassandraPageRequest.first(it.size), false)
+            }
+    }
+
 
     fun loadHistoryMessage(
         organizationId: Int,

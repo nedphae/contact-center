@@ -82,6 +82,10 @@ object SecurityUtils {
 
     fun getBearerAuthentication(headers: HttpHeaders): Authentication? {
         val authorization = headers.getFirst(HttpHeaders.AUTHORIZATION)
+        return getBearerAuthentication(authorization)
+    }
+
+    fun getBearerAuthentication(authorization: String?): Authentication? {
         if (!StringUtils.startsWithIgnoreCase(authorization, "bearer")) {
             return null
         }
@@ -158,7 +162,7 @@ fun Mono<out Principal>.getPrincipalTriple(): Mono<Triple<Mono<Int>, Mono<Long>,
 /**
  * 协程 获取用户 [Principal] 并解析为 [Triple]，包括 机构id，客服id，客服名称
  */
-suspend fun ServerRequest.awaitGetPrincipalTriple(): Triple<Int?, Long?, String?> {
+suspend fun ServerRequest.awaitPrincipalTriple(): Triple<Int?, Long?, String?> {
     val principal = this.awaitPrincipal()
     val jwtPrincipal = (principal as JwtAuthenticationToken).principal as Jwt
     // org id
