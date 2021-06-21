@@ -13,6 +13,8 @@ data class TopicCategory(
     val organizationId: Int,
     /** 分类名称 */
     var name: String,
+    /** 所属知识库ID **/
+    val knowledgeBaseId: Long,
     /** 上级分类 */
     val pid: Long?,
 ) : AbstractAuditingEntity() {

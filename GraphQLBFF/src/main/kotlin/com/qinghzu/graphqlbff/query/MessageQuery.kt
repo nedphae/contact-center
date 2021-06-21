@@ -18,6 +18,6 @@ class MessageQuery(private val messageService: MessageService) : Query {
     }
 
     /**
-     * TODO: 拉取历史消息
+     * TODO: 根据userId拉取历史消息
      */
 }

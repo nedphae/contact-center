@@ -75,6 +75,19 @@ class MessageService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.B
 class CustomerService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.Builder) :
     BaseWebClient(webClientBuilder, "http://dispatching-center") {
 
+    fun findAllCustomer(pageSize: Int, page: Int): Mono<CustomerPage> {
+        return webClient
+            .get()
+            .uri {
+                it.path("/customer/all")
+                    .queryParam("pageSize", pageSize)
+                    .queryParam("page", page)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
+    }
+
     fun findCustomer(organizationId: Int, userId: Long): Mono<Customer> {
         return webClient
             .get()

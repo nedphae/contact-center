@@ -8,6 +8,7 @@ import com.qingzhu.bot.knowledgebase.repository.BotConfigRepository
 import com.qingzhu.bot.knowledgebase.repository.KnowledgeBaseRepository
 import com.qingzhu.bot.knowledgebase.repository.TopicCategoryRepository
 import com.qingzhu.bot.knowledgebase.repository.search.TopicRepository
+import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
 
 @Service
@@ -31,5 +32,21 @@ class BotManageService(
 
     suspend fun saveTopicCategory(topicCategory: TopicCategory): TopicCategory {
         return topicCategoryRepository.save(topicCategory)
+    }
+
+    suspend fun findAllTopic(organizationId: Int): Flow<Topic> {
+        return topicRepository.findAllByOrganizationId(organizationId)
+    }
+
+    suspend fun findAllBotConfig(organizationId: Int): Flow<BotConfig> {
+        return botConfigRepository.findAllByOrganizationId(organizationId)
+    }
+
+    suspend fun findAllKnowledgeBase(organizationId: Int): Flow<KnowledgeBase> {
+        return knowledgeBaseRepository.findAllByOrganizationId(organizationId)
+    }
+
+    suspend fun findTopicCategory(organizationId: Int): Flow<TopicCategory> {
+        return topicCategoryRepository.findAllByOrganizationId(organizationId)
     }
 }

@@ -1,5 +1,7 @@
 package com.qingzhu.dispatcher.customer.controller
 
+import com.qingzhu.common.page.PageParam
+import com.qingzhu.common.security.awaitPrincipalTriple
 import com.qingzhu.dispatcher.customer.domain.dto.CustomerDto
 import com.qingzhu.dispatcher.customer.service.CustomerService
 import kotlinx.coroutines.reactive.awaitSingle
@@ -20,7 +22,8 @@ class CustomerHandler(
     }
 
     suspend fun getCustomerById(sr: ServerRequest): ServerResponse {
-        val oid = sr.queryParam("organizationId").map { it.toInt() }.orElse(null)
+        val (pOid, ) = sr.awaitPrincipalTriple()
+        val oid = sr.queryParam("organizationId").map { it.toInt() }.orElse(pOid)
         val uid = sr.queryParam("userId").map(String::toLong).orElse(null)
         return ServerResponse.ok().bodyValueAndAwait(customerService.getCustomerById(oid, uid))
     }
@@ -29,5 +32,13 @@ class CustomerHandler(
         val oid = sr.queryParam("organizationId").map { it.toInt() }.orElse(null)
         val uid = sr.queryParam("userId").map(String::toLong).orElse(null)
         return ServerResponse.ok().bodyAndAwait(customerService.getDetailDataByUserId(oid, uid))
+    }
+
+    suspend fun findAllCustomer(sr: ServerRequest): ServerResponse {
+        val (oid, ) = sr.awaitPrincipalTriple()
+        val page = sr.queryParam("page").map(String::toInt).orElse(0)
+        val pageSize = sr.queryParam("pageSize").map(String::toInt).orElse(20)
+        return ServerResponse.ok()
+            .bodyValue(customerService.findAllCustomer(oid, PageParam(page, pageSize))).awaitSingle()
     }
 }

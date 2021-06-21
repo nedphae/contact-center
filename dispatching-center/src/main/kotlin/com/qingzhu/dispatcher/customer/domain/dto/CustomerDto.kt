@@ -25,13 +25,15 @@ data class CustomerDto(
     val mobile: String?,
     /** vip等级 1-10 */
     val vipLevel: Int?,
+    /** 备注 **/
+    var remarks: String?,
 
     val data: List<DetailData>? = null,
 
     val detailDataForUpdate: List<DetailDataInput>? = null,
 ) {
     companion object {
-        fun fromCustomer(customer: Customer): CustomerDto {
+        fun fromCustomer(customer: Customer, data: List<DetailData>? = null): CustomerDto {
             return CustomerDto(
                 id = customer.id,
                 organizationId = customer.organizationId,
@@ -40,7 +42,9 @@ data class CustomerDto(
                 email = customer.email,
                 mobile = customer.mobile,
                 vipLevel = customer.vipLevel,
-                userId = customer.id
+                userId = customer.id,
+                remarks = customer.remarks,
+                data = data,
             )
         }
     }
@@ -52,7 +56,8 @@ data class CustomerDto(
             name = this.name,
             email = this.email,
             mobile = this.mobile,
-            vipLevel = this.vipLevel
+            vipLevel = this.vipLevel,
+            remarks = this.remarks,
         )
     }
 }

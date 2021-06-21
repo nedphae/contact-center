@@ -9,7 +9,7 @@ data class KnowledgeBase(
     /** 机构 ID **/
     val organizationId: Int,
     var name: String,
-    var description: String,
+    var description: String?,
 ) : AbstractAuditingEntity() {
     @Id
     var id: Long? = null

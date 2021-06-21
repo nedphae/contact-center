@@ -28,4 +28,6 @@ data class Customer(
     var mobile: String?,
     /** vip等级 1-10 */
     var vipLevel: Int?,
+    /** 备注 **/
+    var remarks: String?,
 ) : AbstractAuditingEntity()

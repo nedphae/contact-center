@@ -227,7 +227,7 @@ CREATE TABLE bot.knowledge_base
     last_modified_by   varchar(500) NULL,
     last_modified_date timestamp NULL,
     name               varchar(250) NOT NULL,
-    description        varchar(250) NOT NULL,
+    description        varchar(250) NULL,
     CONSTRAINT knowledge_base_pkey PRIMARY KEY (id)
 );
 
@@ -244,6 +244,7 @@ CREATE TABLE bot.topic_category
     last_modified_by   varchar(500) NULL,
     last_modified_date timestamp NULL,
     name               varchar(250) NOT NULL,
+    knowledge_base_id  int8         NOT NULL,
     pid                int8 NULL,
     CONSTRAINT topic_category_pkey PRIMARY KEY (id)
 );
@@ -252,7 +253,6 @@ CREATE
 INDEX topic_category_organization_id_idx ON bot.topic_category USING btree (organization_id);
 CREATE
 INDEX topic_category_pid_idx ON bot.topic_category USING btree (pid);
-
 
 CREATE TABLE dispathcer.customer
 (
@@ -267,6 +267,7 @@ CREATE TABLE dispathcer.customer
     email              varchar(50) NULL,
     mobile             varchar(50) NULL,
     vip_level          int4 NULL,
+	remarks            varchar(500),
     CONSTRAINT customer_pkey PRIMARY KEY (id)
 );
 
