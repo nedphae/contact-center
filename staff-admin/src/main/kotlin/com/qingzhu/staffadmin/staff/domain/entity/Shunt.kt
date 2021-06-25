@@ -12,7 +12,7 @@ data class Shunt(
     @Id
     var id: Long? = null,
     /** 公司id */
-    val organizationId: Int,
+    var organizationId: Int? = null,
     /** 接待组 名称 */
     val name: String,
     // 接待组所属分类

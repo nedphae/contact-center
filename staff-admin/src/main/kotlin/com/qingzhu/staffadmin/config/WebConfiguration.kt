@@ -31,10 +31,12 @@ class WebConfiguration : WebFluxConfigurer {
                     "/shunt".nest {
                         GET("/{code}", shuntHandler::findFirstByCode)
                         GET("/id/{id}", shuntHandler::findById)
-                        GET("", shuntHandler::findAllShunt)
+                        GET("/all", shuntHandler::findAllShunt)
+                        POST("", shuntHandler::saveShunt)
                     }
                     "/group".nest {
-                        GET("", staffGroupHandler::findAllGroup)
+                        GET("/all", staffGroupHandler::findAllGroup)
+                        POST("", staffGroupHandler::saveGroup)
                     }
                     "/quick-reply".nest {
                         GET("/personal", quickRecoveryHandler::findQuickRecoveryByStaff)

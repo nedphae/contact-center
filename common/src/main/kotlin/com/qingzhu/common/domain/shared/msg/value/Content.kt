@@ -32,14 +32,14 @@ data class Content(
         val filename: String,
         val picSize: Int,
         /** pic type */
-        val type: Int
+        val type: String
     )
 
     data class Attachments(
         val mediaId: String,
         val size: Int,
         /** Display different icons according to the type */
-        val type: Int,
+        val type: String,
         /** file path */
         val url: String
     )

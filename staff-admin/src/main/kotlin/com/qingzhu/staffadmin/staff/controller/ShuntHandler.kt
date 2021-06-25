@@ -1,16 +1,15 @@
 package com.qingzhu.staffadmin.staff.controller
 
 import com.qingzhu.common.security.getPrincipalTriple
+import com.qingzhu.staffadmin.staff.domain.entity.Shunt
+import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
 import com.qingzhu.staffadmin.staff.repository.ReactiveShuntRepository
 import com.qingzhu.staffadmin.staff.service.ShuntService
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.reactive.function.server.ServerResponse
+import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import org.springframework.web.reactive.function.server.body
-import org.springframework.web.reactive.function.server.bodyAndAwait
 
 @RestController
 class ShuntHandler(
@@ -34,5 +33,22 @@ class ShuntHandler(
                 .flatMapMany { (oid, _, _) -> oid.flatMapMany { shuntService.findAllShunt(it) } }
                 .asFlow()
         )
+    }
+
+    suspend fun saveShunt(sr: ServerRequest): ServerResponse {
+        val body = sr.bodyToMono<Shunt>()
+            .flatMap {
+                sr.principal().getPrincipalTriple()
+                    .flatMap { (organizationId, _) ->
+                        organizationId.map { oid ->
+                            it.organizationId = oid
+                            it
+                        }
+                    }
+            }
+            .flatMap {
+                shuntService.saveShunt(it)
+            }
+        return ok().body(body).awaitSingle()
     }
 }

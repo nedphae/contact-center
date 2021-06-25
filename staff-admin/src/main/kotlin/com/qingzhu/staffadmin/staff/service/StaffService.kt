@@ -35,7 +35,7 @@ class StaffService(
                     true
                 )
             }.map {
-                InnerUser(it.organizationId, it.id!!, it.username, it.password, it.role.name)
+                InnerUser(it.organizationId!!, it.id!!, it.username, it.password, it.role.name)
             }.switchIfEmpty(Mono.error(UsernameNotFoundException("用户[$username]不存在")))
     }
 
@@ -69,11 +69,11 @@ class StaffService(
 
     fun findAllEnabledBotStaff(): Flux<StaffWithShuntDto> {
         val bots = staffRepository.findAllByStaffTypeAndEnabled(0, true).cache()
-        val shuntMap = bots.collectMultimap { it.organizationId }
+        val shuntMap = bots.collectMultimap { it.organizationId!! }
             .flatMapIterable { map ->
                 map.keys.map { oid ->
                     val ids = map[oid]?.stream()?.map { it.id!! }?.toList()
-                    staffConfigRepository.findAllByOrganizationIdAndStaffIdIn(oid, ids ?: emptyList())
+                    staffConfigRepository.findAllByOrganizationIdAndStaffIdIn(oid!!, ids ?: emptyList())
                 }
             }
             // 压扁

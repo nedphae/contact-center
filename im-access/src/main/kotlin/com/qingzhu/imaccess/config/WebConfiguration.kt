@@ -18,9 +18,6 @@ import org.springframework.web.reactive.socket.server.support.HandshakeWebSocket
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter
 import org.springframework.web.reactive.socket.server.upgrade.ReactorNettyRequestUpgradeStrategy
 
-const val imgBucket = "im-img"
-const val fileBucket = "im-file"
-
 @Configuration
 @EnableWebFlux
 class WebConfiguration : WebFluxConfigurer {
@@ -54,18 +51,22 @@ class WebConfiguration : WebFluxConfigurer {
             }
             // "im".nest { // 即时通讯服务 }
             "/oss".nest {
-                "/chat".nest {
-                    POST("/img") {
-                        fileUploadDownloadHandler.upload(it, imgBucket)
-                    }
-                    GET("/img/{fileName}") {
-                        fileUploadDownloadHandler.download(it, imgBucket)
-                    }
-                    POST("/file") {
-                        fileUploadDownloadHandler.upload(it, fileBucket)
-                    }
-                    GET("/file/{fileName}") {
-                        fileUploadDownloadHandler.download(it, fileBucket)
+                listOf("chat", "staff").forEach { path ->
+                    val imgBucket = "$path-img"
+                    val fileBucket = "$path-file"
+                    "/$path".nest {
+                        POST("/img") {
+                            fileUploadDownloadHandler.upload(it, imgBucket)
+                        }
+                        GET("/img/{fileName}") {
+                            fileUploadDownloadHandler.download(it, imgBucket)
+                        }
+                        POST("/file") {
+                            fileUploadDownloadHandler.upload(it, fileBucket)
+                        }
+                        GET("/file/{fileName}") {
+                            fileUploadDownloadHandler.download(it, fileBucket)
+                        }
                     }
                 }
             }

@@ -1,9 +1,11 @@
 package com.qingzhu.staffadmin.staff.mapper
 
+import com.qingzhu.common.security.password.getBCryptPasswordEncoder
 import com.qingzhu.staffadmin.staff.domain.dto.*
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.entity.QuickReply
 import com.qingzhu.staffadmin.staff.domain.entity.QuickReplyGroup
+import com.qingzhu.staffadmin.staff.domain.query.StaffQuery
 import org.mapstruct.Mapper
 import org.mapstruct.ReportingPolicy
 import org.mapstruct.factory.Mappers
@@ -26,6 +28,14 @@ abstract class DtoMapper {
     }
 
     abstract fun mapToStaffWithShuntDto(staff: Staff): StaffWithShuntDto
+
+    abstract fun mapStaffQueryToStaff(staffQuery: StaffQuery): Staff
+
+    fun mapStaffQueryToStaffWithEncoderPassword(staffQuery: StaffQuery): Staff {
+        val staff = mapStaffQueryToStaff(staffQuery)
+        staff.password = getBCryptPasswordEncoder().encode(staff.password)
+        return staff
+    }
 
     /**
      * Test default fun

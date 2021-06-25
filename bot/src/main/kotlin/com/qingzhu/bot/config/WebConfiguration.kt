@@ -29,11 +29,16 @@ class WebConfiguration : WebFluxConfigurer {
                 }
                 "/bot".nest {
                     GET("/qa", qaBotHandler::getAnswer)
-                    "manage".nest {
+                    "/manage".nest {
                         POST("/topic", botManageHandler::saveTopic)
                         POST("/botConfig", botManageHandler::saveBotConfig)
                         POST("/knowledgeBase", botManageHandler::saveKnowledgeBase)
                         POST("/topicCategory", botManageHandler::saveTopicCategory)
+                        // 查找
+                        GET("/topic", botManageHandler::findAllTopic)
+                        GET("/botConfig", botManageHandler::findAllBotConfig)
+                        GET("/knowledgeBase", botManageHandler::findAllKnowledgeBase)
+                        GET("/topicCategory", botManageHandler::findAllTopicCategory)
                     }
                 }
             }

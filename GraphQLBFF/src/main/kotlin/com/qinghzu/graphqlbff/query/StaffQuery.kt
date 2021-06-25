@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
 @GraphQLDescription("客服信息查询")
 @Component
-class StaffQuery(private val staffAdminService: StaffAdminService) : Query {
+class StaffQuery(private val staffAdminService: StaffAdminService): Query {
     @GraphQLDescription("查询客服组")
     suspend fun allStaffGroup(@GraphQLIgnore context: MyGraphQLContext): List<StaffGroup> {
         return staffAdminService.findAllGroup().awaitWithAuthentication(context.oAuth)
@@ -29,4 +29,7 @@ class StaffQuery(private val staffAdminService: StaffAdminService) : Query {
         return staffAdminService.findAllStaff().awaitWithAuthentication(context.oAuth)
     }
 
+    suspend fun getStaffById(@GraphQLIgnore context: MyGraphQLContext, staffId: Long): Staff? {
+        return staffAdminService.findStaffById(staffId).awaitWithAuthentication(context.oAuth)
+    }
 }

@@ -32,7 +32,7 @@ data class StaffStatus(
 data class Staff(
     var id: Long? = null,
     /** 公司id */
-    val organizationId: Int,
+    val organizationId: Int? = null,
     /** 用户名 */
     val username: String,
     /** 密码 机器人不需要密码 */
@@ -70,7 +70,7 @@ data class Staff(
 data class Shunt(
     var id: Long? = null,
     /** 公司id */
-    val organizationId: Int,
+    val organizationId: Int? = null,
     /** 接待组 名称 */
     val name: String,
     // 接待组所属分类
@@ -83,7 +83,7 @@ data class Shunt(
 data class StaffGroup(
     var id: Long? = null,
     /** 公司id */
-    val organizationId: Int,
+    val organizationId: Int? = null,
     /** 部门名称 */
     var groupName: String,
 )

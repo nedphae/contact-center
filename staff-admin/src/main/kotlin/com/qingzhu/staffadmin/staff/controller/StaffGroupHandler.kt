@@ -1,13 +1,13 @@
 package com.qingzhu.staffadmin.staff.controller
 
 import com.qingzhu.common.security.getPrincipalTriple
+import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
 import com.qingzhu.staffadmin.staff.service.StaffGroupService
 import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.reactive.function.server.ServerResponse
+import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import org.springframework.web.reactive.function.server.bodyAndAwait
 
 @RestController
 class StaffGroupHandler(private val staffGroupService: StaffGroupService) {
@@ -18,5 +18,22 @@ class StaffGroupHandler(private val staffGroupService: StaffGroupService) {
                 .flatMapMany { (oid, _, _) -> oid.flatMapMany { staffGroupService.findAllGroup(it) } }
                 .asFlow()
         )
+    }
+
+    suspend fun saveGroup(sr: ServerRequest): ServerResponse {
+        val body = sr.bodyToMono<StaffGroup>()
+            .flatMap {
+                sr.principal().getPrincipalTriple()
+                    .flatMap { (organizationId, _) ->
+                        organizationId.map { oid ->
+                            it.organizationId = oid
+                            it
+                        }
+                    }
+            }
+            .flatMap {
+                staffGroupService.saveGroup(it)
+            }
+        return ok().body(body).awaitSingle()
     }
 }

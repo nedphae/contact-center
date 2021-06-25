@@ -5,12 +5,14 @@ import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
 import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistShuntDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.query.StaffQuery
+import com.qingzhu.staffadmin.staff.mapper.DtoMapper
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffRepository
 import com.qingzhu.staffadmin.staff.service.StaffService
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -18,6 +20,7 @@ import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.body
 import org.springframework.web.reactive.function.server.bodyAndAwait
 import reactor.core.publisher.Mono
+import java.security.Principal
 import javax.validation.Valid
 
 @RestController
@@ -28,8 +31,9 @@ class StaffController(
 ) {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    fun registerCustomerService(@RequestBody @Valid staffQuery: StaffQuery): Mono<Staff> {
-        return staffRepository.save(staffQuery.toCustomerServiceRepresentative())
+    fun registerCustomerService(principal: Principal, @RequestBody @Valid staffQuery: StaffQuery): Mono<Staff> {
+        staffQuery.organizationId = (principal as Jwt).getClaim<Long>("oid").toInt()
+        return staffRepository.save(DtoMapper.mapper.mapStaffQueryToStaff(staffQuery))
     }
 
     @GetMapping
@@ -43,7 +47,7 @@ class StaffHandler(private val staffService: StaffService) {
     suspend fun findStaffInfo(sr: ServerRequest): ServerResponse {
         val oid = sr.queryParam("organizationId").orElse(null)
         val sid = sr.queryParam("staffId").orElse(null)
-        val staffInfo = if (oid != null && sid != null) {
+        val staffInfo = if (sid != null) {
             staffService.findStaffInfo(sid.toLong())
         } else {
             sr.principal()

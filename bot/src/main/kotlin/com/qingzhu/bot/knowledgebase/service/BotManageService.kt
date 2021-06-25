@@ -46,7 +46,7 @@ class BotManageService(
         return knowledgeBaseRepository.findAllByOrganizationId(organizationId)
     }
 
-    suspend fun findTopicCategory(organizationId: Int): Flow<TopicCategory> {
+    suspend fun findAllTopicCategory(organizationId: Int): Flow<TopicCategory> {
         return topicCategoryRepository.findAllByOrganizationId(organizationId)
     }
 }

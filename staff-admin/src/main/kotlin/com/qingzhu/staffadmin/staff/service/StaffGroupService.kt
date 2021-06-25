@@ -6,6 +6,7 @@ import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
 import com.qingzhu.staffadmin.staff.repository.ReactiveStaffGroupRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @Service
 class StaffGroupService(
@@ -17,5 +18,9 @@ class StaffGroupService(
             "staff:group:$organizationId",
             staffGroupRepository.findAllByOrganizationId(organizationId)
         ) { JsonUtils.fromJson(it) }
+    }
+
+    fun saveGroup(staffGroup: StaffGroup): Mono<StaffGroup> {
+        return staffGroupRepository.save(staffGroup)
     }
 }

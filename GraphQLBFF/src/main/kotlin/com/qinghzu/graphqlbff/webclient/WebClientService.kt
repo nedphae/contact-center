@@ -12,7 +12,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 /**
- * NOTE: 因为 这个是通过 kotlin coroutines 调用的，没有通过 spring reactive，所以无法获取 jwt token
+ * NOTE: 因为 这个是通过 kotlin coroutines 调用的，没有通过 spring reactive，所以无法通过request获取 jwt token
  * 完成: innerWebClient 仅仅测试使用，后期修改为 bearerWebClient (使用 MyGraphQLContextFactory)
  */
 @Component
@@ -128,6 +128,17 @@ class CustomerService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.
 class StaffAdminService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.Builder) {
     private val webClient = webClientBuilder.baseUrl("http://staff-admin").build()
 
+    fun findStaffById(staffId: Long): Mono<Staff> {
+        return webClient
+            .get()
+            .uri {
+                it.path("/staff/info")
+                    .queryParam("staffId", staffId)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
+    }
     fun findQuickReplyByStaff(): Mono<QuickReplyDto> {
         return webClient
             .get()
@@ -147,7 +158,7 @@ class StaffAdminService(@Qualifier("bearerWebClient") webClientBuilder: WebClien
     fun findAllGroup(): Flux<StaffGroup> {
         return webClient
             .get()
-            .uri("/staff/group")
+            .uri("/staff/group/all")
             .retrieve()
             .bodyToFlux()
     }
@@ -155,7 +166,7 @@ class StaffAdminService(@Qualifier("bearerWebClient") webClientBuilder: WebClien
     fun findAllShunt(): Flux<Shunt> {
         return webClient
             .get()
-            .uri("/staff/shunt")
+            .uri("/staff/shunt/all")
             .retrieve()
             .bodyToFlux()
     }
@@ -198,6 +209,106 @@ class StaffAdminService(@Qualifier("bearerWebClient") webClientBuilder: WebClien
         return webClient
             .delete()
             .uri("/staff/quick-reply/group/${id}")
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun saveStaff(staff: Staff): Mono<Staff> {
+        return webClient
+            .post()
+            .uri("/staff")
+            .bodyValue(staff)
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun saveStaffGroup(staffGroup: StaffGroup): Mono<StaffGroup> {
+        return webClient
+            .post()
+            .uri("/staff/group")
+            .bodyValue(staffGroup)
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun saveShunt(shunt: Shunt): Mono<Shunt> {
+        return webClient
+            .post()
+            .uri("/staff/shunt")
+            .bodyValue(shunt)
+            .retrieve()
+            .bodyToMono()
+    }
+}
+
+@Service
+class BotService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.Builder) {
+    private val webClient = webClientBuilder.baseUrl("http://bot").build()
+
+    fun findAllTopic(): Flux<Topic> {
+        return webClient
+            .get()
+            .uri("/bot/manage/topic")
+            .retrieve()
+            .bodyToFlux()
+    }
+
+    fun findAllBotConfig(): Flux<BotConfig> {
+        return webClient
+            .get()
+            .uri("/bot/manage/botConfig")
+            .retrieve()
+            .bodyToFlux()
+    }
+
+    fun findAllKnowledgeBase(): Flux<KnowledgeBase> {
+        return webClient
+            .get()
+            .uri("/bot/manage/knowledgeBase")
+            .retrieve()
+            .bodyToFlux()
+    }
+
+    fun findAllTopicCategory(): Flux<TopicCategory> {
+        return webClient
+            .get()
+            .uri("/bot/manage/topicCategory")
+            .retrieve()
+            .bodyToFlux()
+    }
+
+    fun saveTopic(topic: Topic): Mono<Topic> {
+        return webClient
+            .post()
+            .uri("/bot/manage/topic")
+            .bodyValue(topic)
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun saveBotConfig(botConfig: BotConfig): Mono<BotConfig> {
+        return webClient
+            .post()
+            .uri("/bot/manage/botConfig")
+            .bodyValue(botConfig)
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun saveKnowledgeBase(knowledgeBase: KnowledgeBase): Mono<KnowledgeBase> {
+        return webClient
+            .post()
+            .uri("/bot/manage/knowledgeBase")
+            .bodyValue(knowledgeBase)
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun saveTopicCategory(topicCategory: TopicCategory): Mono<TopicCategory> {
+        return webClient
+            .post()
+            .uri("/bot/manage/topicCategory")
+            .bodyValue(topicCategory)
             .retrieve()
             .bodyToMono()
     }

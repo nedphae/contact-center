@@ -54,8 +54,8 @@ class FileUploadDownloadHandler(
                     .map { inputStream ->
                         // 上传到图片空间
                         val bucketExistsArgs: BucketExistsArgs = BucketExistsArgs.builder().bucket(bucket).build()
-                        val makeBucketArgs: MakeBucketArgs = MakeBucketArgs.builder().bucket(bucket).build()
                         if (minioClient.bucketExists(bucketExistsArgs).not()) {
+                            val makeBucketArgs: MakeBucketArgs = MakeBucketArgs.builder().bucket(bucket).build()
                             minioClient.makeBucket(makeBucketArgs)
                         }
                         val putObjectArgs = PutObjectArgs.builder().bucket(bucket)

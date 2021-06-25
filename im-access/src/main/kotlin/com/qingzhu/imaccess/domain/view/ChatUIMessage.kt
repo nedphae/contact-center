@@ -63,7 +63,7 @@ data class ChatUIMessage(
             } else {
                 Content(
                     MessageType.IMAGE,
-                    photoContent = Content.PhotoContent("", "", 0, 0)
+                    photoContent = Content.PhotoContent("", "", 0, "jpeg")
                 )
                 TODO("图片消息处理")
             }

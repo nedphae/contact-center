@@ -16,13 +16,13 @@ data class Staff(
     @Id
     var id: Long? = null,
     /** 公司id */
-    val organizationId: Int,
+    var organizationId: Int? = null,
     /** 用户名 */
     val username: String,
     /** 密码 机器人不需要密码 */
     var password: String?,
     /** 角色 */
-    var role: StaffAuthority,
+    var role: StaffAuthority = StaffAuthority.ROLE_STAFF,
     // 所属分组
     /** @ManyToOne */
     var staffGroupId: Long,

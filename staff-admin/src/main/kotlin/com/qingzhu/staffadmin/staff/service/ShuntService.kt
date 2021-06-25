@@ -6,6 +6,7 @@ import com.qingzhu.staffadmin.staff.domain.entity.Shunt
 import com.qingzhu.staffadmin.staff.repository.ReactiveShuntRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @Service
 class ShuntService(
@@ -17,5 +18,9 @@ class ShuntService(
             "staff:shunt:$organizationId",
             shuntRepository.findAllByOrganizationId(organizationId)
         ) { JsonUtils.fromJson(it) }
+    }
+
+    fun saveShunt(shunt: Shunt): Mono<Shunt> {
+        return shuntRepository.save(shunt)
     }
 }

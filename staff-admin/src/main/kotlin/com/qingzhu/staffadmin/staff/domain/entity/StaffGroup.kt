@@ -13,7 +13,7 @@ data class StaffGroup(
     @Id
     var id: Long? = null,
     /** 公司id */
-    val organizationId: Int,
+    var organizationId: Int? = null,
     /** 部门名称 */
     var groupName: String,
 ) : AbstractAuditingEntity()

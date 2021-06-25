@@ -1,40 +1,42 @@
 package com.qingzhu.staffadmin.staff.domain.query
 
-import com.qingzhu.common.security.password.getBCryptPasswordEncoder
 import com.qingzhu.common.domain.shared.authority.StaffAuthority
-import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
-import javax.validation.constraints.Size
-
 
 data class StaffQuery(
-    @field: NotNull(message = "公司ID不能为空")
-    val organizationId: Int,
+    var organizationId: Int?,
     @field: NotEmpty(message = "用户名不能为空")
-    val username: String,
+    val username: String?,
     @field: Length(message = "密码长度必须大于6小于100", min = 6, max = 100)
     val password: String,
-    @field: Size(message = "用户角色不能为空", min = 1)
     val role: StaffAuthority,
     @field: NotNull(message = "用户分组不能为空")
-    val groupId: Long,
+    val staffGroupId: Long,
+    @field: NotNull(message = "用户实名不能为空")
     val realName: String,
+    @field: NotNull(message = "用户昵称不能为空")
     val nickName: String,
     // 头像URL
-    val avatar: String,
+    val avatar: String?,
+    /** 同时接待量（默认设置为8） */
+    var simultaneousService: Int = 8,
+    // 工单
+    /** 每日上限 */
+    var maxTicketPerDay: Int = 999,
+    /** 总上限 */
+    var maxTicketAllTime: Int = 999,
+    /** 是否是机器人 0 机器人， 1人工 */
+    var staffType: Int = 1,
+    /** 性别 */
+    var gender: Int = 0,
+    /** 手机 */
+    var mobilePhone: String? = null,
+    /** 个性签名 */
+    var personalizedSignature: String? = null,
+    /** 是否启用 */
+    var enabled: Boolean = true,
 ) {
-    fun toCustomerServiceRepresentative(): Staff {
-        return Staff(
-            organizationId = organizationId,
-            username = username,
-            password = getBCryptPasswordEncoder().encode(password),
-            role = role,
-            staffGroupId = groupId,
-            realName = realName,
-            nickName = nickName,
-            avatar = avatar,
-        )
-    }
+
 }

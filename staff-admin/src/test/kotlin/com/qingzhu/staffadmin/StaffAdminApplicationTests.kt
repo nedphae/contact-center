@@ -70,7 +70,7 @@ class StaffAdminApplicationTests {
             avatar = null
         )
         val staffSave = staffRepositoryR.findFirstByOrganizationIdAndUsernameAndStaffTypeAndEnabled(
-            staff.organizationId,
+            staff.organizationId!!,
             staff.username,
             1,
             true

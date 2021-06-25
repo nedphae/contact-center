@@ -14,7 +14,7 @@ import reactor.kotlin.core.publisher.toMono
 class CustomerMutation(
     private val customerService: CustomerService,
 ) : Mutation {
-    @GraphQLDescription("modifies passed in widget so it doesn't have null value")
+    @GraphQLDescription("修改的客户基本信息")
     suspend fun updateCustomer(@GraphQLIgnore context: MyGraphQLContext, @GraphQLDescription("修改的客户基本信息") customer: Customer): Customer? {
         return customerService.updateCustomer(customer.toMono()).awaitWithAuthentication(context.oAuth)
     }
