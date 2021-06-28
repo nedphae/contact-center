@@ -10,19 +10,19 @@ CREATE TABLE staffadmin.shunt
     created_by         varchar(500) NOT NULL,
     created_date       timestamp    NOT NULL,
     last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
+    last_modified_date timestamp    NULL,
     organization_id    int4         NOT NULL,
     "name"             varchar(250) NULL,
-    shunt_class_id     int8 NULL,
+    shunt_class_id     int8         NULL,
     code               varchar(500) NULL,
     CONSTRAINT shunt_pkey PRIMARY KEY (id)
 );
 CREATE
-INDEX shunt_name_idx ON staffadmin.shunt USING btree (name);
+    INDEX shunt_name_idx ON staffadmin.shunt USING btree (name);
 CREATE
-INDEX shunt_organization_id_idx ON staffadmin.shunt USING btree (organization_id);
+    INDEX shunt_organization_id_idx ON staffadmin.shunt USING btree (organization_id);
 create
-index shunt_code_index on staffadmin.shunt using btree (code);
+    index shunt_code_index on staffadmin.shunt using btree (code);
 
 -- Drop table
 
@@ -34,16 +34,16 @@ CREATE TABLE staffadmin.shunt_class
     created_by         varchar(500) NOT NULL,
     created_date       timestamp    NOT NULL,
     last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
+    last_modified_date timestamp    NULL,
     organization_id    int4         NOT NULL,
     class_name         varchar(250) NULL,
-    catalogue          int8 NULL,
+    catalogue          int8         NULL,
     CONSTRAINT shunt_class_pkey PRIMARY KEY (id)
 );
 CREATE
-INDEX shunt_class_class_name_idx ON staffadmin.shunt_class USING btree (class_name);
+    INDEX shunt_class_class_name_idx ON staffadmin.shunt_class USING btree (class_name);
 CREATE
-INDEX shunt_class_organization_id_idx ON staffadmin.shunt_class USING btree (organization_id);
+    INDEX shunt_class_organization_id_idx ON staffadmin.shunt_class USING btree (organization_id);
 
 -- Drop table
 
@@ -55,35 +55,35 @@ CREATE TABLE staffadmin.staff
     created_by             varchar(500) NOT NULL,
     created_date           timestamp    NOT NULL,
     last_modified_by       varchar(500) NULL,
-    last_modified_date     timestamp NULL,
-    organization_id        int4 NULL,
+    last_modified_date     timestamp    NULL,
+    organization_id        int4         NULL,
     username               varchar(250) NULL,
     "password"             varchar(250) NULL,
-    "role"                 varchar(50) NULL,
-    staff_group_id         int8 NULL,
+    "role"                 varchar(50)  NULL,
+    staff_group_id         int8         NULL,
     real_name              varchar(250) NULL,
     nick_name              varchar(250) NULL,
     avatar                 varchar(250) NULL,
-    simultaneous_service   int2 NULL,
-    max_ticket_per_day     int2 NULL,
-    max_ticket_all_time    int2 NULL,
-    staff_type             int2 NULL,
-    gender                 int2 NULL,
-    mobile_phone           varchar(50) NULL,
+    simultaneous_service   int2         NULL,
+    max_ticket_per_day     int2         NULL,
+    max_ticket_all_time    int2         NULL,
+    staff_type             int2         NULL,
+    gender                 int2         NULL,
+    mobile_phone           varchar(50)  NULL,
     personalized_signature varchar(500) NULL,
     enabled                boolean default true,
     CONSTRAINT staff_group_pkey PRIMARY KEY (id)
 );
 CREATE
-INDEX staff_organization_id_idx ON staffadmin.staff USING btree (organization_id);
+    INDEX staff_organization_id_idx ON staffadmin.staff USING btree (organization_id);
 CREATE
-INDEX staff_organization_id_name_idx ON staffadmin.staff USING btree (organization_id, username);
+    INDEX staff_organization_id_name_idx ON staffadmin.staff USING btree (organization_id, username);
 CREATE
-INDEX staff_staff_group_id_idx ON staffadmin.staff USING btree (staff_group_id);
+    INDEX staff_staff_group_id_idx ON staffadmin.staff USING btree (staff_group_id);
 create
-index staff_enabled on staffadmin.staff USING btree (enabled);
+    index staff_enabled on staffadmin.staff USING btree (enabled);
 create
-index staff_staff_type on staffadmin.staff using btree (staff_type);
+    index staff_staff_type on staffadmin.staff using btree (staff_type);
 
 -- Drop table
 
@@ -95,17 +95,17 @@ CREATE TABLE staffadmin.staff_config
     created_by         varchar(500) NOT NULL,
     created_date       timestamp    NOT NULL,
     last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
-    organization_id    int4 NULL,
-    staff_id           int4 NULL,
-    shunt_id           int4 NULL,
-    priority           int2 NULL,
+    last_modified_date timestamp    NULL,
+    organization_id    int4         NULL,
+    staff_id           int4         NULL,
+    shunt_id           int4         NULL,
+    priority           int2         NULL,
     CONSTRAINT staff_config_group_pkey PRIMARY KEY (id)
 );
 CREATE
-INDEX staff_config_shunt_id_name_idx ON staffadmin.staff_config USING btree (shunt_id);
+    INDEX staff_config_shunt_id_name_idx ON staffadmin.staff_config USING btree (shunt_id);
 CREATE
-INDEX staff_config_staff_id_idx ON staffadmin.staff_config USING btree (staff_id);
+    INDEX staff_config_staff_id_idx ON staffadmin.staff_config USING btree (staff_id);
 
 
 -- Drop table
@@ -118,15 +118,15 @@ CREATE TABLE staffadmin.staff_group
     created_by         varchar(500) NOT NULL,
     created_date       timestamp    NOT NULL,
     last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
-    organization_id    int4 NULL,
+    last_modified_date timestamp    NULL,
+    organization_id    int4         NULL,
     group_name         varchar(250) NULL,
     CONSTRAINT staff_group_pkey PRIMARY KEY (id)
 );
 CREATE
-INDEX staff_group_group_name_idx ON staffadmin.staff_group USING btree (group_name);
+    INDEX staff_group_group_name_idx ON staffadmin.staff_group USING btree (group_name);
 CREATE
-INDEX staff_group_organization_id_idx ON staffadmin.staff_group USING btree (organization_id);
+    INDEX staff_group_organization_id_idx ON staffadmin.staff_group USING btree (organization_id);
 
 
 -- Drop table
@@ -135,63 +135,85 @@ INDEX staff_group_organization_id_idx ON staffadmin.staff_group USING btree (org
 
 CREATE TABLE staffadmin.shunt_ui_config
 (
-    id                 int8         NOT NULL GENERATED BY DEFAULT AS IDENTITY,
-    organization_id    int4 NULL,
-    created_by         varchar(500) NOT NULL,
-    created_date       timestamp    NOT NULL,
-    last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
-    shunt_id           int8 NULL,
+    id                 int8          NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+    organization_id    int4          NULL,
+    created_by         varchar(500)  NOT NULL,
+    created_date       timestamp     NOT NULL,
+    last_modified_by   varchar(500)  NULL,
+    last_modified_date timestamp     NULL,
+    shunt_id           int8          NULL,
     config             varchar(2000) NULL,
     CONSTRAINT shunt_ui_config_pkey PRIMARY KEY (id)
 );
 CREATE
-INDEX shunt_ui_config_shunt_id ON staffadmin.shunt_ui_config USING btree (shunt_id);
+    INDEX shunt_ui_config_shunt_id ON staffadmin.shunt_ui_config USING btree (shunt_id);
 CREATE
-INDEX shunt_ui_config_organization_id_idx ON staffadmin.shunt_ui_config USING btree (organization_id);
+    INDEX shunt_ui_config_organization_id_idx ON staffadmin.shunt_ui_config USING btree (organization_id);
 
 -- 快捷回复
 CREATE TABLE staffadmin.quick_reply
 (
     id                 int8         NOT NULL GENERATED BY DEFAULT AS IDENTITY,
-    organization_id    int4 NULL,
+    organization_id    int4         NULL,
     created_by         varchar(500) NOT NULL,
     created_date       timestamp    NOT NULL,
     last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
-    staff_id           int8 NULL,
-    group_id           int8 NULL,
+    last_modified_date timestamp    NULL,
+    staff_id           int8         NULL,
+    group_id           int8         NULL,
     title              varchar(250) NULL,
     content            varchar(500) NULL,
     personal           boolean default false,
     CONSTRAINT quick_reply_pkey PRIMARY KEY (id)
 );
 CREATE
-INDEX quick_reply_staff_id ON staffadmin.quick_reply USING btree (staff_id);
+    INDEX quick_reply_staff_id ON staffadmin.quick_reply USING btree (staff_id);
 CREATE
-INDEX quick_reply_group_id ON staffadmin.quick_reply USING btree (group_id);
+    INDEX quick_reply_group_id ON staffadmin.quick_reply USING btree (group_id);
 CREATE
-INDEX quick_reply_organization_id_idx ON staffadmin.quick_reply USING btree (organization_id);
+    INDEX quick_reply_organization_id_idx ON staffadmin.quick_reply USING btree (organization_id);
 
 -- 快捷回复 分组
 CREATE TABLE staffadmin.quick_reply_group
 (
     id                 int8         NOT NULL GENERATED BY DEFAULT AS IDENTITY,
-    organization_id    int4 NULL,
+    organization_id    int4         NULL,
     created_by         varchar(500) NOT NULL,
     created_date       timestamp    NOT NULL,
     last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
-    staff_id           int8 NULL,
-    group_name          varchar(250) NULL,
+    last_modified_date timestamp    NULL,
+    staff_id           int8         NULL,
+    group_name         varchar(250) NULL,
     personal           boolean default false,
     CONSTRAINT quick_reply_group_pkey PRIMARY KEY (id)
 );
 CREATE
-INDEX quick_reply_group_staff_id ON staffadmin.quick_reply_group USING btree (staff_id);
+    INDEX quick_reply_group_staff_id ON staffadmin.quick_reply_group USING btree (staff_id);
 CREATE
-INDEX quick_reply_group_organization_id_idx ON staffadmin.quick_reply_group USING btree (organization_id);
+    INDEX quick_reply_group_organization_id_idx ON staffadmin.quick_reply_group USING btree (organization_id);
 
+-- 系统配置
+CREATE TABLE staffadmin.properties
+(
+    id                 int8         NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+    organization_id    int4         NULL,
+    created_by         varchar(500) NOT NULL,
+    created_date       timestamp    NOT NULL,
+    last_modified_by   varchar(500) NULL,
+    last_modified_date timestamp    NULL,
+    key                varchar(250) NOT NULL,
+    value              varchar(250) NULL,
+    label              varchar(250) NOT NULL,
+    available          boolean default true,
+    personal           boolean default false,
+    CONSTRAINT properties_pkey PRIMARY KEY (id)
+);
+CREATE
+    INDEX properties_key ON staffadmin.properties USING btree (key);
+CREATE
+    INDEX properties_personal ON staffadmin.properties USING btree (personal);
+CREATE
+    INDEX properties_organization_id_idx ON staffadmin.properties USING btree (organization_id);
 
 -- Drop table
 
@@ -200,101 +222,101 @@ INDEX quick_reply_group_organization_id_idx ON staffadmin.quick_reply_group USIN
 CREATE TABLE bot.bot_config
 (
     id                 int8         NOT NULL GENERATED BY DEFAULT AS IDENTITY,
-    organization_id    int4 NULL,
+    organization_id    int4         NULL,
     created_by         varchar(500) NOT NULL,
     created_date       timestamp    NOT NULL,
     last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
+    last_modified_date timestamp    NULL,
     bot_id             int8         NOT NULL,
     knowledge_base_id  int8         NOT NULL,
     no_answer_reply    varchar(500) NOT NULL,
     CONSTRAINT bot_config_pkey PRIMARY KEY (id)
 );
 CREATE
-UNIQUE INDEX bot_config_bot_id_idx ON bot.bot_config USING btree (bot_id);
+    UNIQUE INDEX bot_config_bot_id_idx ON bot.bot_config USING btree (bot_id);
 CREATE
-INDEX bot_config_knowledge_base_id_idx ON bot.bot_config USING btree (knowledge_base_id);
+    INDEX bot_config_knowledge_base_id_idx ON bot.bot_config USING btree (knowledge_base_id);
 CREATE
-INDEX bot_config_organization_id_idx ON bot.bot_config USING btree (organization_id);
+    INDEX bot_config_organization_id_idx ON bot.bot_config USING btree (organization_id);
 
 
 CREATE TABLE bot.knowledge_base
 (
     id                 int8         NOT NULL GENERATED BY DEFAULT AS IDENTITY,
-    organization_id    int4 NULL,
+    organization_id    int4         NULL,
     created_by         varchar(500) NOT NULL,
     created_date       timestamp    NOT NULL,
     last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
+    last_modified_date timestamp    NULL,
     name               varchar(250) NOT NULL,
     description        varchar(250) NULL,
     CONSTRAINT knowledge_base_pkey PRIMARY KEY (id)
 );
 
 CREATE
-INDEX knowledge_base_organization_id_idx ON bot.knowledge_base USING btree (organization_id);
+    INDEX knowledge_base_organization_id_idx ON bot.knowledge_base USING btree (organization_id);
 
 
 CREATE TABLE bot.topic_category
 (
     id                 int8         NOT NULL GENERATED BY DEFAULT AS IDENTITY,
-    organization_id    int4 NULL,
+    organization_id    int4         NULL,
     created_by         varchar(500) NOT NULL,
     created_date       timestamp    NOT NULL,
     last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
+    last_modified_date timestamp    NULL,
     name               varchar(250) NOT NULL,
     knowledge_base_id  int8         NOT NULL,
-    pid                int8 NULL,
+    pid                int8         NULL,
     CONSTRAINT topic_category_pkey PRIMARY KEY (id)
 );
 
 CREATE
-INDEX topic_category_organization_id_idx ON bot.topic_category USING btree (organization_id);
+    INDEX topic_category_organization_id_idx ON bot.topic_category USING btree (organization_id);
 CREATE
-INDEX topic_category_pid_idx ON bot.topic_category USING btree (pid);
+    INDEX topic_category_pid_idx ON bot.topic_category USING btree (pid);
 
 CREATE TABLE dispathcer.customer
 (
     id                 int8         NOT NULL GENERATED BY DEFAULT AS IDENTITY,
-    organization_id    int4 NULL,
+    organization_id    int4         NULL,
     created_by         varchar(500) NOT NULL,
     created_date       timestamp    NOT NULL,
     last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
+    last_modified_date timestamp    NULL,
     uid                varchar(100) NOT NULL,
-    name               varchar(50) NULL,
-    email              varchar(50) NULL,
-    mobile             varchar(50) NULL,
-    vip_level          int4 NULL,
-	remarks            varchar(500),
+    name               varchar(50)  NULL,
+    email              varchar(50)  NULL,
+    mobile             varchar(50)  NULL,
+    vip_level          int4         NULL,
+    remarks            varchar(500),
     CONSTRAINT customer_pkey PRIMARY KEY (id)
 );
 
 CREATE
-INDEX customer_organization_id_idx ON dispathcer.customer USING btree (organization_id);
+    INDEX customer_organization_id_idx ON dispathcer.customer USING btree (organization_id);
 CREATE
-INDEX customer_uid_idx ON dispathcer.customer USING btree (uid);
+    INDEX customer_uid_idx ON dispathcer.customer USING btree (uid);
 
 CREATE TABLE dispathcer.detail_data
 (
     id                 int8         NOT NULL GENERATED BY DEFAULT AS IDENTITY,
-    organization_id    int4 NULL,
+    organization_id    int4         NULL,
     created_by         varchar(500) NOT NULL,
     created_date       timestamp    NOT NULL,
     last_modified_by   varchar(500) NULL,
-    last_modified_date timestamp NULL,
+    last_modified_date timestamp    NULL,
     user_id            int8         NOT NULL,
     key                varchar(50)  NOT NULL,
     value              varchar(50)  NOT NULL,
     label              varchar(50)  NOT NULL,
-    index              int4 NULL,
-    href               varchar(50) NULL,
+    index              int4         NULL,
+    href               varchar(50)  NULL,
     hidden             boolean default false,
     CONSTRAINT detail_data_pkey PRIMARY KEY (id)
 );
 
 CREATE
-INDEX detail_data_organization_id_idx ON dispathcer.detail_data USING btree (organization_id);
+    INDEX detail_data_organization_id_idx ON dispathcer.detail_data USING btree (organization_id);
 CREATE
-INDEX detail_data_user_id_idx ON dispathcer.detail_data USING btree (user_id);
+    INDEX detail_data_user_id_idx ON dispathcer.detail_data USING btree (user_id);

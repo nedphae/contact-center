@@ -239,6 +239,23 @@ class StaffAdminService(@Qualifier("bearerWebClient") webClientBuilder: WebClien
             .retrieve()
             .bodyToMono()
     }
+
+    fun findAllShuntClass(): Flux<ShuntClass> {
+        return webClient
+            .get()
+            .uri("/staff/shunt/class/all")
+            .retrieve()
+            .bodyToFlux()
+    }
+
+    fun saveShuntClass(shuntClass: ShuntClass): Mono<ShuntClass> {
+        return webClient
+            .post()
+            .uri("/staff/shunt/class")
+            .bodyValue(shuntClass)
+            .retrieve()
+            .bodyToMono()
+    }
 }
 
 @Service

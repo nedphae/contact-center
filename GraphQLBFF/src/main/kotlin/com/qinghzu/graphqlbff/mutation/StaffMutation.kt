@@ -5,6 +5,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.server.operations.Mutation
 import com.qinghzu.graphqlbff.context.MyGraphQLContext
 import com.qinghzu.graphqlbff.model.Shunt
+import com.qinghzu.graphqlbff.model.ShuntClass
 import com.qinghzu.graphqlbff.model.Staff
 import com.qinghzu.graphqlbff.model.StaffGroup
 import com.qinghzu.graphqlbff.webclient.StaffAdminService
@@ -24,5 +25,9 @@ class StaffMutation(private val staffAdminService: StaffAdminService): Mutation 
     @GraphQLDescription("保存客服接待组")
     suspend fun saveShunt(@GraphQLIgnore context: MyGraphQLContext, @GraphQLDescription("客服接待组信息") shunt: Shunt): Shunt? {
         return staffAdminService.saveShunt(shunt).awaitWithAuthentication(context.oAuth)
+    }
+    @GraphQLDescription("保存客服接待组分类")
+    suspend fun saveShuntClass(@GraphQLIgnore context: MyGraphQLContext, @GraphQLDescription("客服接待组信息") shuntClass: ShuntClass): ShuntClass? {
+        return staffAdminService.saveShuntClass(shuntClass).awaitWithAuthentication(context.oAuth)
     }
 }

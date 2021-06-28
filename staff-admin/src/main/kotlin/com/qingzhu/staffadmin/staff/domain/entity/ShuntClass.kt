@@ -13,7 +13,7 @@ data class ShuntClass(
     @Id
     var id: Long? = null,
     /** 公司id */
-    val organizationId: Int,
+    var organizationId: Int? = null,
     /** 分类名称 */
     val className: String,
     /** 上级分类 */

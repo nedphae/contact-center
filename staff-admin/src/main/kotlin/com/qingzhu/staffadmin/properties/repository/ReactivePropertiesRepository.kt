@@ -5,5 +5,5 @@ import org.springframework.data.repository.reactive.ReactiveSortingRepository
 import reactor.core.publisher.Mono
 
 interface ReactivePropertiesRepository : ReactiveSortingRepository<Properties, Long> {
-    fun findDistinctTopByKey(key: String): Mono<Properties>
+    fun findDistinctTopByOrganizationIdAndKeyAndPersonalIsFalse(organizationId: Int, key: String): Mono<Properties>
 }

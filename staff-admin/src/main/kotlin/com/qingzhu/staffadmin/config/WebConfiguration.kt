@@ -33,6 +33,8 @@ class WebConfiguration : WebFluxConfigurer {
                         GET("/id/{id}", shuntHandler::findById)
                         GET("/all", shuntHandler::findAllShunt)
                         POST("", shuntHandler::saveShunt)
+                        GET("/class/all", shuntHandler::findAllShuntClass)
+                        POST("/class", shuntHandler::saveShuntClass)
                     }
                     "/group".nest {
                         GET("/all", staffGroupHandler::findAllGroup)

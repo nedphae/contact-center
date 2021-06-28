@@ -42,15 +42,15 @@ class PropertiesService(
      * 系统内部使用的配置项目接口
      */
     fun findDistinctTopByKey(organizationId: Int, key: String): Mono<Properties> {
-        val result = propertiesRepository.findDistinctTopByKey(key)
+        val result = propertiesRepository.findDistinctTopByOrganizationIdAndKeyAndPersonalIsFalse(organizationId, key)
             .switchIfEmpty(Mono.just(Properties(null, organizationId, key, null, null)))
 
         return reactorRedisCache.cache("prop:$organizationId:$key", result) { JsonUtils.fromJson(it) }
     }
 
-    fun getAllProperties(): IO<Mono<String>> {
+    fun getAllProperties(organizationId: Int): IO<Mono<String>> {
         return IO.fx {
-            reactorRedisCache.cache("prop:all", createMapFromProperties(propertiesRepository.findAll())) { it }
+            reactorRedisCache.cache("prop:$organizationId", createMapFromProperties(propertiesRepository.findAll())) { it }
         }
     }
 

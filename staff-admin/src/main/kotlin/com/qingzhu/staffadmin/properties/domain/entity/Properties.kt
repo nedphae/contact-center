@@ -14,5 +14,7 @@ data class Properties(
     var value: String?,
     var label: String?,
     /** 是否启用 */
-    var available: Boolean = true
+    var available: Boolean = true,
+    /** 是系统/个人配置 */
+    var personal: Boolean = false,
 ) : AbstractAuditingEntity()

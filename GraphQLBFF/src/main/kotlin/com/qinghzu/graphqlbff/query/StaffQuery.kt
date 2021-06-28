@@ -5,6 +5,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.server.operations.Query
 import com.qinghzu.graphqlbff.context.MyGraphQLContext
 import com.qinghzu.graphqlbff.model.Shunt
+import com.qinghzu.graphqlbff.model.ShuntClass
 import com.qinghzu.graphqlbff.model.Staff
 import com.qinghzu.graphqlbff.model.StaffGroup
 import com.qinghzu.graphqlbff.webclient.StaffAdminService
@@ -31,5 +32,9 @@ class StaffQuery(private val staffAdminService: StaffAdminService): Query {
 
     suspend fun getStaffById(@GraphQLIgnore context: MyGraphQLContext, staffId: Long): Staff? {
         return staffAdminService.findStaffById(staffId).awaitWithAuthentication(context.oAuth)
+    }
+
+    suspend fun allShuntClass(@GraphQLIgnore context: MyGraphQLContext): List<ShuntClass> {
+        return staffAdminService.findAllShuntClass().awaitWithAuthentication(context.oAuth)
     }
 }

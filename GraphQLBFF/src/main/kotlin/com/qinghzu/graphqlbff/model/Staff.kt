@@ -67,6 +67,16 @@ data class Staff(
     var enabled: Boolean = true,
 )
 
+data class ShuntClass(
+    var id: Long? = null,
+    /** 公司id */
+    val organizationId: Int,
+    /** 分类名称 */
+    val className: String,
+    /** 上级分类 */
+    val catalogue: Long
+)
+
 data class Shunt(
     var id: Long? = null,
     /** 公司id */
