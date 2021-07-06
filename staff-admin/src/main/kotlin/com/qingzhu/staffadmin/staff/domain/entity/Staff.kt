@@ -15,8 +15,6 @@ import org.springframework.data.relational.core.mapping.Table
 data class Staff(
     @Id
     var id: Long? = null,
-    /** 公司id */
-    var organizationId: Int? = null,
     /** 用户名 */
     val username: String,
     /** 密码 机器人不需要密码 */

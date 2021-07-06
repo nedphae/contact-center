@@ -1,10 +1,9 @@
 package com.qingzhu.staffadmin.staff.controller
 
 import com.qingzhu.common.security.getPrincipalTriple
-import com.qingzhu.common.util.JsonUtils
+import com.qingzhu.common.security.setOrganizationId
 import com.qingzhu.staffadmin.staff.domain.entity.Shunt
 import com.qingzhu.staffadmin.staff.domain.entity.ShuntClass
-import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
 import com.qingzhu.staffadmin.staff.repository.ReactiveShuntRepository
 import com.qingzhu.staffadmin.staff.service.ShuntService
 import kotlinx.coroutines.reactive.asFlow
@@ -12,8 +11,6 @@ import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 
 @RestController
 class ShuntHandler(
@@ -34,25 +31,15 @@ class ShuntHandler(
         return ok().bodyAndAwait(
             sr.principal()
                 .getPrincipalTriple()
-                .flatMapMany { (oid, _, _) -> oid.flatMapMany { shuntService.findAllShunt(it) } }
+                .flatMapMany { shuntService.findAllShunt(it.t1) }
                 .asFlow()
         )
     }
 
     suspend fun saveShunt(sr: ServerRequest): ServerResponse {
         val body = sr.bodyToMono<Shunt>()
-            .flatMap {
-                sr.principal().getPrincipalTriple()
-                    .flatMap { (organizationId, _) ->
-                        organizationId.map { oid ->
-                            it.organizationId = oid
-                            it
-                        }
-                    }
-            }
-            .flatMap {
-                shuntService.saveShunt(it)
-            }
+            .flatMap { sr.principal().setOrganizationId(it) }
+            .flatMap { shuntService.saveShunt(it) }
         return ok().body(body).awaitSingle()
     }
 
@@ -60,25 +47,15 @@ class ShuntHandler(
         return ok().bodyAndAwait(
             sr.principal()
                 .getPrincipalTriple()
-                .flatMapMany { (oid, _, _) -> oid.flatMapMany { shuntService.findAllShuntClass(it) } }
+                .flatMapMany { shuntService.findAllShuntClass(it.t1) }
                 .asFlow()
         )
     }
 
     suspend fun saveShuntClass(sr: ServerRequest): ServerResponse {
         val body = sr.bodyToMono<ShuntClass>()
-            .flatMap {
-                sr.principal().getPrincipalTriple()
-                    .flatMap { (organizationId, _) ->
-                        organizationId.map { oid ->
-                            it.organizationId = oid
-                            it
-                        }
-                    }
-            }
-            .flatMap {
-                shuntService.saveShuntClass(it)
-            }
+            .flatMap { sr.principal().setOrganizationId(it) }
+            .flatMap { shuntService.saveShuntClass(it) }
         return ok().body(body).awaitSingle()
     }
 }

@@ -1,6 +1,6 @@
 package com.qingzhu.staffadmin.staff.domain.entity
 
-import com.qingzhu.common.domain.AbstractAuditingEntity
+import com.qingzhu.common.domain.AbstractStaffEntity
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 
@@ -9,27 +9,17 @@ import org.springframework.data.relational.core.mapping.Table
 data class QuickReply(
     @Id
     var id: Long? = null,
-    /** 公司id */
-    var organizationId: Int? = null,
-    // 配置的客服 (每个客服可以有多个配置)
-    /** @ManyToOne */
-    var staffId: Long? = null,
     var groupId: Long? = null,
     var title: String,
     var content: String,
     var personal: Boolean,
-) : AbstractAuditingEntity()
+) : AbstractStaffEntity()
 
 
 @Table
 data class QuickReplyGroup(
     @Id
     var id: Long? = null,
-    /** 公司id */
-    var organizationId: Int? = null,
-    // 配置的客服 (每个客服可以有多个配置)
-    /** @ManyToOne */
-    var staffId: Long? = null,
     val groupName: String,
     var personal: Boolean,
-) : AbstractAuditingEntity()
+) : AbstractStaffEntity()

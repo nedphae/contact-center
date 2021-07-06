@@ -12,8 +12,6 @@ import org.springframework.data.relational.core.mapping.Table
 data class StaffGroup(
     @Id
     var id: Long? = null,
-    /** 公司id */
-    var organizationId: Int? = null,
     /** 部门名称 */
     var groupName: String,
 ) : AbstractAuditingEntity()

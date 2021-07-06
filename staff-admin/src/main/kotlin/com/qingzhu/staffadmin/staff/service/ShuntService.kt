@@ -9,6 +9,7 @@ import com.qingzhu.staffadmin.staff.repository.ReactiveShuntRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.util.*
 
 @Service
 class ShuntService(
@@ -24,6 +25,9 @@ class ShuntService(
     }
 
     fun saveShunt(shunt: Shunt): Mono<Shunt> {
+        if (shunt.code.isNullOrEmpty()) {
+            shunt.code = UUID.randomUUID().toString()
+        }
         return shuntRepository.save(shunt)
     }
 

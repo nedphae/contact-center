@@ -12,8 +12,6 @@ import org.springframework.data.relational.core.mapping.Table
 data class ShuntClass(
     @Id
     var id: Long? = null,
-    /** 公司id */
-    var organizationId: Int? = null,
     /** 分类名称 */
     val className: String,
     /** 上级分类 */

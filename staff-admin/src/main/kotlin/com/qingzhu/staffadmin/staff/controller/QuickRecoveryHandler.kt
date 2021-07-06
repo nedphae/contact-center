@@ -1,6 +1,7 @@
 package com.qingzhu.staffadmin.staff.controller
 
 import com.qingzhu.common.security.getPrincipalTriple
+import com.qingzhu.common.security.setOrganizationIdAndStaffId
 import com.qingzhu.staffadmin.staff.domain.entity.QuickReply
 import com.qingzhu.staffadmin.staff.domain.entity.QuickReplyGroup
 import com.qingzhu.staffadmin.staff.service.QuickReplyService
@@ -8,7 +9,6 @@ import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import reactor.core.publisher.Mono
 
 @RestController
 class QuickRecoveryHandler(
@@ -18,13 +18,7 @@ class QuickRecoveryHandler(
         return sr
             .principal()
             .getPrincipalTriple()
-            .flatMap { (organizationId, staffId, _) ->
-                organizationId.flatMap {
-                    staffId.flatMap { sid ->
-                        quickReplyService.findQuickReplyByStaff(it, sid)
-                    }
-                }
-            }
+            .flatMap { quickReplyService.findQuickReplyByStaff(it.t1, it.t2) }
             .transform { ok().body(it) }
             .awaitSingle()
     }
@@ -33,48 +27,24 @@ class QuickRecoveryHandler(
         return sr
             .principal()
             .getPrincipalTriple()
-            .flatMap { (organizationId, _, _) ->
-                organizationId.flatMap {
-                    quickReplyService.findQuickReplyByOrganizationId(it)
-                }
-            }
+            .flatMap { quickReplyService.findQuickReplyByOrganizationId(it.t1) }
             .transform { ok().body(it) }
             .awaitSingle()
     }
 
     suspend fun saveQuickReply(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<QuickReply>()
-            .flatMap {
-                sr.principal().getPrincipalTriple()
-                    .flatMap { (organizationId, staffId, _) ->
-                        organizationId.flatMap { oid ->
-                            staffId.flatMap { sid ->
-                                it.organizationId = oid
-                                it.staffId = sid
-                                quickReplyService.saveQuickReply(it)
-                            }
-                        }
-                    }
-            }
-            .transform {  ok().body(it) }
+            .flatMap { sr.principal().setOrganizationIdAndStaffId(it) }
+            .flatMap { quickReplyService.saveQuickReply(it) }
+            .transform { ok().body(it) }
             .awaitSingle()
     }
 
     suspend fun saveQuickReplyGroup(sr: ServerRequest): ServerResponse {
         return sr.bodyToMono<QuickReplyGroup>()
-            .flatMap {
-                sr.principal().getPrincipalTriple()
-                    .flatMap { (organizationId, staffId, _) ->
-                        organizationId.flatMap { oid ->
-                            staffId.flatMap { sid ->
-                                it.organizationId = oid
-                                it.staffId = sid
-                                quickReplyService.saveQuickReplyGroup(it)
-                            }
-                        }
-                    }
-            }
-            .transform {  ok().body(it) }
+            .flatMap { sr.principal().setOrganizationIdAndStaffId(it) }
+            .flatMap { quickReplyService.saveQuickReplyGroup(it) }
+            .transform { ok().body(it) }
             .awaitSingle()
     }
 

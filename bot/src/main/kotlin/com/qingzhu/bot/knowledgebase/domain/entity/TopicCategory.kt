@@ -9,8 +9,6 @@ import org.springframework.data.relational.core.mapping.Table
  */
 @Table
 data class TopicCategory(
-    /** 机构 ID **/
-    val organizationId: Int,
     /** 分类名称 */
     var name: String,
     /** 所属知识库ID **/

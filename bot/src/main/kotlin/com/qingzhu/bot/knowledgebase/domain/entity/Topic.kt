@@ -17,7 +17,7 @@ import java.time.Instant
 @Document(indexName = "knowledge_base_topic", shards = 1, replicas = 0)
 data class Topic(
     /** 机构 ID **/
-    val organizationId: Int,
+    val organizationId: Int? = null,
     /** 所属知识库ID **/
     val knowledgeBaseId: Long,
     /** 问题，使用ik分词器查询和索引 */
@@ -25,7 +25,7 @@ data class Topic(
     var question: String,
     /** 问题的md5 */
     @Field(type = FieldType.Keyword)
-    var md5: String,
+    var md5: String?,
     /** 问题的对外答案，如果是相似问题，可以设置为空 */
     @Field(type = FieldType.Text)
     var answer: String?,

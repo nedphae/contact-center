@@ -43,7 +43,7 @@ data class Topic(
 data class BotConfig(
     var id: Long? = null,
     /** 机构 ID **/
-    val organizationId: Int,
+    val organizationId: Int? = null,
     /** 机器人ID, 对应 staff Id */
     var botId: Long,
     /** 机器人 与 知识库的映射 */

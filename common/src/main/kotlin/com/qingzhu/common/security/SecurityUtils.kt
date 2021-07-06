@@ -1,5 +1,7 @@
 package com.qingzhu.common.security
 
+import com.qingzhu.common.domain.AbstractAuditingEntity
+import com.qingzhu.common.domain.AbstractStaffEntity
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingleOrNull
@@ -26,6 +28,7 @@ import org.springframework.web.reactive.function.server.awaitPrincipal
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.util.context.Context
+import reactor.util.function.Tuple3
 import java.math.BigInteger
 import java.security.KeyFactory
 import java.security.Principal
@@ -146,8 +149,8 @@ fun getPublicKey(): PublicKey {
 /**
  * 获取用户 [Principal] 并解析为 [Triple]，包括 机构id，客服id，客服名称
  */
-fun Mono<out Principal>.getPrincipalTriple(): Mono<Triple<Mono<Int>, Mono<Long>, Mono<String>>> {
-    return this.map {
+fun Mono<out Principal>.getPrincipalTriple(): Mono<Tuple3<Int, Long, String>> {
+    return this.flatMap {
         val principal = (it as JwtAuthenticationToken).principal as Jwt
         // org id
         val orgId = principal.getClaim<Long>("oid").toInt()
@@ -155,8 +158,27 @@ fun Mono<out Principal>.getPrincipalTriple(): Mono<Triple<Mono<Int>, Mono<Long>,
         val sid = principal.getClaim<Long>("sid")
         // staff name
         val username = it.name
-        Triple(Mono.justOrEmpty(orgId), Mono.justOrEmpty(sid), Mono.justOrEmpty(username))
+        Mono.zip(Mono.justOrEmpty(orgId), Mono.justOrEmpty(sid), Mono.justOrEmpty(username))
     }
+}
+
+fun <T : AbstractAuditingEntity> Mono<out Principal>.setOrganizationId(entity: T): Mono<T> {
+    return this
+        .getPrincipalTriple()
+        .map {
+            entity.organizationId = it.t1
+            entity
+        }
+}
+
+fun <T : AbstractStaffEntity> Mono<out Principal>.setOrganizationIdAndStaffId(entity: T): Mono<T> {
+    return this
+        .getPrincipalTriple()
+        .map {
+            entity.organizationId = it.t1
+            entity.staffId = it.t2
+            entity
+        }
 }
 
 /**

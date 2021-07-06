@@ -52,9 +52,7 @@ class StaffHandler(private val staffService: StaffService) {
         } else {
             sr.principal()
                 .getPrincipalTriple()
-                .flatMap { (_, sid, _) ->
-                    sid.flatMap { staffService.findStaffInfo(it) }
-                }
+                .flatMap { staffService.findStaffInfo(it.t2) }
         }
 
         return staffInfo
@@ -79,7 +77,7 @@ class StaffHandler(private val staffService: StaffService) {
         return ok().bodyAndAwait(
             sr.principal()
                 .getPrincipalTriple()
-                .flatMapMany { (oid, _, _) -> oid.flatMapMany { staffService.findAllStaff(it) } }
+                .flatMapMany { staffService.findAllStaff(it.t1) }
                 .asFlow()
         )
     }

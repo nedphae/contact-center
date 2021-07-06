@@ -87,7 +87,7 @@ data class Shunt(
     /** @ManyToOne */
     val shuntClassId: Long,
     /** 接待组范围代码 */
-    val code: String
+    val code: String?
 )
 
 data class StaffGroup(

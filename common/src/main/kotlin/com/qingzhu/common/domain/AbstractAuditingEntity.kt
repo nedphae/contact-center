@@ -50,4 +50,14 @@ abstract class AbstractAuditingEntity : Serializable {
     @Column(name = "last_modified_date")
     @JsonIgnore
     var lastModifiedDate = Instant.now()
+
+    /** 机构 ID **/
+    var organizationId: Int? = null
+}
+
+@MappedSuperclass
+abstract class AbstractStaffEntity : AbstractAuditingEntity() {
+    // 配置的客服 (每个客服可以有多个配置)
+    /** @ManyToOne */
+    var staffId: Long? = null
 }

@@ -19,5 +19,5 @@ data class Shunt(
     /** @ManyToOne */
     val shuntClassId: Long,
     /** 接待组范围代码 */
-    val code: String
+    var code: String?
 ) : AbstractAuditingEntity()
