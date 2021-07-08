@@ -2,6 +2,7 @@ package com.qinghzu.graphqlbff.query
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
+import com.expediagroup.graphql.server.operations.Query
 import com.qinghzu.graphqlbff.context.MyGraphQLContext
 import com.qinghzu.graphqlbff.model.BotConfig
 import com.qinghzu.graphqlbff.model.KnowledgeBase
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component
 
 @GraphQLDescription("机器人信息查询")
 @Component
-class BotQuery(private val botService: BotService) {
+class BotQuery(private val botService: BotService): Query {
     suspend fun allTopic(@GraphQLIgnore context: MyGraphQLContext): List<Topic> {
         return botService.findAllTopic().awaitWithAuthentication(context.oAuth)
     }

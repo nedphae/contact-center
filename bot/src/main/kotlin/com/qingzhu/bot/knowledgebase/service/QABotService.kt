@@ -34,7 +34,7 @@ class QABotService(
         val botConfig = botConfigRepository.findByBotId(botId)
         if (botConfig != null) {
             val requestMessage = ChatUIMessage.createTextMessage(
-                botConfig.organizationId,
+                botConfig.organizationId!!,
                 conversationId,
                 from = userId,
                 to = botId,
@@ -60,7 +60,7 @@ class QABotService(
             }
 
             val responseMessage = ChatUIMessage.createTextMessage(
-                botConfig.organizationId,
+                botConfig.organizationId!!,
                 conversationId,
                 from = botId,
                 to = userId,

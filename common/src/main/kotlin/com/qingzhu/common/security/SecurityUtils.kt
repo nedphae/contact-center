@@ -24,6 +24,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtRea
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter
 import org.springframework.util.StringUtils
 import org.springframework.web.reactive.function.server.ServerRequest
+import org.springframework.web.reactive.function.server.awaitBody
 import org.springframework.web.reactive.function.server.awaitPrincipal
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -194,6 +195,21 @@ suspend fun ServerRequest.awaitPrincipalTriple(): Triple<Int?, Long?, String?> {
     // staff name
     val username = principal.name
     return Triple(orgId, sid, username)
+}
+
+suspend inline fun <reified T: AbstractAuditingEntity> ServerRequest.awaitPrincipalTripleWithBodyOrg(): T {
+    val entity = this.awaitBody<T>()
+    val (orgId, _, _) = this.awaitPrincipalTriple()
+    entity.organizationId = orgId
+    return entity
+}
+
+suspend inline fun <reified T: AbstractStaffEntity> ServerRequest.awaitPrincipalTripleWithBodyOrgAndStaff(): T {
+    val entity = this.awaitBody<T>()
+    val (orgId, staffId, _) = this.awaitPrincipalTriple()
+    entity.organizationId = orgId
+    entity.staffId = staffId
+    return entity
 }
 
 private fun getContextWith(oldContext: Context, authentication: Authentication?): Context {

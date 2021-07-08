@@ -8,7 +8,7 @@ import com.qingzhu.dispatcher.customer.domain.entity.DetailData
 data class CustomerDto(
     val id: Long? = null,
     /** 公司id */
-    val organizationId: Int,
+    val organizationId: Int?,
     /** 客户 id 服务器自动设置 */
     val userId: Long? = null,
     /**
@@ -51,14 +51,13 @@ data class CustomerDto(
 
     fun toCustomer(): Customer {
         return Customer(
-            organizationId = this.organizationId,
             uid = this.uid,
             name = this.name,
             email = this.email,
             mobile = this.mobile,
             vipLevel = this.vipLevel,
             remarks = this.remarks,
-        )
+        ).also { it.organizationId = this.organizationId }
     }
 }
 

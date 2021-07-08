@@ -12,8 +12,6 @@ import org.springframework.data.relational.core.mapping.Table
 data class Customer(
     @Id
     var id: Long? = null,
-    /** 公司id */
-    val organizationId: Int,
     /**
      * 用户id
      * 用户在企业产品中的标识，便于后续客服系统中查看该用户在产品中的相关信息，

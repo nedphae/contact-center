@@ -256,6 +256,27 @@ class StaffAdminService(@Qualifier("bearerWebClient") webClientBuilder: WebClien
             .retrieve()
             .bodyToMono()
     }
+
+    fun getUIConfigByShunt(shuntId: Long): Mono<ShuntUIConfig> {
+        return webClient
+            .get()
+            .uri {
+                it.path("/config/chat-ui/config")
+                    .queryParam("shuntId", shuntId)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun saveUIConfig(shuntUIConfig: ShuntUIConfig): Mono<ShuntUIConfig> {
+        return webClient
+            .post()
+            .uri("/config/chat-ui/config")
+            .bodyValue(shuntUIConfig)
+            .retrieve()
+            .bodyToMono()
+    }
 }
 
 @Service

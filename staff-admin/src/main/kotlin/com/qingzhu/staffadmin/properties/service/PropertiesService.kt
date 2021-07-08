@@ -43,7 +43,7 @@ class PropertiesService(
      */
     fun findDistinctTopByKey(organizationId: Int, key: String): Mono<Properties> {
         val result = propertiesRepository.findDistinctTopByOrganizationIdAndKeyAndPersonalIsFalse(organizationId, key)
-            .switchIfEmpty(Mono.just(Properties(null, organizationId, key, null, null)))
+            .switchIfEmpty(Mono.just(Properties(null, key, null, null).also { it.organizationId = organizationId }))
 
         return reactorRedisCache.cache("prop:$organizationId:$key", result) { JsonUtils.fromJson(it) }
     }

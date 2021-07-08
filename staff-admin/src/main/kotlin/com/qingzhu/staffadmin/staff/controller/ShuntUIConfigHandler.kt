@@ -1,6 +1,8 @@
 package com.qingzhu.staffadmin.staff.controller
 
 import com.qingzhu.common.security.awaitPrincipalTriple
+import com.qingzhu.common.security.awaitPrincipalTripleWithBodyOrg
+import com.qingzhu.staffadmin.staff.domain.entity.ShuntUIConfig
 import com.qingzhu.staffadmin.staff.repository.ShuntUIConfigRepository
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.web.bind.annotation.RestController
@@ -31,5 +33,11 @@ class ShuntUIConfigHandler(
 
         }
         return response
+    }
+
+    suspend fun saveUIConfig(sr: ServerRequest): ServerResponse {
+        var uiConfig = sr.awaitPrincipalTripleWithBodyOrg<ShuntUIConfig>()
+        uiConfig = shuntUIConfigRepository.save(uiConfig)
+        return ok().bodyValueAndAwait(uiConfig)
     }
 }

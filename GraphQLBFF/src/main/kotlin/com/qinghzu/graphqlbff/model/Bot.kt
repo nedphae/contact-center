@@ -1,9 +1,5 @@
 package com.qinghzu.graphqlbff.model
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import com.qingzhu.common.domain.AbstractAuditingEntity
-import java.time.Instant
-
 data class Topic(
     var id: String? = null,
     /** 机构 ID **/
@@ -29,11 +25,9 @@ data class Topic(
     /** 是否有效标记位 */
     var enabled: Boolean,
     /** 问题的有效时间 */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    var effectiveTime: Instant?,
+    var effectiveTime: String?,
     /** 有效期结束 */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    var failureTime: Instant?,
+    var failureTime: String?,
     /** 知识点所属分类 */
     var categoryId: Long,
     /** 问题答案类型，0只有对外答案，1只有对内答案，2同时有对内和对外答案，null 相似问题，无答案 */

@@ -51,6 +51,7 @@ class WebConfiguration : WebFluxConfigurer {
                 }
                 "/config".nest {
                     GET("/chat-ui/config", shuntUIConfigHandler::getUIConfigByShunt)
+                    POST("/chat-ui/config", shuntUIConfigHandler::saveUIConfig)
                 }
             }
         }

@@ -6,8 +6,6 @@ import org.springframework.data.relational.core.mapping.Table
 @Table
 data class DetailData(
     val id: Long? = null,
-    /** 公司id */
-    val organizationId: Int,
     /** 用户id **/
     val userId: Long,
     /**

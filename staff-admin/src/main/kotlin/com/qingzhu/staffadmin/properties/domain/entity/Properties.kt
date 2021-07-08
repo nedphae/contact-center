@@ -8,8 +8,6 @@ import org.springframework.data.relational.core.mapping.Table
 data class Properties(
     @Id
     val id: Int?,
-    /** 公司id */
-    val organizationId: Int,
     val key: String,
     var value: String?,
     var label: String?,

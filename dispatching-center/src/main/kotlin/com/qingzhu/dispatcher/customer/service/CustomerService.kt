@@ -26,9 +26,9 @@ class CustomerService(
     @PreAuthorize("hasRole('ADMIN')")
     fun saveAndGetCustomer(customerDto: CustomerDto): Mono<CustomerDto> {
         val customer = customerDto.toCustomer()
-        val dbCustomer = customerRepository.findFirstByOrganizationIdAndUid(customer.organizationId, customer.uid)
+        val dbCustomer = customerRepository.findFirstByOrganizationIdAndUid(customer.organizationId!!, customer.uid)
         return dbCustomer
-            .flatMapMany { detailDataRepository.findAllByOrganizationIdAndUserId(it.organizationId, it.id!!) }
+            .flatMapMany { detailDataRepository.findAllByOrganizationIdAndUserId(it.organizationId!!, it.id!!) }
             .collectMap { it.key }
             .map {
                 var result: List<DetailData> = emptyList()
