@@ -59,7 +59,7 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
         return webClient
             .get()
             .uri {
-                it.path("/status/customer/shunt-id")
+                it.path("/status/customer/find-by-id")
                     .queryParam("organizationId", organizationId)
                     .queryParam("userId", userId)
                     .build()

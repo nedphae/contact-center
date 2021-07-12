@@ -74,15 +74,15 @@ data class Customer(
     @GraphQLDescription("用于更新的detailData")
     val detailDataForUpdate: List<DetailDataUpdate>?,
     @GraphQLDescription("批量获取的detailData")
-    val data: List<DetailDataUpdate>,
+    val data: List<DetailData>,
 ) {
     @GraphQLDescription("客户在线状态，readOnly，批量时请不要查询此状态")
     suspend fun status(@GraphQLIgnore @Autowired messageService: MessageService, context: MyGraphQLContext) =
-        messageService.findCustomerStatus(organizationId, id).awaitWithAuthentication(context.oAuth)
+        messageService.findCustomerStatus(id).awaitWithAuthentication(context.oAuth)
 
     @GraphQLDescription("提供企业自定义的用户信息标识，批量时请不要查询此状态")
     suspend fun detailData(@GraphQLIgnore @Autowired customerService: CustomerService, context: MyGraphQLContext) =
-        customerService.findCustomerDetailData(organizationId, id).awaitWithAuthentication(context.oAuth)
+        customerService.findCustomerDetailData(id).awaitWithAuthentication(context.oAuth)
 }
 
 @GraphQLDescription("客户在线状态")

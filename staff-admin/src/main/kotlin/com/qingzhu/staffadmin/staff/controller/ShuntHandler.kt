@@ -1,5 +1,6 @@
 package com.qingzhu.staffadmin.staff.controller
 
+import com.qingzhu.common.security.bodyToMonoWithOrg
 import com.qingzhu.common.security.getPrincipalTriple
 import com.qingzhu.common.security.setOrganizationId
 import com.qingzhu.staffadmin.staff.domain.entity.Shunt
@@ -37,8 +38,7 @@ class ShuntHandler(
     }
 
     suspend fun saveShunt(sr: ServerRequest): ServerResponse {
-        val body = sr.bodyToMono<Shunt>()
-            .flatMap { sr.principal().setOrganizationId(it) }
+        val body = sr.bodyToMonoWithOrg<Shunt>()
             .flatMap { shuntService.saveShunt(it) }
         return ok().body(body).awaitSingle()
     }
@@ -53,8 +53,7 @@ class ShuntHandler(
     }
 
     suspend fun saveShuntClass(sr: ServerRequest): ServerResponse {
-        val body = sr.bodyToMono<ShuntClass>()
-            .flatMap { sr.principal().setOrganizationId(it) }
+        val body = sr.bodyToMonoWithOrg<ShuntClass>()
             .flatMap { shuntService.saveShuntClass(it) }
         return ok().body(body).awaitSingle()
     }

@@ -71,8 +71,6 @@ class WebConfiguration : WebFluxConfigurer {
                         GET("/online", staffStatusHandler::findAllOnlineStaff)
                     }
                     "/customer".nest {
-                        // 查询客户指定的接待组id或者客服id
-                        GET("/shunt-id", customerStatusHandler::findStaffIdOrShuntId)
                         // 根据 uid 查找客户
                         GET("/find-by-uid", customerStatusHandler::findByUid)
                         // 根据 id 查找客户

@@ -1,5 +1,6 @@
 package com.qingzhu.staffadmin.staff.controller
 
+import com.qingzhu.common.security.bodyToMonoWithOrg
 import com.qingzhu.common.security.getPrincipalTriple
 import com.qingzhu.common.security.setOrganizationId
 import com.qingzhu.staffadmin.staff.domain.entity.StaffGroup
@@ -22,8 +23,7 @@ class StaffGroupHandler(private val staffGroupService: StaffGroupService) {
     }
 
     suspend fun saveGroup(sr: ServerRequest): ServerResponse {
-        val body = sr.bodyToMono<StaffGroup>()
-            .flatMap { sr.principal().setOrganizationId(it) }
+        val body = sr.bodyToMonoWithOrg<StaffGroup>()
             .flatMap { staffGroupService.saveGroup(it) }
         return ok().body(body).awaitSingle()
     }

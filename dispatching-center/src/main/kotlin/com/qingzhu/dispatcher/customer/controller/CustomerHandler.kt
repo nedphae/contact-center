@@ -29,7 +29,8 @@ class CustomerHandler(
     }
 
     suspend fun getDetailDataByUserId(sr: ServerRequest): ServerResponse {
-        val oid = sr.queryParam("organizationId").map { it.toInt() }.orElse(null)
+        val (pOid, ) = sr.awaitPrincipalTriple()
+        val oid = sr.queryParam("organizationId").map { it.toInt() }.orElse(pOid)
         val uid = sr.queryParam("userId").map(String::toLong).orElse(null)
         return ServerResponse.ok().bodyAndAwait(customerService.getDetailDataByUserId(oid, uid))
     }

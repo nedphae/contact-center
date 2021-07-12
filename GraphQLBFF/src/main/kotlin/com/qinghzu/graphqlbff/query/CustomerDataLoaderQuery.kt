@@ -4,6 +4,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.server.operations.Query
 import com.qinghzu.graphqlbff.context.MyGraphQLContext
+import com.qinghzu.graphqlbff.model.Conversation
 import com.qinghzu.graphqlbff.model.Customer
 import com.qinghzu.graphqlbff.model.CustomerPage
 import com.qinghzu.graphqlbff.webclient.CustomerService
@@ -16,12 +17,17 @@ class CustomerDataLoaderQuery(
 ) : Query {
 
     @GraphQLDescription("根据 机构id(oid), 和 用户id 获取用户信息")
-    suspend fun getCustomer(@GraphQLIgnore context: MyGraphQLContext, oid: Int, userId: Long): Customer? {
-        return customerService.findCustomer(oid, userId).awaitWithAuthentication(context.oAuth)
+    suspend fun getCustomer(@GraphQLIgnore context: MyGraphQLContext, userId: Long): Customer? {
+        return customerService.findCustomer(userId).awaitWithAuthentication(context.oAuth)
     }
 
     @GraphQLDescription("分页获取客户信息")
     suspend fun findAllCustomer(@GraphQLIgnore context: MyGraphQLContext, first: Int, offset: Int): CustomerPage? {
         return customerService.findAllCustomer(first, offset).awaitWithAuthentication(context.oAuth)
+    }
+
+    @GraphQLDescription("获取客户会话信息")
+    suspend fun getConversation(@GraphQLIgnore context: MyGraphQLContext, userId: Long): Conversation? {
+        return customerService.findConversationByUserId(userId).awaitWithAuthentication(context.oAuth)
     }
 }

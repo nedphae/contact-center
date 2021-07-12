@@ -4,6 +4,7 @@ import com.qinghzu.graphqlbff.model.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.body
 import org.springframework.web.reactive.function.client.bodyToFlux
@@ -19,12 +20,11 @@ import reactor.core.publisher.Mono
 class MessageService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.Builder) :
     BaseWebClient(webClientBuilder, "http://message-server") {
 
-    fun findCustomerStatus(organizationId: Int, userId: Long): Mono<CustomerStatus> {
+    fun findCustomerStatus(userId: Long): Mono<CustomerStatus> {
         return webClient
             .get()
             .uri {
                 it.path("/status/customer/find-by-id")
-                    .queryParam("organizationId", organizationId)
                     .queryParam("userId", userId)
                     .build()
             }
@@ -88,12 +88,11 @@ class CustomerService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.
             .bodyToMono()
     }
 
-    fun findCustomer(organizationId: Int, userId: Long): Mono<Customer> {
+    fun findCustomer(userId: Long): Mono<Customer> {
         return webClient
             .get()
             .uri {
                 it.path("/customer")
-                    .queryParam("organizationId", organizationId)
                     .queryParam("userId", userId)
                     .build()
             }
@@ -101,12 +100,23 @@ class CustomerService(@Qualifier("bearerWebClient") webClientBuilder: WebClient.
             .bodyToMono()
     }
 
-    fun findCustomerDetailData(organizationId: Int, userId: Long): Flux<DetailData> {
+    fun findConversationByUserId(userId: Long): Mono<Conversation> {
+        return webClient
+            .get()
+            .uri {
+                it.path("/status/conversation/find-by-user-id")
+                    .queryParam("userId", userId)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
+    }
+
+    fun findCustomerDetailData(userId: Long): Flux<DetailData> {
         return webClient
             .get()
             .uri {
                 it.path("/customer/detail")
-                    .queryParam("organizationId", organizationId)
                     .queryParam("userId", userId)
                     .build()
             }
@@ -139,6 +149,7 @@ class StaffAdminService(@Qualifier("bearerWebClient") webClientBuilder: WebClien
             .retrieve()
             .bodyToMono()
     }
+
     fun findQuickReplyByStaff(): Mono<QuickReplyDto> {
         return webClient
             .get()

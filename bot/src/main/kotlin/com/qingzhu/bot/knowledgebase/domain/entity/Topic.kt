@@ -45,11 +45,11 @@ data class Topic(
     /** 是否有效标记位 */
     var enabled: Boolean,
     /** 问题的有效时间 */
-    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    @Field(type = FieldType.Date, format = DateFormat.date_time)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     var effectiveTime: Instant?,
     /** 有效期结束 */
-    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    @Field(type = FieldType.Date, format = DateFormat.date_time)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     var failureTime: Instant?,
     /** 知识点所属分类 */
@@ -73,13 +73,13 @@ data class Topic(
 
     @CreatedDate
     @JsonIgnore
-    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    @Field(type = FieldType.Date, format = DateFormat.date_time)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     val createdDate = Instant.now()
 
     @LastModifiedDate
     @JsonIgnore
-    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    @Field(type = FieldType.Date, format = DateFormat.date_time)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     var lastModifiedDate = Instant.now()
 }

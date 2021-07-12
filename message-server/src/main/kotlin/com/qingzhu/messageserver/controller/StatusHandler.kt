@@ -1,7 +1,6 @@
 package com.qingzhu.messageserver.controller
 
 import com.qingzhu.common.security.awaitPrincipalTriple
-import com.qingzhu.common.util.getOrgAnd
 import com.qingzhu.messageserver.domain.dto.CustomerBaseClientDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
@@ -14,21 +13,44 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.*
+import reactor.core.publisher.Mono
+
+val emptyResponse = ok().build()
+
+private suspend fun ServerRequest.getOrganizationIdAndUserId(
+    queryParamName: String,
+    getBody: (oid: Int, queryParam: String) -> Mono<ServerResponse>
+): ServerResponse {
+    val (organizationId, _, _) = this.awaitPrincipalTriple()
+    val queryParamOrganizationId = this
+        .queryParam("organizationId")
+        .map(String::toInt)
+        .orElseGet {
+            organizationId
+        }
+    return this.queryParam(queryParamName)
+        .map {
+            getBody(queryParamOrganizationId, it)
+        }
+        .orElse(emptyResponse)
+        .awaitSingle()
+}
 
 @RestController
 class StaffStatusHandler(
     private val staffStatusService: StaffStatusService
 ) {
     suspend fun findIdleStaffWithStaffDispatcherDto(sr: ServerRequest): ServerResponse {
-        val result = sr.queryParam("organizationId").map(String::toInt).map { oi ->
-            sr.queryParam("shuntId").map(String::toLong).map { rg ->
-                staffStatusService.findIdleStaffWithStaffDispatcherDto(oi, rg)
-            }.orElse(emptyFlow())
+        val (organizationId, _, _) = sr.awaitPrincipalTriple()
+        val result = sr.queryParam("shuntId").map(String::toLong).map { rg ->
+            staffStatusService.findIdleStaffWithStaffDispatcherDto(organizationId!!, rg)
         }.orElse(emptyFlow())
+
         return ok().bodyAndAwait(result)
     }
 
     suspend fun findBotStaffWithStaffDispatcherDto(sr: ServerRequest): ServerResponse {
+        val (organizationId, _, _) = sr.awaitPrincipalTriple()
         val result = sr.queryParam("organizationId").map(String::toInt).map { oi ->
             sr.queryParam("shuntId").map(String::toLong).map { rg ->
                 staffStatusService.findBotStaffWithStaffDispatcherDto(oi, rg)
@@ -59,23 +81,15 @@ class StaffStatusHandler(
 @RestController
 class CustomerStatusHandler(private val customerStatusService: CustomerStatusService) {
 
-    suspend fun findStaffIdOrShuntId(sr: ServerRequest): ServerResponse {
-        return sr.getOrgAnd("userId") { oi, uid ->
-            ok().body(customerStatusService.findStaffIdOrShuntId(oi, uid.toLong()))
-        }
-    }
-
     suspend fun findByUid(sr: ServerRequest): ServerResponse {
-        return sr.getOrgAnd("userId") { oi, uid ->
-            customerStatusService.findByUid(oi, uid)
-                .transform { ok().body(it) }
+        return sr.getOrganizationIdAndUserId("uid") { oid, uid ->
+            ok().body(customerStatusService.findByUid(oid, uid))
         }
     }
 
     suspend fun findByUserId(sr: ServerRequest): ServerResponse {
-        return sr.getOrgAnd("userId") { oi, uid ->
-            customerStatusService.findByUserId(oi, uid.toLong())
-                .transform { ok().body(it) }
+        return sr.getOrganizationIdAndUserId("userId") { oid, userId ->
+            ok().body(customerStatusService.findByUserId(oid, userId.toLong()))
         }
     }
 
@@ -106,9 +120,8 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
 class ConversationStatusHandler(private val conversationStatusService: ConversationStatusService) {
 
     suspend fun findByUserId(sr: ServerRequest): ServerResponse {
-        return sr.getOrgAnd("userId") { oi, uid ->
-            conversationStatusService.findByUserId(oi, uid.toLong())
-                .transform { ok().body(it) }
+        return sr.getOrganizationIdAndUserId("userId") { oid, userId ->
+            ok().body(conversationStatusService.findByUserId(oid, userId.toLong()))
         }
     }
 

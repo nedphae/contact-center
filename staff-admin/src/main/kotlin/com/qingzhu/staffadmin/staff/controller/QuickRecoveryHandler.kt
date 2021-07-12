@@ -1,5 +1,7 @@
 package com.qingzhu.staffadmin.staff.controller
 
+import com.qingzhu.common.security.bodyToMonoWithOrg
+import com.qingzhu.common.security.bodyToMonoWithOrgAndStaff
 import com.qingzhu.common.security.getPrincipalTriple
 import com.qingzhu.common.security.setOrganizationIdAndStaffId
 import com.qingzhu.staffadmin.staff.domain.entity.QuickReply
@@ -33,16 +35,14 @@ class QuickRecoveryHandler(
     }
 
     suspend fun saveQuickReply(sr: ServerRequest): ServerResponse {
-        return sr.bodyToMono<QuickReply>()
-            .flatMap { sr.principal().setOrganizationIdAndStaffId(it) }
+        return sr.bodyToMonoWithOrgAndStaff<QuickReply>()
             .flatMap { quickReplyService.saveQuickReply(it) }
             .transform { ok().body(it) }
             .awaitSingle()
     }
 
     suspend fun saveQuickReplyGroup(sr: ServerRequest): ServerResponse {
-        return sr.bodyToMono<QuickReplyGroup>()
-            .flatMap { sr.principal().setOrganizationIdAndStaffId(it) }
+        return sr.bodyToMonoWithOrgAndStaff<QuickReplyGroup>()
             .flatMap { quickReplyService.saveQuickReplyGroup(it) }
             .transform { ok().body(it) }
             .awaitSingle()

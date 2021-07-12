@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.awaitBody
 import org.springframework.web.reactive.function.server.awaitPrincipal
+import org.springframework.web.reactive.function.server.bodyToMono
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.util.context.Context
@@ -152,15 +153,23 @@ fun getPublicKey(): PublicKey {
  */
 fun Mono<out Principal>.getPrincipalTriple(): Mono<Tuple3<Int, Long, String>> {
     return this.flatMap {
-        val principal = (it as JwtAuthenticationToken).principal as Jwt
-        // org id
-        val orgId = principal.getClaim<Long>("oid").toInt()
-        // staff id
-        val sid = principal.getClaim<Long>("sid")
-        // staff name
-        val username = it.name
-        Mono.zip(Mono.justOrEmpty(orgId), Mono.justOrEmpty(sid), Mono.justOrEmpty(username))
+        val principal = getPrincipalTriple(it)
+        Mono.zip(
+            Mono.justOrEmpty(principal.first),
+            Mono.justOrEmpty(principal.second),
+            Mono.justOrEmpty(principal.third)
+        )
     }
+}
+
+inline fun <reified T : AbstractStaffEntity> ServerRequest.bodyToMonoWithOrgAndStaff(): Mono<T> {
+    return this.bodyToMono<T>()
+        .flatMap { this.principal().setOrganizationIdAndStaffId(it) }
+}
+
+inline fun <reified T : AbstractAuditingEntity> ServerRequest.bodyToMonoWithOrg(): Mono<T> {
+    return this.bodyToMono<T>()
+        .flatMap { this.principal().setOrganizationId(it) }
 }
 
 fun <T : AbstractAuditingEntity> Mono<out Principal>.setOrganizationId(entity: T): Mono<T> {
@@ -182,14 +191,10 @@ fun <T : AbstractStaffEntity> Mono<out Principal>.setOrganizationIdAndStaffId(en
         }
 }
 
-/**
- * 协程 获取用户 [Principal] 并解析为 [Triple]，包括 机构id，客服id，客服名称
- */
-suspend fun ServerRequest.awaitPrincipalTriple(): Triple<Int?, Long?, String?> {
-    val principal = this.awaitPrincipal()
+private fun getPrincipalTriple(principal: Principal): Triple<Int?, Long?, String?> {
     val jwtPrincipal = (principal as JwtAuthenticationToken).principal as Jwt
     // org id
-    val orgId = jwtPrincipal.getClaim<Int>("oid")
+    val orgId = jwtPrincipal.getClaim<Long>("oid").toInt()
     // staff id
     val sid = jwtPrincipal.getClaim<Long>("sid")
     // staff name
@@ -197,14 +202,22 @@ suspend fun ServerRequest.awaitPrincipalTriple(): Triple<Int?, Long?, String?> {
     return Triple(orgId, sid, username)
 }
 
-suspend inline fun <reified T: AbstractAuditingEntity> ServerRequest.awaitPrincipalTripleWithBodyOrg(): T {
+/**
+ * 协程 获取用户 [Principal] 并解析为 [Triple]，包括 机构id，客服id，客服名称
+ */
+suspend fun ServerRequest.awaitPrincipalTriple(): Triple<Int?, Long?, String?> {
+    val principal = this.awaitPrincipal()
+    return getPrincipalTriple(principal!!)
+}
+
+suspend inline fun <reified T : AbstractAuditingEntity> ServerRequest.awaitPrincipalTripleWithBodyOrg(): T {
     val entity = this.awaitBody<T>()
     val (orgId, _, _) = this.awaitPrincipalTriple()
     entity.organizationId = orgId
     return entity
 }
 
-suspend inline fun <reified T: AbstractStaffEntity> ServerRequest.awaitPrincipalTripleWithBodyOrgAndStaff(): T {
+suspend inline fun <reified T : AbstractStaffEntity> ServerRequest.awaitPrincipalTripleWithBodyOrgAndStaff(): T {
     val entity = this.awaitBody<T>()
     val (orgId, staffId, _) = this.awaitPrincipalTriple()
     entity.organizationId = orgId

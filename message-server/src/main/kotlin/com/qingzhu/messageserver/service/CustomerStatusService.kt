@@ -73,11 +73,6 @@ class CustomerStatusService(
         }
     }
 
-    fun findStaffIdOrShuntId(organizationId: Int, userId: Long): Mono<CustomerStatus> {
-        val statusMap = getStatusMap(organizationId)
-        return Mono.justOrEmpty(statusMap[userId])
-    }
-
     fun findByUserId(organizationId: Int, userId: Long): Mono<CustomerStatus> {
         val statusMap = getStatusMap(organizationId)
         return Mono.justOrEmpty(statusMap[userId])
