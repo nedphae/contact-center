@@ -4,6 +4,7 @@ import com.qingzhu.common.domain.shared.msg.dto.MessageDto
 import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.common.message.getChatMessageSnowFlake
 import com.qingzhu.common.security.awaitPrincipalTriple
+import com.qingzhu.common.util.awaitGetOrganizationId
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.domain.query.ConversationQuery
 import com.qingzhu.messageserver.service.MessagePersistentService
@@ -56,8 +57,8 @@ class MessageHandler(
 
     suspend fun hasHistoryMessage(sr: ServerRequest): ServerResponse {
         val userId = sr.queryParam("userId").map { it.toLong() }.orElse(null)
-        val orgId = sr.queryParam("organizationId").map { it.toInt() }.orElse(null)
-        return messagePersistentService.hasHistoryMessage(orgId, userId)
+        val (orgId) = sr.awaitGetOrganizationId()
+        return messagePersistentService.hasHistoryMessage(orgId!!, userId)
             .flatMap {
                 ok().bodyValue(it)
             }.awaitSingle()
@@ -65,7 +66,7 @@ class MessageHandler(
 
     suspend fun loadHistoryMessage(sr: ServerRequest): ServerResponse {
         val userId = sr.queryParam("userId").map { it.toLong() }.orElse(null)
-        val orgId = sr.queryParam("organizationId").map { it.toInt() }.orElse(null)
+        val (orgId) = sr.awaitGetOrganizationId()
         val lastSeqId = sr
             .queryParam("lastSeqId")
             .filter { it.isNotBlank() }
@@ -75,7 +76,7 @@ class MessageHandler(
             .filter { it.isNotBlank() }
             .map { it.toInt() }
             .orElse(20)
-        return messagePersistentService.loadHistoryMessage(orgId, userId, lastSeqId, count)
+        return messagePersistentService.loadHistoryMessage(orgId!!, userId, lastSeqId, count)
             .flatMap {
                 ok().bodyValue(it)
             }.awaitSingle()
@@ -88,13 +89,13 @@ class MessageHandler(
     suspend fun syncHistoryMessage(sr: ServerRequest): ServerResponse {
         val userId = sr.queryParam("userId").map { it.toLong() }.orElse(null)
         val lastSeqId = sr.queryParam("lastSeqId").map { it.toLong() }.orElse(null)
-        val (oid, _, _) = sr.awaitPrincipalTriple()
-        return if (oid != null) {
+        val (orgId, _, _) = sr.awaitPrincipalTriple()
+        return if (orgId != null) {
             if (lastSeqId == null) {
                 // 没有发同步id 就获取最近20 条
-                messagePersistentService.loadHistoryMessage(oid, userId, getChatMessageSnowFlake().getNextSequenceId(), 20)
+                messagePersistentService.loadHistoryMessage(orgId, userId, getChatMessageSnowFlake().getNextSequenceId(), 20)
             } else {
-                messagePersistentService.syncHistoryMessage(oid, userId, lastSeqId)
+                messagePersistentService.syncHistoryMessage(orgId, userId, lastSeqId)
             }.flatMap {
                 ok().bodyValue(it)
             }.awaitSingle()

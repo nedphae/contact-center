@@ -51,10 +51,10 @@ class NettyWebSocketAutoConfiguration(
         config.port = webSocketConfigProperties.port
         config.workerThreads = webSocketConfigProperties.workerThreads
         config.authorizationListener = authorizationListener.getIfAvailable { SuccessAuthorizationListener() }
-        config.socketConfig.isReuseAddress = true
-        config.socketConfig.soLinger = 0
-        config.socketConfig.isTcpNoDelay = true
-        config.socketConfig.isTcpKeepAlive = true
+        // config.socketConfig.isReuseAddress = true
+        // config.socketConfig.soLinger = 0
+        // config.socketConfig.isTcpNoDelay = true
+        // config.socketConfig.isTcpKeepAlive = true
         config.ackMode = AckMode.MANUAL
         // 添加 kotlin 支持
         config.jsonSupport = JacksonJsonSupport(KotlinModule(), JavaTimeModule(), Jdk8Module(), ProblemModule(), ConstraintViolationProblemModule())

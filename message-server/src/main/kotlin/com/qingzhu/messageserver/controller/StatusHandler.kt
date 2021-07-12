@@ -1,6 +1,6 @@
 package com.qingzhu.messageserver.controller
 
-import com.qingzhu.common.security.awaitPrincipalTriple
+import com.qingzhu.common.util.awaitGetOrganizationId
 import com.qingzhu.messageserver.domain.dto.CustomerBaseClientDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.*
 import reactor.core.publisher.Mono
+import java.util.*
 
 val emptyResponse = ok().build()
 
@@ -21,16 +22,10 @@ private suspend fun ServerRequest.getOrganizationIdAndUserId(
     queryParamName: String,
     getBody: (oid: Int, queryParam: String) -> Mono<ServerResponse>
 ): ServerResponse {
-    val (organizationId, _, _) = this.awaitPrincipalTriple()
-    val queryParamOrganizationId = this
-        .queryParam("organizationId")
-        .map(String::toInt)
-        .orElseGet {
-            organizationId
-        }
+    val (organizationId, _, _) = this.awaitGetOrganizationId()
     return this.queryParam(queryParamName)
         .map {
-            getBody(queryParamOrganizationId, it)
+            getBody(organizationId!!, it)
         }
         .orElse(emptyResponse)
         .awaitSingle()
@@ -41,19 +36,18 @@ class StaffStatusHandler(
     private val staffStatusService: StaffStatusService
 ) {
     suspend fun findIdleStaffWithStaffDispatcherDto(sr: ServerRequest): ServerResponse {
-        val (organizationId, _, _) = sr.awaitPrincipalTriple()
+        val (organizationId) = sr.awaitGetOrganizationId()
         val result = sr.queryParam("shuntId").map(String::toLong).map { rg ->
             staffStatusService.findIdleStaffWithStaffDispatcherDto(organizationId!!, rg)
         }.orElse(emptyFlow())
-
         return ok().bodyAndAwait(result)
     }
 
     suspend fun findBotStaffWithStaffDispatcherDto(sr: ServerRequest): ServerResponse {
-        val (organizationId, _, _) = sr.awaitPrincipalTriple()
-        val result = sr.queryParam("organizationId").map(String::toInt).map { oi ->
+        val (organizationId) = sr.awaitGetOrganizationId()
+        val result = Optional.ofNullable(organizationId).map{
             sr.queryParam("shuntId").map(String::toLong).map { rg ->
-                staffStatusService.findBotStaffWithStaffDispatcherDto(oi, rg)
+                staffStatusService.findBotStaffWithStaffDispatcherDto(it, rg)
             }.orElse(emptyFlow())
         }.orElse(emptyFlow())
         return ok().bodyAndAwait(result)
@@ -70,9 +64,9 @@ class StaffStatusHandler(
     }
 
     suspend fun findAllOnlineStaff(sr: ServerRequest): ServerResponse {
-        val (oid, _, _) = sr.awaitPrincipalTriple()
-        return (if (oid != null) {
-            val result = staffStatusService.findAllOnlineStaff(oid)
+        val (organizationId, _, _) = sr.awaitGetOrganizationId()
+        return (if (organizationId != null) {
+            val result = staffStatusService.findAllOnlineStaff(organizationId)
             ok().bodyValue(result)
         } else notFound().build()).awaitSingle()
     }
@@ -94,7 +88,7 @@ class CustomerStatusHandler(private val customerStatusService: CustomerStatusSer
     }
 
     suspend fun findAllOnlineCustomer(sr: ServerRequest): ServerResponse {
-        val (oid, _, _) = sr.awaitPrincipalTriple()
+        val (oid, _, _) = sr.awaitGetOrganizationId()
         return (if (oid != null) {
             val result = customerStatusService.findAllOnlineCustomer(oid)
             ok().bodyValue(result)
@@ -126,11 +120,6 @@ class ConversationStatusHandler(private val conversationStatusService: Conversat
     }
 
     suspend fun new(sr: ServerRequest): ServerResponse {
-        // 测试 json 序列化问题
-        // val json = sr.awaitBody<String>()
-        // println(json)
-        // val body = JsonUtils.fromJson(json)
-        // println(body)
         return sr.bodyToMono<ConversationStatus>()
             .flatMap { conversationStatusService.generate(it) }
             .transform {

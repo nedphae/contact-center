@@ -1,5 +1,6 @@
 package com.qingzhu.dispatcher.controller
 
+import com.qingzhu.common.util.awaitGetOrganizationId
 import com.qingzhu.dispatcher.service.AssignmentService
 import com.qingzhu.dispatcher.service.QueueService
 import kotlinx.coroutines.reactive.awaitSingle
@@ -8,15 +9,18 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.body
+import java.util.*
 
 @RestController
 class AssignmentHandler(
     private val assignmentService: AssignmentService,
     private val queueService: QueueService,
 ) {
+    val response = ok().build()
+
     suspend fun assignmentStaff(sr: ServerRequest): ServerResponse {
-        val response = ok().build()
-        return sr.queryParam("organizationId").map(String::toInt).map { oi ->
+        val (organizationId) = sr.awaitGetOrganizationId()
+        return Optional.ofNullable(organizationId).map { oi ->
             sr.queryParam("userId").map(String::toLong).map { uid ->
                 assignmentService.assignmentStaff(oi, uid)
                     .transform { ok().body(it) }
@@ -25,8 +29,8 @@ class AssignmentHandler(
     }
 
     suspend fun assignmentAuto(sr: ServerRequest): ServerResponse {
-        val response = ok().build()
-        return sr.queryParam("organizationId").map(String::toInt).map { oid ->
+        val (organizationId) = sr.awaitGetOrganizationId()
+        return Optional.ofNullable(organizationId).map { oid ->
             sr.queryParam("userId").map(String::toLong).map { userId ->
                 ok().body(assignmentService.assignmentAuto(oid, userId))
             }.orElse(response)
@@ -34,8 +38,8 @@ class AssignmentHandler(
     }
 
     suspend fun assignmentFromQueue(sr: ServerRequest): ServerResponse {
-        val response = ok().build()
-        return sr.queryParam("organizationId").map(String::toInt).map { oid ->
+        val (organizationId) = sr.awaitGetOrganizationId()
+        return Optional.ofNullable(organizationId).map { oid ->
             sr.queryParam("userId").map(String::toLong).map { userId ->
                 ok().body(queueService.removeUser(oid, userId))
             }.orElse(response)

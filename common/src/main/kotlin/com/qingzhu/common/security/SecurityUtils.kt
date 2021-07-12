@@ -191,12 +191,12 @@ fun <T : AbstractStaffEntity> Mono<out Principal>.setOrganizationIdAndStaffId(en
         }
 }
 
-private fun getPrincipalTriple(principal: Principal): Triple<Int?, Long?, String?> {
-    val jwtPrincipal = (principal as JwtAuthenticationToken).principal as Jwt
+fun getPrincipalTriple(principal: Principal): Triple<Int?, Long?, String?> {
+    val jwtPrincipal = (principal as JwtAuthenticationToken).principal as? Jwt
     // org id
-    val orgId = jwtPrincipal.getClaim<Long>("oid").toInt()
+    val orgId = jwtPrincipal?.getClaim<Long>("oid")?.toInt()
     // staff id
-    val sid = jwtPrincipal.getClaim<Long>("sid")
+    val sid = jwtPrincipal?.getClaim<Long>("sid")
     // staff name
     val username = principal.name
     return Triple(orgId, sid, username)

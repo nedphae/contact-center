@@ -1,8 +1,8 @@
 package com.qingzhu.staffadmin.staff.controller
 
 import com.qingzhu.common.security.getPrincipalTriple
+import com.qingzhu.common.util.awaitGetOrganizationId
 import com.qingzhu.staffadmin.staff.domain.dto.InnerUser
-import com.qingzhu.staffadmin.staff.domain.dto.ReceptionistShuntDto
 import com.qingzhu.staffadmin.staff.domain.entity.Staff
 import com.qingzhu.staffadmin.staff.domain.query.StaffQuery
 import com.qingzhu.staffadmin.staff.mapper.DtoMapper
@@ -32,7 +32,7 @@ class StaffController(
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     fun registerCustomerService(principal: Principal, @RequestBody @Valid staffQuery: StaffQuery): Mono<Staff> {
-        staffQuery.organizationId = (principal as Jwt).getClaim<Long>("oid").toInt()
+        staffQuery.organizationId = getPrincipalTriple(principal).first
         return staffRepository.save(DtoMapper.mapper.mapStaffQueryToStaff(staffQuery))
     }
 
@@ -45,15 +45,10 @@ class StaffController(
 @RestController
 class StaffHandler(private val staffService: StaffService) {
     suspend fun findStaffInfo(sr: ServerRequest): ServerResponse {
-        val oid = sr.queryParam("organizationId").orElse(null)
-        val sid = sr.queryParam("staffId").orElse(null)
-        val staffInfo = if (sid != null) {
-            staffService.findStaffInfo(sid.toLong())
-        } else {
-            sr.principal()
-                .getPrincipalTriple()
-                .flatMap { staffService.findStaffInfo(it.t2) }
-        }
+        val (_, staffId) = sr.awaitGetOrganizationId()
+        val staffInfo = if (staffId != null) {
+            staffService.findStaffInfo(staffId)
+        } else Mono.empty()
 
         return staffInfo
             .transform { ok().body(it) }
@@ -61,12 +56,13 @@ class StaffHandler(private val staffService: StaffService) {
     }
 
     suspend fun findStaffConfigByOrganizationIdAndStaffId(sr: ServerRequest): ServerResponse {
-        return sr.queryParam("organizationId").map(String::toInt).map { oi ->
-            sr.queryParam("staffId").map(String::toLong).map { si ->
-                ok().contentType(MediaType.APPLICATION_JSON)
-                    .body<ReceptionistShuntDto>(staffService.findStaffConfigByOrganizationIdAndStaffId(oi, si))
-            }.orElseGet { ok().build() }
-        }.orElseGet { ok().build() }.awaitSingle()
+        val (organizationId, staffId) = sr.awaitGetOrganizationId()
+        return if (organizationId != null && staffId != null) {
+            ok().contentType(MediaType.APPLICATION_JSON)
+                .body(staffService.findStaffConfigByOrganizationIdAndStaffId(organizationId, staffId))
+        } else {
+            ok().build()
+        }.awaitSingle()
     }
 
     suspend fun findAllEnabledBotStaff(sr: ServerRequest): ServerResponse {

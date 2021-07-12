@@ -87,3 +87,4 @@ spring:
 logging:
   level:
     root: info
+    com.corundumstudio.socketio: debug
