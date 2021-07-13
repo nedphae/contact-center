@@ -58,5 +58,6 @@ class StaffEventHandler(private val registerService: RegisterService) : Abstract
         val (organizationId, staffId) = getOrganizationIdAndRegisterName(socketIOClient)
         registerService.unRegisterStaff(organizationId, staffId)
         MapUtils.remove(Key(organizationId, CreatorType.STAFF, staffId), socketIOClient)
+        socketIOClient.disconnect()
     }
 }

@@ -48,7 +48,6 @@ spring:
         # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
 
     gateway:
-
       routes:
         # 鉴权服务
         - id: auth_route
@@ -67,9 +66,9 @@ spring:
         # websocket服务
         - id: websocket_http_route
           # hlb for hash load balance
-          uri: hlb://websocket-server
+          uri: lb:ws://websocket-server
           predicates:
-            - Path=/socket.io/**
+            - Path=/socket.io
 
         # 客户接入服务
         - id: access_route
@@ -138,10 +137,11 @@ spring:
             - Path=/graphql/**
 
         # 聚合服务
+        # 如果这里启用了 ws 会导致 socket.io 的连接转到这里，什么原因？
         - id: graphql_subscriptions_route
-          uri: lb://graphql-bff
+          uri: lb:ws://graphql-bff
           predicates:
-            - Path=/subscriptions/**
+            - Path=/subscriptions
 logging:
   level:
     root: info
