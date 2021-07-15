@@ -1,5 +1,7 @@
 package com.qinghzu.graphqlbff.model
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.qingzhu.common.constant.NoArg
 import com.qingzhu.common.message.getChatMessageSnowFlake
 import java.util.*
 
@@ -133,7 +135,7 @@ data class Message(
     /** 创建者类型 */
     val creatorType: Int,
     /** 内容 */
-    val content: String,
+    val content: Content,
     /** 昵称 */
     val nickName: String? = null
 )
@@ -153,3 +155,43 @@ class Evaluate(
     /** 用户标记的解决状态，0=未选择 1=已解决 2=未解决 */
     var userResolvedStatus: Int
 )
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArg
+data class Content(
+    /** Content type:
+     *
+     * text, picture, file, system message(text)
+     */
+    val contentType: String,
+    /** sys 消息类型 **/
+    val sysCode: Int? = null,
+    /** text */
+    var textContent: TextContent? = null,
+    /** picture */
+    var photoContent: PhotoContent? = null,
+    /** file */
+    var attachments: Attachments? = null
+
+) {
+    data class TextContent(
+        val text: String
+    )
+
+    data class PhotoContent(
+        val mediaId: String,
+        val filename: String,
+        val picSize: Int,
+        /** pic type */
+        val type: String
+    )
+
+    data class Attachments(
+        val mediaId: String,
+        val size: Int,
+        /** Display different icons according to the type */
+        val type: String,
+        /** file path */
+        val url: String
+    )
+}

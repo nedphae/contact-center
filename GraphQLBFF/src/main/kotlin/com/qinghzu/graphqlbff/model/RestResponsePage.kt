@@ -1,6 +1,8 @@
 package com.qinghzu.graphqlbff.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.qingzhu.common.util.RawStringSerializer
 
 open class RestResponsePage<T>(
     @JsonProperty("content") var content: List<T>? = null,
@@ -13,7 +15,7 @@ open class RestResponsePage<T>(
     @JsonProperty("sort") var sort: Sort? = null,
     @JsonProperty("first") var first: Boolean = true,
     @JsonProperty("numberOfElements") var numberOfElements: Int = 0,
-    @JsonProperty("numberOfElements") var empty: Boolean = true,
+    @JsonProperty("empty") var empty: Boolean = true,
 )
 
 data class Sort(
@@ -35,9 +37,13 @@ open class SearchHit<T>(
     var index: String? = null,
     var id: String? = null,
     var score: Float? = null,
-    var sortValues: List<String>? = null,
+    @field:JsonDeserialize(using = RawStringSerializer::class)
+    var sortValues: String? = null,
+    @field:JsonDeserialize(using = RawStringSerializer::class)
     var highlightFields: String? = null,
+    @field:JsonDeserialize(using = RawStringSerializer::class)
     var innerHits: String? = null,
+    @field:JsonDeserialize(using = RawStringSerializer::class)
     var nestedMetaData: String? = null,
     var content: T? = null,
 )

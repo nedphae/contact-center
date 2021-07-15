@@ -1,9 +1,9 @@
 package com.qingzhu.common.util
 
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.TreeNode
+import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -27,6 +27,14 @@ class BigDecimalSerializer : JsonSerializer<BigDecimal>() {
         gen?.writeString(value?.times(100.toBigDecimal()).toString())
     }
 }
+
+class RawStringSerializer : JsonDeserializer<String>() {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext?): String {
+        val tree = p.codec.readTree<TreeNode>(p)
+        return tree.toString()
+    }
+}
+
 
 fun <T> T.toJson(): String {
     return JsonUtils.toJson(this)
