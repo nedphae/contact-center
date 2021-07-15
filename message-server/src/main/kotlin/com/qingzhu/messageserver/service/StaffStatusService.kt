@@ -16,7 +16,9 @@ import kotlinx.coroutines.flow.map
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toFlux
 import java.util.concurrent.TimeUnit
 
 @Service
@@ -125,16 +127,16 @@ class StaffStatusService(
      * 管理员权限
      */
     @PreAuthorize("hasRole('ADMIN')")
-    fun findAllOnlineStaff(organizationId: Int): Collection<StaffStatus> {
+    fun findAllOnlineStaff(organizationId: Int): Flux<StaffStatus> {
         val statusMap = getStatusMap(organizationId)
         val predicateList = mutableListOf(
             // 接待组不为空
-            NotEqualPredicate("shunt[any]", null),
+            NotEqualPredicate("shunt[0]", null),
             // 在线
             NotEqualPredicate("onlineStatus", OnlineStatus.OFFLINE),
         )
         val andPredicate = AndPredicate(*predicateList.toTypedArray())
         @Suppress("UNCHECKED_CAST")
-        return statusMap.values(andPredicate as Predicate<Long, StaffStatus>)
+        return statusMap.values(andPredicate as Predicate<Long, StaffStatus>).toFlux()
     }
 }

@@ -41,12 +41,13 @@ object MapUtils {
         /**
          * 获取过期的 key
          */
-        fun getExpiredKey(organizationId: Int, duration: Duration): List<Key> {
+        fun getExpiredKey(organizationId: Int, role: CreatorType, duration: Duration): List<Key> {
             return timeMap[organizationId]?.let { map ->
                 map.entries
                     .parallelStream()
                     .filter {
-                        it.value <= System.currentTimeMillis() - duration.toMillis()
+                        it.value <= System.currentTimeMillis() - duration.toMillis() &&
+                                it.key.role == role
                     }
                     .map { it.key }
                     .toList()

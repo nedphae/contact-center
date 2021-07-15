@@ -1,6 +1,8 @@
 package com.qinghzu.graphqlbff.model
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.qingzhu.common.domain.shared.authority.StaffAuthority
+import com.qingzhu.common.util.RawStringSerializer
 
 data class StaffStatus(
     /** 公司id */
@@ -16,6 +18,7 @@ data class StaffStatus(
     /** 客服分组 **/
     var groupId: Long,
     /** 不同接待组的优先级 */
+    @field:JsonDeserialize(using = RawStringSerializer::class)
     var priorityOfShunt: String,
     /** 最大接待数量 */
     var maxServiceCount: Int,

@@ -45,13 +45,13 @@ class StaffStatusServiceTest : MessageServerApplicationTests() {
     fun testStaffStatus() {
         staffStatusService.saveStatus(
             StaffStatus(
-                1, 2L, StaffAuthority.ROLE_STAFF, listOf(3L, 4L), 1,
+                1, 1L, StaffAuthority.ROLE_STAFF, listOf(3L, 4L), 1,
                 mapOf(3L to 15), 10, 1
             )
         )
         staffStatusService.saveStatus(
             StaffStatusDto(
-                1, 12L, StaffAuthority.ROLE_STAFF, listOf(13L, 4L), 1,
+                1, 2L, StaffAuthority.ROLE_STAFF, listOf(13L, 4L), 1,
                 mapOf(4L to 15), maxServiceCount = 10, staffType = 1
             ).toStaffStatus()
         )
@@ -61,9 +61,20 @@ class StaffStatusServiceTest : MessageServerApplicationTests() {
 
         assertFalse(staffStatusList.isEmpty())
 
-        staffStatusService.setStatusOffline(StaffChangeStatusDto(1, 2L, null))
+        staffStatusService.setStatusOffline(StaffChangeStatusDto(1, 2L))
         val result = staffStatusService.findIdleStaff(1, 4L)
         println(result)
         assertEquals(1, result.size)
+
+        // 不属于任何接待组的客服
+        staffStatusService.saveStatus(
+            StaffStatusDto(
+                1, 3L, StaffAuthority.ROLE_STAFF, listOf(), 1,
+                mapOf(4L to 15), maxServiceCount = 10, staffType = 1
+            ).toStaffStatus()
+        )
+        val allStaff = staffStatusService.findAllOnlineStaff(1).collectList().block()
+        println(allStaff)
+        assertEquals(1, allStaff?.size)
     }
 }

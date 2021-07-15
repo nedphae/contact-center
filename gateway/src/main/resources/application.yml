@@ -137,7 +137,7 @@ spring:
             - Path=/graphql/**
 
         # 聚合服务
-        # 如果这里启用了 ws 会导致 socket.io 的连接转到这里，什么原因？
+        # 如果这里启用了 ws 会导致 socket.io 的连接转到这里，因为 websocket 相同端口共用连接
         - id: graphql_subscriptions_route
           uri: lb:ws://graphql-bff
           predicates:

@@ -45,7 +45,7 @@ data class Conversation(
     /** 客服名字 或为 "机器人" */
     var nickName: String,
     /** 会话开始时间 */
-    val startTime: String,
+    val startTime: Double,
     /** 客户id */
     val userId: Long,
     /** 客户名称 */
@@ -79,11 +79,11 @@ data class Conversation(
     /** 会话关闭原因 */
     var closeReason: String? = null,
     /** 结束时间 */
-    var endTime: String? = null,
+    var endTime: Double? = null,
     /** 用户评价内容 */
     var evaluate: Evaluate? = null,
     /** 客服首次响应的时间戳 */
-    var staffFirstReplyTime: String? = null,
+    var staffFirstReplyTime: Double? = null,
     /** 客服首次响应时长(访客首条消息与客服首次回复消息的时间间隔) */
     var firstReplyCost: Long = 0,
     /** 置顶时长 */
@@ -95,7 +95,7 @@ data class Conversation(
     /** 对话回合数 */
     var roundNumber: Int = 0,
     /** 访客首条消息时间 */
-    var clientFirstMessageTime: String? = null,
+    var clientFirstMessageTime: Double? = null,
     /** 客服平均响应时长 */
     var avgRespDuration: Long? = 0,
     /** 是否有效会话 */

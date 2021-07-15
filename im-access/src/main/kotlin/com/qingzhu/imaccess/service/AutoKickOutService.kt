@@ -10,6 +10,7 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.scheduler.Schedulers
+import reactor.kotlin.core.publisher.toFlux
 import java.time.Duration
 
 /**
@@ -20,10 +21,10 @@ class AutoKickOutService(
     private val registerService: RegisterService,
 ) : CommandLineRunner {
     override fun run(vararg args: String?) {
-        Flux.interval(Duration.ZERO, Duration.ofSeconds(30), Schedulers.boundedElastic())
+        Flux.interval(Duration.ZERO, Duration.ofSeconds(10), Schedulers.boundedElastic())
             .flatMapIterable {
                 // TODO 通过配置获取
-                MapUtils.Time.getExpiredKey(9491, Duration.ofMinutes(15))
+                MapUtils.Time.getExpiredKey(9491, CreatorType.CUSTOMER, Duration.ofMinutes(15))
             }
             .flatMapSequential { MapUtils.get(it).map { socket -> it to socket } }
             .map { (key, socket) ->
@@ -36,6 +37,10 @@ class AutoKickOutService(
                     MapUtils.remove(Key(key.organizationId, CreatorType.CUSTOMER, key.id), socket)
                     socket.disconnect()
                 }
+            }
+            .thenMany(MapUtils.Time.getExpiredKey(9491, CreatorType.STAFF, Duration.ofMinutes(2)).toFlux())
+            .map {
+                TODO("客服离线超时，发送关闭信号给其客户")
             }
             .subscribe()
     }

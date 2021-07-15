@@ -13,7 +13,7 @@ data class StaffChangeStatusDto(
     /** 客服id */
     val staffId: Long,
 
-    val userId: Long?
+    val userId: Long? = null,
 )
 
 /**

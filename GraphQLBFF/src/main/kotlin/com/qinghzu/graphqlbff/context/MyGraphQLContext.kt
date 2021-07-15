@@ -36,5 +36,6 @@ class MyGraphQLContext(
  */
 class MySubscriptionGraphQLContext(
     val request: WebSocketSession,
-    var auth: String? = null
+    var auth: String? = null,
+    var oAuth: Authentication? = null
 ) : GraphQLContext

@@ -67,7 +67,7 @@ class StaffStatusHandler(
         val (organizationId, _, _) = sr.awaitGetOrganizationId()
         return (if (organizationId != null) {
             val result = staffStatusService.findAllOnlineStaff(organizationId)
-            ok().bodyValue(result)
+            ok().body(result)
         } else notFound().build()).awaitSingle()
     }
 }

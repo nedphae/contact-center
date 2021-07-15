@@ -1,6 +1,5 @@
 package com.qingzhu.messageserver.domain.entity
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Document
@@ -56,7 +55,6 @@ data class Conversation(
     var nickName: String,
     /** 会话开始时间 */
     @Field(type = FieldType.Date, format = DateFormat.date_time)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     val startTime: Instant,
     /** 客户id */
     val userId: Long,
@@ -101,14 +99,12 @@ data class Conversation(
     var closeReason: String? = null,
     /** 结束时间 */
     @Field(type = FieldType.Date, format = DateFormat.date_time)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     var endTime: Instant? = null,
     /** 用户评价内容 */
     @Field(type = FieldType.Object)
     var evaluate: Evaluate? = null,
     /** 客服首次响应的时间戳 */
     @Field(type = FieldType.Date, format = DateFormat.date_time)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     var staffFirstReplyTime: Instant? = null,
     /** 客服首次响应时长(访客首条消息与客服首次回复消息的时间间隔) */
     var firstReplyCost: Long = 0,
@@ -125,7 +121,6 @@ data class Conversation(
     var roundNumber: Int = 0,
     /** 访客首条消息时间 */
     @Field(type = FieldType.Date, format = DateFormat.date_time)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     var clientFirstMessageTime: Instant? = null,
     /** 客服平均响应时长 */
     var avgRespDuration: Long? = 0,

@@ -17,6 +17,7 @@
 package com.qinghzu.graphqlbff.subscriptions
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.server.operations.Subscription
 import com.qinghzu.graphqlbff.context.MySubscriptionGraphQLContext
 import graphql.GraphqlErrorException
@@ -85,10 +86,10 @@ class SimpleSubscription : Subscription {
         Flux.just(myGraphQLContext.auth ?: "no-auth")
 
     @GraphQLDescription("测试定时器")
-    fun fluxInterval(seconds: Long? = 5): Flux<String> {
+    fun fluxInterval(@GraphQLIgnore myGraphQLContext: MySubscriptionGraphQLContext, seconds: Long? = 5): Flux<String> {
         return Flux.interval(Duration.ofSeconds(seconds ?: 5))
             .map {
-                it.toString()
+                "${myGraphQLContext.auth} + $it"
             }
     }
 }

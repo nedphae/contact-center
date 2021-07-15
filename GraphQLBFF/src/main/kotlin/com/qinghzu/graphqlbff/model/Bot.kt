@@ -25,9 +25,9 @@ data class Topic(
     /** 是否有效标记位 */
     var enabled: Boolean,
     /** 问题的有效时间 */
-    var effectiveTime: String?,
+    var effectiveTime: Double?,
     /** 有效期结束 */
-    var failureTime: String?,
+    var failureTime: Double?,
     /** 知识点所属分类 */
     var categoryId: Long,
     /** 问题答案类型，0只有对外答案，1只有对内答案，2同时有对内和对外答案，null 相似问题，无答案 */

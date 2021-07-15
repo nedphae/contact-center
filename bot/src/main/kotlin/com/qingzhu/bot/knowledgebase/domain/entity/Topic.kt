@@ -1,6 +1,5 @@
 package com.qingzhu.bot.knowledgebase.domain.entity
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
@@ -46,11 +45,9 @@ data class Topic(
     var enabled: Boolean,
     /** 问题的有效时间 */
     @Field(type = FieldType.Date, format = DateFormat.date_time)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     var effectiveTime: Instant?,
     /** 有效期结束 */
     @Field(type = FieldType.Date, format = DateFormat.date_time)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     var failureTime: Instant?,
     /** 知识点所属分类 */
     var categoryId: Long,
@@ -74,12 +71,10 @@ data class Topic(
     @CreatedDate
     @JsonIgnore
     @Field(type = FieldType.Date, format = DateFormat.date_time)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     val createdDate = Instant.now()
 
     @LastModifiedDate
     @JsonIgnore
     @Field(type = FieldType.Date, format = DateFormat.date_time)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     var lastModifiedDate = Instant.now()
 }
