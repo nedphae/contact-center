@@ -15,7 +15,6 @@ class ConversationStatusService(
     @Qualifier("hazelcastInstance")
     private val hazelcastInstance: HazelcastInstance,
     private val staffStatusService: StaffStatusService,
-    private val clearStatusService: ClearStatusService,
     private val messagePersistentService: MessagePersistentService,
 ) {
 
@@ -30,8 +29,6 @@ class ConversationStatusService(
         if (statusMap.isEmpty) {
             statusMap.addIndex(IndexType.HASH, "staffId")
             statusMap.addIndex(IndexType.HASH, "userId")
-            // 添加 EntryListener 到 IMap， 删除 entry 同时会删除该 userId 关联的会话和 redis zSet 消息
-            statusMap.addEntryListener(clearStatusService, true)
         }
         statusMap.put(conversationStatus.id, conversationStatus, 1, TimeUnit.HOURS)
     }

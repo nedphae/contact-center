@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit
 class StaffStatusService(
     @Qualifier("hazelcastInstance")
     private val hazelcastInstance: HazelcastInstance,
+    private val clearStatusService: ClearStatusService,
 ) {
     private fun getStatusMap(organizationId: Int) =
         hazelcastInstance.getMap<Long, StaffStatus>("$organizationId:staff")
@@ -40,6 +41,8 @@ class StaffStatusService(
             statusMap.addIndex(IndexType.BITMAP, "shunt[any]")
             statusMap.addIndex(IndexType.HASH, "onlineStatus")
             statusMap.addIndex(IndexType.HASH, "autoBusy")
+            // 添加 EntryListener 到 IMap， 删除 entry 同时会删除该 userId 关联的会话和 redis zSet 消息
+            statusMap.addEntryListener(clearStatusService, true)
         }
         statusMap.put(staffStatus.staffId, staffStatus, 2, TimeUnit.HOURS)
     }

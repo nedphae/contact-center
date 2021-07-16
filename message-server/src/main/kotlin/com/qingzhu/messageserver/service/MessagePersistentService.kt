@@ -21,13 +21,14 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
+import java.time.Duration
 
 /**
  * 数据持久化服务
  */
 @Service
 class MessagePersistentService(
-    redisTemplate: ReactiveRedisTemplate<String, String>,
+    private val redisTemplate: ReactiveRedisTemplate<String, String>,
     private val conversationRepository: ConversationRepository,
     private val reactiveElasticsearchTemplate: ReactiveElasticsearchTemplate,
     private val dispatchingCenter: DispatchingCenter,
@@ -49,7 +50,8 @@ class MessagePersistentService(
                     ChatMessageMapper.mapper.mapToFromMessage(JsonUtils.fromJson(msg))
                 }
                 .doOnNext {
-                    // TODO 清理 聊天消息
+                    // 清理 聊天消息 设置 缓存 2 天
+                    redisTemplate.expire(redisKey, Duration.ofDays(2))
                 }
         val conversation = ConversationMapper.mapper.mapFromStatusWithEnum(conversationStatus)
         val user = dispatchingCenter.findCustomer(conversation.organizationId, conversation.userId)
