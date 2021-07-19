@@ -46,6 +46,8 @@ class WebConfiguration : WebFluxConfigurer {
                     GET("/has-history-msg", messageHandler::hasHistoryMessage)
                     GET("/history", messageHandler::loadHistoryMessage)
                     GET("/history/customer/sync", messageHandler::syncHistoryMessage)
+                    // 根据客户 userId 查找历史会话
+                    GET("/conversation/history/find-by-user-id", messageHandler::findLatestStaffConvByUserId)
                 }
                 "/status".nest {
                     "/register".nest {

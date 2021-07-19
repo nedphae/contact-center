@@ -10,6 +10,7 @@ import java.time.Instant
 
 /**
  * ChatMessage entity in elasticsearch
+ * 和 common 包的 Message 一样结构，只是为了es存储
  */
 data class ChatMessage(
     /** 公司id */
@@ -22,7 +23,7 @@ data class ChatMessage(
     @Field(type = FieldType.Date, format = DateFormat.date_time)
     val createdAt: Instant = Instant.now(),
     /** 会话id */
-    val conversationId: Long,
+    var conversationId: Long?,
     /** 消息来源 (服务器设置) */
     var from: Long,
     /** 消息送至 */

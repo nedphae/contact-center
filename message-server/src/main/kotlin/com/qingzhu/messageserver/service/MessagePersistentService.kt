@@ -3,6 +3,7 @@ package com.qingzhu.messageserver.service
 import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.common.util.JsonUtils
 import com.qingzhu.messageserver.domain.entity.ChatMessage
+import com.qingzhu.messageserver.domain.entity.ChatMessagePO
 import com.qingzhu.messageserver.domain.entity.Conversation
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.domain.query.ConversationQuery
@@ -18,7 +19,6 @@ import org.springframework.data.redis.connection.RedisZSetCommands
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.ReactiveZSetOperations
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import java.time.Duration
@@ -78,6 +78,13 @@ class MessagePersistentService(
             )
             // 缩小 SearchHit 导致的序列化太大
             .map { PageImpl(it.content, it.pageable, it.totalElements) }
+    }
+
+    /**
+     * 根据 [userId] 获取最近一次的人工会话
+     */
+    fun findLatestStaffConvByUserId(organizationId: Int, userId: Long): Mono<Conversation> {
+        return conversationRepository.findFirstByOrganizationIdAndUserIdOrderByStartTimeDesc(organizationId, userId)
     }
 
     fun hasHistoryMessage(organizationId: Int, userId: Long): Mono<Boolean> {

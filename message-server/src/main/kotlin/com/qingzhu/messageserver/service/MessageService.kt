@@ -27,6 +27,7 @@ class MessageService(
     redisTemplate: ReactiveRedisTemplate<String, String>,
     private val streamBridge: StreamBridge,
     private val chatMessagePORepository: ChatMessagePORepository,
+    private val conversationStatusService: ConversationStatusService,
 ) {
     private val zSet: ReactiveZSetOperations<String, String> = redisTemplate.opsForZSet()
 
@@ -109,7 +110,7 @@ class MessageService(
                 // 持久化 到 数据库
                 customer.flatMap { cs ->
                     val chatMessage = ChatMessageMapper.mapper.mapToFromMessage(messageDto.message)
-                    chatMessagePORepository.save(ChatMessagePO(chatMessage, cs.userId))
+                    saveMessage(ChatMessagePO(chatMessage, cs.userId))
                 }
             }
             .map { true }
@@ -165,7 +166,7 @@ class MessageService(
         return Mono
             .zip(
                 zSet.add(key, message.toJson(), message.seqId.toDouble()),
-                chatMessagePORepository.save(ChatMessagePO(chatMessage, userId!!))
+                saveMessage(ChatMessagePO(chatMessage, userId!!))
             )
             .map { it.t1 }
     }
@@ -194,5 +195,19 @@ class MessageService(
             }
             .collectList()
             .flatMap { Mono.empty() }
+    }
+
+    /**
+     * 持久化单独消息到 cassandra
+     */
+    private fun saveMessage(chatMessagePO: ChatMessagePO): Mono<ChatMessagePO> {
+        return conversationStatusService.findLatestByUserId(
+            chatMessagePO.chatMessageKey.organizationId,
+            chatMessagePO.chatMessageKey.ownerId.toLong()
+        )
+            .flatMap {
+                chatMessagePO.conversationId = it.id
+                chatMessagePORepository.save(chatMessagePO)
+            }
     }
 }

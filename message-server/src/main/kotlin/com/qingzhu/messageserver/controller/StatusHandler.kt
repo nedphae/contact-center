@@ -1,6 +1,7 @@
 package com.qingzhu.messageserver.controller
 
 import com.qingzhu.common.util.awaitGetOrganizationId
+import com.qingzhu.common.util.getOrganizationIdAndUserId
 import com.qingzhu.messageserver.domain.dto.CustomerBaseClientDto
 import com.qingzhu.messageserver.domain.dto.StaffChangeStatusDto
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
@@ -15,21 +16,6 @@ import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.*
 import reactor.core.publisher.Mono
 import java.util.*
-
-val emptyResponse = ok().build()
-
-private suspend fun ServerRequest.getOrganizationIdAndUserId(
-    queryParamName: String,
-    getBody: (oid: Int, queryParam: String) -> Mono<ServerResponse>
-): ServerResponse {
-    val (organizationId, _, _) = this.awaitGetOrganizationId()
-    return this.queryParam(queryParamName)
-        .map {
-            getBody(organizationId!!, it)
-        }
-        .orElse(emptyResponse)
-        .awaitSingle()
-}
 
 @RestController
 class StaffStatusHandler(
@@ -115,7 +101,7 @@ class ConversationStatusHandler(private val conversationStatusService: Conversat
 
     suspend fun findByUserId(sr: ServerRequest): ServerResponse {
         return sr.getOrganizationIdAndUserId("userId") { oid, userId ->
-            ok().body(conversationStatusService.findByUserId(oid, userId.toLong()))
+            ok().body(conversationStatusService.findLatestByUserId(oid, userId.toLong()))
         }
     }
 

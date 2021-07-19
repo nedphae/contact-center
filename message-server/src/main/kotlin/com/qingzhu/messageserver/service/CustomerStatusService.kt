@@ -3,14 +3,11 @@ package com.qingzhu.messageserver.service
 import com.hazelcast.config.IndexType
 import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
-import com.hazelcast.query.impl.predicates.AndPredicate
 import com.hazelcast.query.impl.predicates.EqualPredicate
-import com.hazelcast.query.impl.predicates.NotEqualPredicate
 import com.qingzhu.messageserver.domain.constant.OnlineStatus
 import com.qingzhu.messageserver.domain.dto.CustomerBaseClientDto
 import com.qingzhu.messageserver.domain.dto.CustomerBaseStatusDto
 import com.qingzhu.messageserver.domain.entity.CustomerStatus
-import com.qingzhu.messageserver.domain.entity.StaffStatus
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -54,7 +51,7 @@ class CustomerStatusService(
             customerStatus.setOffline(customerBaseStatusDto.clientAccessServer)
             if (customerStatus.onlineStatus == OnlineStatus.OFFLINE) {
                 // 设置会话结束
-                val conversationStatus = conversationStatusService.findByUserId(
+                val conversationStatus = conversationStatusService.findLatestByUserId(
                     customerBaseStatusDto.organizationId,
                     customerBaseStatusDto.userId
                 )

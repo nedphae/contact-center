@@ -34,7 +34,7 @@ class AutoBotRegisterService(
             .flatMap {
                 staffAdminService.findAllEnabledBotStaff()
                     .retryWhen(
-                        Retry.fixedDelay(50, Duration.ofSeconds(5))
+                        Retry.fixedDelay(80, Duration.ofSeconds(10))
                             .filter { e -> e is ConnectTimeoutException }
                     )
             }

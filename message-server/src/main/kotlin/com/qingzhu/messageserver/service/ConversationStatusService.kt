@@ -3,11 +3,13 @@ package com.qingzhu.messageserver.service
 import com.hazelcast.config.IndexType
 import com.hazelcast.core.HazelcastInstance
 import com.hazelcast.query.Predicate
+import com.hazelcast.query.Predicates
 import com.hazelcast.query.impl.predicates.EqualPredicate
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 @Service
@@ -40,6 +42,7 @@ class ConversationStatusService(
         val statusMap = getStatusMap(conversationStatus.organizationId)
         return Mono.justOrEmpty(statusMap[conversationStatus.id])
             .doOnNext {
+                it.endConversation()
                 statusMap.put(it.id, it, 15, TimeUnit.MINUTES)
                 staffStatusService.removeCustomer(
                     it.organizationId,
@@ -60,13 +63,18 @@ class ConversationStatusService(
             .doOnNext { saveStatus(it) }
     }
 
-    fun findByUserId(organizationId: Int, userId: Long): Mono<ConversationStatus> {
+    fun findLatestByUserId(organizationId: Int, userId: Long): Mono<ConversationStatus> {
         val statusMap = getStatusMap(organizationId)
-        val equalPredicate = EqualPredicate("userId", userId)
+
         @Suppress("UNCHECKED_CAST")
+        val equalPredicate = EqualPredicate("userId", userId) as Predicate<Long, ConversationStatus>
+        val pagePredicate = Predicates.pagingPredicate(equalPredicate,
+            // desc for conversation id
+            { o1, o2 -> (o2?.key?.minus(o1?.key ?: 0) ?: 0).toInt() }, 1
+        )
         return Mono.justOrEmpty(
             statusMap
-                .values(equalPredicate as Predicate<Long, ConversationStatus>)
+                .values(pagePredicate)
                 .stream().findFirst()
         )
     }

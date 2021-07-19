@@ -111,4 +111,10 @@ data class ConversationStatus(
         @JvmStatic
         private val serialVersionUID = 1L
     }
+
+    fun endConversation(): ConversationStatus {
+        this.endTime = Instant.now()
+
+        return this
+    }
 }

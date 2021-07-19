@@ -2,6 +2,7 @@ package com.qingzhu.dispatcher.service
 
 import com.qingzhu.common.domain.shared.msg.constant.CreatorType
 import com.qingzhu.dispatcher.component.AssignmentComponent
+import com.qingzhu.dispatcher.component.MessageService
 import com.qingzhu.dispatcher.domain.constant.CloseReason
 import com.qingzhu.dispatcher.domain.constant.RelatedType
 import com.qingzhu.dispatcher.domain.constant.TransferType
@@ -14,7 +15,10 @@ import java.time.Duration
 import java.time.Instant
 
 @Service
-class AssignmentService(private val assignmentComponent: AssignmentComponent) {
+class AssignmentService(
+    private val assignmentComponent: AssignmentComponent,
+    private val messageService: MessageService,
+) {
     /**
      * 根据 机构id[organizationId] 和 用户id[userId] 自动分配客服，并返回会话信息
      * TODO: 获取设置的用户信息里的客服ID 和 分组 配置
@@ -47,11 +51,9 @@ class AssignmentService(private val assignmentComponent: AssignmentComponent) {
     fun assignmentStaff(organizationId: Int, userId: Long, fromQueue: Boolean = false): Mono<ConversationViewDto> {
         val customerDispatcherDto = assignmentComponent.getCustomerDispatcherWithCache(organizationId, userId)
         val mono = Mono
-            .create<ConversationStatusDto> {
-                // TODO 通过 JPA 获取历史会话的座席信息
-                // TODO 生成会话信息
-                it.success()
-            }.cache()
+            // 获取历史会话的人工座席信息
+            .defer { messageService.findLatestStaffConvByUserId(organizationId, userId) }
+            .cache()
         return mono
             .transform { assignmentCustomerAndSendEvent(it) }
             .onErrorResume {

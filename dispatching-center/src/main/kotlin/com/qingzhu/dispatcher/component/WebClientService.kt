@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.reactive.function.client.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @Component
 class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Builder) :
@@ -22,6 +23,19 @@ class MessageService(@Qualifier("innerWebClient") webClientBuilder: WebClient.Bu
             .body(message)
             .retrieve()
             .toEntity()
+    }
+
+    fun findLatestStaffConvByUserId(organizationId: Int, userId: Long): Mono<ConversationStatusDto> {
+        return webClient
+            .get()
+            .uri {
+                it.path("/message//conversation/history/find-by-user-id")
+                    .queryParam("organizationId", organizationId)
+                    .queryParam("userId", userId)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono()
     }
 
     fun findIdleStaff(organizationId: Int, shuntId: Long): Flux<StaffDispatcherDto> {

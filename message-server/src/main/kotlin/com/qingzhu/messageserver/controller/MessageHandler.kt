@@ -5,6 +5,7 @@ import com.qingzhu.common.domain.shared.msg.value.Message
 import com.qingzhu.common.message.getChatMessageSnowFlake
 import com.qingzhu.common.security.awaitPrincipalTriple
 import com.qingzhu.common.util.awaitGetOrganizationId
+import com.qingzhu.common.util.getOrganizationIdAndUserId
 import com.qingzhu.messageserver.domain.entity.ConversationStatus
 import com.qingzhu.messageserver.domain.query.ConversationQuery
 import com.qingzhu.messageserver.service.MessagePersistentService
@@ -100,5 +101,11 @@ class MessageHandler(
                 ok().bodyValue(it)
             }.awaitSingle()
         } else ok().build().awaitSingle()
+    }
+
+    suspend fun findLatestStaffConvByUserId(sr: ServerRequest): ServerResponse {
+        return sr.getOrganizationIdAndUserId("userId") { oid, userId ->
+            ok().body(messagePersistentService.findLatestStaffConvByUserId(oid, userId.toLong()))
+        }
     }
 }

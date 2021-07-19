@@ -77,8 +77,8 @@ data class ChatUIMessage(
                 conversationId = conversationId,
                 from = from,
                 to = to,
-                type = CreatorType.STAFF,
-                creatorType = CreatorType.CUSTOMER,
+                type = CreatorType.CUSTOMER,
+                creatorType = CreatorType.STAFF,
                 content = Content(
                     MessageType.TEXT,
                     sysCode = sysCode,

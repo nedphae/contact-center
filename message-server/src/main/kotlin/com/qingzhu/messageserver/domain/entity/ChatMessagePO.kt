@@ -18,7 +18,7 @@ data class ChatMessagePO(
     val uuid: String,
     val createdAt: Instant = Instant.now(),
     /** 会话id */
-    val conversationId: Long,
+    var conversationId: Long?,
     /** 消息来源 (服务器设置) */
     var from: Long,
     /** 消息送至 */
