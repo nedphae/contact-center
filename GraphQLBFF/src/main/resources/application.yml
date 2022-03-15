@@ -1,0 +1,42 @@
+graphql:
+  packages:
+    - "com.qinghzu.graphqlbff"
+  subscriptions:
+    # Send a ka message every 1000 ms (1 second)
+    keepAliveInterval: 1000
+
+server:
+  port: 8880
+
+spring:
+  application:
+    name: graphql-bff
+
+  cloud:
+    inetutils:
+      ignored-interfaces:
+        - eth*
+      preferred-networks:
+        - 192.168.*
+    consul:
+      host: 192.168.50.108
+      port: 80
+      discovery:
+        prefer-ip-address: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
+        # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+    loadbalancer:
+      ribbon:
+        enabled: false
+
+  security:
+    oauth2:
+      client:
+        provider:
+          authProvider:
+            token-uri: http://oauth2-auth-server/oauth/token
+        registration:
+          authProvider:
+            client-id: inner_client
+            client-secret: test_secret
+            authorization-grant-type: client_credentials

@@ -1,0 +1,39 @@
+logging:
+  level:
+    root: info
+
+server:
+  port: 8804
+
+spring:
+  application:
+    name: oauth2-auth-server
+  devtools:
+    livereload:
+      port: 35730
+  cloud:
+    inetutils:
+      ignored-interfaces:
+        - eth*
+      preferred-networks:
+        - 192.168.*
+    consul:
+      host: 192.168.50.108
+      port: 80
+      discovery:
+        prefer-ip-address: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
+        #　health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://192.168.50.102:5432/postgres?currentSchema=oauth
+    username: postgres
+    password: JpESiz1nHf
+
+im:
+  security:
+    inner-oauth:
+      enable: true

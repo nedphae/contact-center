@@ -1,0 +1,90 @@
+server:
+  port: 8801
+
+spring:
+  application:
+    name: im-server
+  netty-websocket:
+    name: websocket-server
+    port: 8802
+    service-id: ${spring.netty-websocket.name}:${vcap.application.instance_id:${spring.application.instance_id:${spring.netty-websocket.port}}}
+
+  redis:
+    database: 0
+    host: 192.168.50.103
+    port: 6379
+    password: G!Ps&eEwtsxd7NGf
+    timeout: 5000
+
+  r2dbc:
+    url: r2dbc:postgresql://192.168.50.102:5432/postgres?currentSchema=im
+    username: postgres
+    password: JpESiz1nHf
+    pool:
+      enabled: true
+
+  # security:
+  #   oauth2:
+  #     resourceserver:
+  #       jwt:
+  #         jwk-set-uri: http://localhost:8000/.well-known/jwks.json
+
+  cloud:
+    inetutils:
+      ignored-interfaces:
+        - eth*
+      preferred-networks:
+        - 192.168.*
+    consul:
+      host: 192.168.50.108
+      port: 80
+      discovery:
+        prefer-ip-address: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
+        # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+    loadbalancer:
+      ribbon:
+        enabled: false
+
+    stream:
+      function:
+        definition: message;messageStreamProcess;conversationStreamProcess
+      poller:
+        fixed-delay: 500
+        max-messages-per-poll: 1
+      kafka:
+        binder:
+          brokers: 192.168.50.107:9092
+          replication-factor: 1
+        streams:
+          binder:
+            functions:
+              message:
+                applicationId: message
+              messageStreamProcess:
+                applicationId: messageStreamProcess
+      bindings:
+        message-out-0:
+          # 使用 StatefulSet 创建固定名称的 pod
+          destination: ${spring.cloud.client.hostname:im}.message
+        messageStreamProcess-in-0:
+          destination: ${spring.cloud.client.hostname:im}.message
+        conversationStreamProcess-in-0:
+          destination: ${spring.cloud.client.hostname:im}.conv
+
+  security:
+    oauth2:
+      client:
+        provider:
+          authProvider:
+            token-uri: http://oauth2-auth-server/oauth/token
+        registration:
+          authProvider:
+            client-id: inner_client
+            client-secret: test_secret
+            authorization-grant-type: client_credentials
+
+logging:
+  level:
+    root: info
+    com.corundumstudio.socketio: debug

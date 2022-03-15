@@ -1,0 +1,147 @@
+server:
+  port: 8800
+
+spring:
+  application:
+    name: gateway-server
+
+  # r2dbc:
+  #   url: r2dbc:postgresql://192.168.50.102:5432/postgres?currentSchema=gateway
+  #   username: postgres
+  #   password: JpESiz1nHf
+  #   pool:
+  #     enabled: true
+  # 配置 oauth2 client，现在使用的是动态配置 client，因此无法使用 oauth2
+  # security:
+  #   oauth2:
+  #     client:
+  #       registration:
+  #         gateway:
+  #           provider: uaa
+  #           client-id: test_client
+  #           client-secret: test_secret
+  #           authorization-grant-type: password
+  #           redirect-uri: '{baseUrl}/'
+  #           scope: read
+  #       provider:
+  #         uaa:
+  #           authorization-uri: http://localhost:8000/oauth/authorize
+  #           token-uri: http://localhost:8000/oauth/token
+  #           user-info-uri: http://localhost:8000/userinfo
+  #           user-name-attribute: sub
+  #           jwk-set-uri: http://localhost:8000/token_keys
+  cloud:
+    inetutils:
+      ignored-interfaces:
+        - eth*
+      preferred-networks:
+        - 192.168.*
+    loadbalancer:
+      ribbon:
+        enabled: false
+    consul:
+      host: 192.168.50.108
+      port: 80
+      discovery:
+        prefer-ip-address: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
+        # health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+
+    gateway:
+      routes:
+        # 鉴权服务
+        - id: auth_route
+          uri: lb://oauth2-auth-server
+          predicates:
+            # - Path=/{companyId}/**
+            - Path=/oauth/**
+
+        # public key
+        - id: .well-known_route
+          uri: lb://oauth2-auth-server
+          predicates:
+            # - Path=/{companyId}/**
+            - Path=/.well-known/**
+
+        # websocket服务
+        - id: websocket_http_route
+          # hlb for hash load balance
+          uri: lb:ws://websocket-server
+          predicates:
+            - Path=/socket.io
+
+        # 客户接入服务
+        - id: access_route
+          uri: lb://im-server
+          predicates:
+            - Path=/access/**
+
+        # 即时通讯服务
+        - id: im_route
+          uri: lb://im-server
+          predicates:
+            - Path=/im/**
+
+        # 机器人服务
+        - id: bot_route
+          uri: lb://bot
+          predicates:
+            - Path=/bot/**
+
+        # 用户服务
+        - id: customer_route
+          uri: lb://dispatching-center
+          predicates:
+            - Path=/customer/**
+
+        # 调度中心服务
+        - id: dispatcher_route
+          uri: lb://dispatching-center
+          predicates:
+            - Path=/dispatcher/**
+
+        # oss 对象存储服务
+        - id: oss_route
+          uri: lb://im-server
+          predicates:
+            - Path=/oss/**
+
+        # 消息服务
+        - id: message_route
+          uri: lb://message-server
+          predicates:
+            - Path=/message/**
+
+        # 状态服务
+        - id: status_route
+          uri: lb://message-server
+          predicates:
+            - Path=/status/**
+
+        # 客服信息服务
+        - id: staff_route
+          uri: lb://staff-admin
+          predicates:
+            - Path=/staff/**
+
+        # 客服信息服务
+        - id: chat_ui_route
+          uri: http://localhost:13000
+          predicates:
+            - Path=/chat/**
+
+        # 聚合服务
+        - id: graphql-bff_route
+          uri: lb://graphql-bff
+          predicates:
+            - Path=/graphql/**
+
+        # 聚合服务
+        # 如果这里启用了 ws 会导致 socket.io 的连接转到这里，因为 websocket 相同端口共用连接
+        - id: graphql_subscriptions_route
+          uri: lb:ws://graphql-bff
+          predicates:
+            - Path=/subscriptions
+logging:
+  level:
+    root: info

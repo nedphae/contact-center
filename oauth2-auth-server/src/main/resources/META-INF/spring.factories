@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.qingzhu.oauth2authserver.security.InnerLoadBalanceProperties,\
+  com.qingzhu.oauth2authserver.security.InnerLoadBalanceAutoConfiguration

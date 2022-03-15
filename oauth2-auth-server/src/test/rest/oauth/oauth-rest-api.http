@@ -1,0 +1,30 @@
+###
+# 测试 获取 token
+POST http://localhost:8704/oauth/token?username=admin&password=123456&grant_type=password&org_id=9491
+Accept: */*
+Cache-Control: no-cache
+# base64 of user_client:test_secret
+Authorization: Basic dXNlcl9jbGllbnQ6dGVzdF9zZWNyZXQ=
+
+> {%
+    client.global.set("access_token", response.body.access_token);
+    client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+###
+# 测试 根据 token 获取用户信息
+GET http://localhost:8704/oauth/users/me
+Accept: */*
+Cache-Control: no-cache
+# base64 of user_client:test_secret
+Authorization: Bearer {{access_token}}
+
+###
+# 根据 refresh token 获取 access_token
+POST http://localhost:8704/oauth/token?grant_type=refresh_token&refresh_token={{refresh_token}}&org_id=9491
+Accept: */*
+Cache-Control: no-cache
+# base64 of user_client:test_secret
+Authorization: Basic dXNlcl9jbGllbnQ6dGVzdF9zZWNyZXQ=
+
+###

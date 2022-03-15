@@ -1,0 +1,23 @@
+# hazelcast 配置
+#  禁用 multicast， 使用 k8s 进行服务集群连接
+hazelcast:
+  cluster-name: message-server
+  # cp-subsystem:
+  #   cp-member-count: 3
+
+  serialization:
+    portable-version: 0
+    portable-factories:
+      - factory-id: 1
+        class-name: com.qingzhu.messageserver.domain.entity.StaffStatusPortableFactory
+
+  network:
+    join:
+      multicast:
+        enabled: false
+      kubernetes:
+        # 测试时设置为 false
+        enabled: false
+        # user k8s headless service
+        service-dns: message-server.devops.svc.cluster.local
+        service-dns-timeout: 50000

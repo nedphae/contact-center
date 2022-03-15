@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "im.security.inner-oauth.client-authorization.client-id",
+      "type": "java.lang.String",
+      "description": "Description for im.security.inner-oauth.client-authorization.client-id."
+    }
+  ]
+}
