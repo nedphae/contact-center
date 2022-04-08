@@ -3,6 +3,8 @@
 [![Kotlin version](https://img.shields.io/badge/Kotlin-1.4.32-blue)](https://kotlinlang.org/docs/reference/whatsnew14.html)
 [![License](https://img.shields.io/badge/License-Apache%202.0-red.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
+**小白客服现已推出商业版本，访问 [http://xbcs.top/](http://xbcs.top/) 了解详情**
+
 基于 Spring Cloud 的高并发，高可用，全异步开源微服务客服系统
 
 全自研系统，完全开源，包括后台服务端和桌面客户端。后台使用 Kotlin + Spring Cloud 开发（本项目也可作为一个 Kotlin 微服务后端的示例项目）
@@ -105,17 +107,6 @@ SpringBoot 项目，可以在IDE中运行，也可以打包为单独的 jar 包�
 ### Changelog
 
 [Changelog](CHANGELOG.md)
-
-### 后续开发计划【优先级 1-5】
-
-- [ ] ⚫ 客服监控功能 [5]
-- [ ] ⚫ 咨询类型 [4]
-- [ ] ⚫ 基于 Redis 的实时统计 [3]
-- [ ] ⚫ 图文机器人 [2]
-- [ ] ⚫ 留言处理（发送短信/邮件）[1]
-- [ ] ⚫ 基于 Kibana + Elasticsearch 统计客服在线、会话、TopN问题、等 [1]
-- [ ] ❌ Apache Kylin + Saiku / SuperSet + Apache Druid 进行 OLAP 数据分析模块开发
-- [ ] ❌ 数据使用 kafka 导入到 kylin / hbase / hadoop
 
 ### 联系方式
 
