@@ -3,7 +3,7 @@
 [![Kotlin version](https://img.shields.io/badge/Kotlin-1.4.32-blue)](https://kotlinlang.org/docs/reference/whatsnew14.html)
 [![License](https://img.shields.io/badge/License-Apache%202.0-red.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-**小白客服现已推出商业版本，访问 [http://xbcs.top/](http://xbcs.top/) 了解详情**
+**小白客服现已推出在线版本，访问 [https://xbcs.top/](https://xbcs.top/) 了解详情**
 
 基于 Spring Cloud 的高并发，高可用，全异步开源微服务客服系统
 
