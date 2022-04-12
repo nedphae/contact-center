@@ -5,9 +5,10 @@
 
 **小白客服现已推出在线版本，访问 [https://xbcs.top/](https://xbcs.top/) 了解详情**
 
+
 基于 Spring Cloud 的高并发，高可用，全异步开源微服务客服系统
 
-全自研系统，完全开源，包括后台服务端和桌面客户端。后台使用 Kotlin + Spring Cloud 开发（本项目也可作为一个 Kotlin 微服务后端的示例项目）
+全自研系统，包括后台服务端和桌面客户端。后台使用 Kotlin + Spring Cloud 开发（本项目也可作为一个 Kotlin 微服务后端的示例项目）
 
 其他项目 :
 
@@ -15,6 +16,12 @@
 | :---------: | :--------------------------------- | :--------------------------------- |
 | 客服系统桌面客户端 | [contact-center-client](https://github.com/nedphae/contact-center-client) | 基于 Electron + React 开发的桌面客户端，UI 使用 material-ui |
 | 客服系统用户端 | [customer-web-client](https://github.com/nedphae/customer-web-client) | 客服系统用户端，基于 [ChatUI Pro](https://chatui.io/sdk/getting-started) 开发 |
+
+### 客服系统试用账户
+
+| 机构ID          | 账户名称             | 密码                | 客服访问链接             | 客服端下载                |
+| :------------: | :------------------ | :------------------ | :---------------------- | :------------------------- |
+| 1001 | admin | 123456 | https://im.xbcs.top/chat/?sc=KpqKXORg | [GitHub](https://github.com/nedphae/contact-center-client/releases/download/1.0.0/Setup.1.0.0.exe) [Gitee](https://gitee.com/nedgao/contact-center-client/attach_files/1026736/download/%E5%B0%8F%E7%99%BD%E5%AE%A2%E6%9C%8D%20Setup%201.0.0.exe) |
 
 ### 系统特性
 
