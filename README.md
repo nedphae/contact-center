@@ -19,7 +19,7 @@
 
 ### 客服系统试用账户
 
-| 机构ID          | 账户名称             | 密码                | 客服访问链接             | 客服端下载                |
+| 机构ID          | 账户名称             | 密码                | 客户访问链接             | 客服端下载                |
 | :------------: | :------------------ | :------------------ | :---------------------- | :------------------------- |
 | 1001 | admin | 123456 | https://im.xbcs.top/chat/?sc=KpqKXORg | [GitHub](https://github.com/nedphae/contact-center-client/releases/download/1.0.0/Setup.1.0.0.exe) [Gitee](https://gitee.com/nedgao/contact-center-client/attach_files/1026736/download/%E5%B0%8F%E7%99%BD%E5%AE%A2%E6%9C%8D%20Setup%201.0.0.exe) |
 
