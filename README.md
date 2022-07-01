@@ -19,9 +19,9 @@
 
 ### 客服系统试用账户
 
-| 机构ID          | 账户名称             | 密码                | 客户访问链接             | 客服端下载                |
+| 机构ID          | 账户名称             | 密码                | 客户访问链接             | 客服端                |
 | :------------: | :------------------ | :------------------ | :---------------------- | :------------------------- |
-| 1001 | admin | 123456 | https://im.xbcs.top/chat/?sc=KpqKXORg | [Windows 客户端](https://xbcs.top/download/) |
+| 1001 | admin | 123456 | https://im.xbcs.top/chat/?sc=AGACSCCx | [Windows 客户端](https://xbcs.top/download/) / [Web版本](https://im.xbcs.top/workbench)|
 
 ### 系统特性
 
