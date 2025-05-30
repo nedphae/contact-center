@@ -119,6 +119,3 @@ SpringBoot 项目，可以在IDE中运行，也可以打包为单独的 jar 包�
 
 **email: [nedphae@gmail.com](mailto:nedphae@gmail.com)**
 
-**QQ 群:** 密码 2022<br />
-
-![qq group](doc/img/QQgroup.png)
